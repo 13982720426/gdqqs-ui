@@ -3,7 +3,7 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
-import {deepClone} from "../../utils";
+import {cloneDeep} from "lodash-es";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
@@ -12,7 +12,7 @@ const extraRoute = [
   {
     component: "offer/Save/index",
     hidden: true,
-    meta: {title: "新增", icon: "#", noCache: false, link: null},
+    meta: {title: "报价管理新增", icon: "#", noCache: false, link: null},
     name: "OfferSave",
     path: "offer/save",
   }
@@ -72,7 +72,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
     }
 
     if (route.path === '/' && route.children) {
-      route.children = [...route.children, ...deepClone(extraRoute)]
+      route.children = [...route.children, ...cloneDeep(extraRoute)]
     }
 
     if (route.component) {
