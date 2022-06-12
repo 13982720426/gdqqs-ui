@@ -110,3 +110,11 @@ function submitForm() {
   }
 })();
 </script>
+<style scoped>
+.pagination-container {
+  background: none;
+}
+.sel {
+  color: #ff5800;
+}
+</style>

@@ -1,44 +1,44 @@
 import request from '@/utils/request'
 
 // 查询油漆部件列表
-export function listPart(query) {
+export function listPaintpart(query) {
   return request({
-    url: '/business/part/list',
+    url: '/business/paintpart/list',
     method: 'get',
     params: query
   })
 }
 
 // 查询油漆部件详细
-export function getPart(paintPartId) {
+export function getPaintpart(paintPartId) {
   return request({
-    url: '/business/part/' + paintPartId,
+    url: '/business/paintpart/' + paintPartId,
     method: 'get'
   })
 }
 
 // 新增油漆部件
-export function addPart(data) {
+export function addPaintpart(data) {
   return request({
-    url: '/business/part',
+    url: '/business/paintpart',
     method: 'post',
     data: data
   })
 }
 
 // 修改油漆部件
-export function updatePart(data) {
+export function updatePaintpart(data) {
   return request({
-    url: '/business/part',
+    url: '/business/paintpart',
     method: 'put',
     data: data
   })
 }
 
 // 删除油漆部件
-export function delPart(paintPartId) {
+export function delPaintpart(paintPartId) {
   return request({
-    url: '/business/part/' + paintPartId,
+    url: '/business/paintpart/' + paintPartId,
     method: 'delete'
   })
 }
