@@ -16,7 +16,7 @@
          </el-radio-group>
       </el-form-item>
       <el-form-item>
-      <el-button type="primary" @click="submit">保存</el-button>
+      <el-button type="primary" @click="submit" color="#ffdac6" class="sel">保存</el-button>
       <el-button type="danger" @click="close">关闭</el-button>
       </el-form-item>
    </el-form>
@@ -54,3 +54,8 @@ function close() {
   proxy.$tab.closePage();
 };
 </script>
+<style scoped>
+.sel {
+  color: #ff5800;
+}
+</style>

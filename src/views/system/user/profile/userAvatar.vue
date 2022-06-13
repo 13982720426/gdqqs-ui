@@ -1,9 +1,9 @@
 <template>
-  <!-- <div class="user-info-head" @click="editCropper()"><img :src="options.img" title="点击上传头像" class="img-circle img-lg" /></div> -->
-  <div class="user-info-head" @click="editCropper()">
+  <div class="user-info-head" @click="editCropper()"><img :src="options.img" title="点击上传头像" class="img-circle img-lg" /></div>
+  <!-- <div class="user-info-head" @click="editCropper()">
     <el-icon><UploadFilled /></el-icon>
     上传头像
-  </div>
+  </div> -->
   <el-dialog
     :title="title"
     v-model="open"
@@ -150,34 +150,34 @@ function closeDialog() {
 </script>
 
 <style lang="scss" scoped>
-.user-info-head {
-  width: 100px;
-  height: 30px;
-  color: #ff5800;
-  background: #ffdac6;
-  text-align: center;
-}
 // .user-info-head {
-//   position: relative;
-//   display: inline-block;
-//   height: 120px;
+//   width: 100px;
+//   height: 30px;
+//   color: #ff5800;
+//   background: #ffdac6;
+//   text-align: center;
 // }
+.user-info-head {
+  position: relative;
+  display: inline-block;
+  height: 120px;
+}
 
-// .user-info-head:hover:after {
-//   content: '+';
-//   position: absolute;
-//   left: 0;
-//   right: 0;
-//   top: 0;
-//   bottom: 0;
-//   color: #eee;
-//   background: rgba(0, 0, 0, 0.5);
-//   font-size: 24px;
-//   font-style: normal;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-//   cursor: pointer;
-//   line-height: 110px;
-//   border-radius: 50%;
-// }
+.user-info-head:hover:after {
+  content: '+';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  color: #eee;
+  background: rgba(0, 0, 0, 0.5);
+  font-size: 24px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  cursor: pointer;
+  line-height: 110px;
+  border-radius: 50%;
+}
 </style>

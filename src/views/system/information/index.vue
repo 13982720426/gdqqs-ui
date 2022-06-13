@@ -32,8 +32,15 @@
       </el-form-item>
       <el-form-item label="头像" prop="avatar">
         <el-row :gutter="20">
-          <el-col :span="22"><el-input @click="editCropper()" v-model="state.user.avatar"/></el-col>
-          <el-col :span="2"><userAvatarVue ref="upimg"></userAvatarVue></el-col>
+          <el-col :span="22">
+            <el-input @click="editCropper()" v-model="state.user.avatar" />
+          </el-col>
+          <el-col :span="2">
+            <div class="user-info-head" @click="editCropper()">
+              <el-icon><UploadFilled /></el-icon>
+              上传头像
+            </div>
+          </el-col>
         </el-row>
 
         <el-dialog
@@ -100,13 +107,19 @@
         </el-dialog>
       </el-form-item>
       <el-form-item label="手机号码" prop="phonenumber">
-        <el-input maxlength="11" v-model="state.user.phonenumber" style="width: 22%"/>
+        <el-input maxlength="11" v-model="state.user.phonenumber" style="width: 22%" />
       </el-form-item>
       <el-form-item label="邮箱" prop="email">
-        <el-input maxlength="50" v-model="state.user.email" style="width: 22%"/>
+        <el-input maxlength="50" v-model="state.user.email" style="width: 22%" />
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input type="textarea" v-model="state.user.remark" maxlength="300" show-word-limit style="width: 22%"/>
+        <el-input
+          type="textarea"
+          v-model="state.user.remark"
+          maxlength="300"
+          show-word-limit
+          style="width: 22%"
+        />
       </el-form-item>
 
       <el-form-item>
@@ -114,6 +127,67 @@
         <el-button type="danger" @click="close">重新填写</el-button>
       </el-form-item>
     </el-form>
+
+    <el-dialog
+      :title="title"
+      v-model="open"
+      width="800px"
+      append-to-body
+      @opened="modalOpened"
+      @close="closeDialog"
+    >
+      <el-row>
+        <el-col :xs="24" :md="12" :style="{ height: '350px' }">
+          <vue-cropper
+            ref="cropper"
+            :img="options.img"
+            :info="true"
+            :autoCrop="options.autoCrop"
+            :autoCropWidth="options.autoCropWidth"
+            :autoCropHeight="options.autoCropHeight"
+            :fixedBox="options.fixedBox"
+            @realTime="realTime"
+            v-if="visible"
+          />
+        </el-col>
+        <el-col :xs="24" :md="12" :style="{ height: '350px' }">
+          <div class="avatar-upload-preview">
+            <img :src="options.previews.url" :style="options.previews.img" />
+          </div>
+        </el-col>
+      </el-row>
+      <br />
+      <el-row>
+        <el-col :lg="2" :md="2">
+          <el-upload
+            action="#"
+            :http-request="requestUpload"
+            :show-file-list="false"
+            :before-upload="beforeUpload"
+          >
+            <el-button>
+              选择
+              <el-icon class="el-icon--right"><Upload /></el-icon>
+            </el-button>
+          </el-upload>
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 2 }" :md="2">
+          <el-button icon="Plus" @click="changeScale(1)"></el-button>
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 1 }" :md="2">
+          <el-button icon="Minus" @click="changeScale(-1)"></el-button>
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 1 }" :md="2">
+          <el-button icon="RefreshLeft" @click="rotateLeft()"></el-button>
+        </el-col>
+        <el-col :lg="{ span: 1, offset: 1 }" :md="2">
+          <el-button icon="RefreshRight" @click="rotateRight()"></el-button>
+        </el-col>
+        <el-col :lg="{ span: 2, offset: 6 }" :md="2">
+          <el-button type="primary" @click="uploadImg()">确 定</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 

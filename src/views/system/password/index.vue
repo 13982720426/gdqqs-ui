@@ -2,17 +2,34 @@
   <div class="inform">
     <el-form ref="pwdRef" :model="user" :rules="rules" label-width="80px" style="padding: 20px">
       <el-form-item label="当前密码" prop="oldPassword">
-        <el-input placeholder="请输入旧密码" type="password" show-password />
+        <el-input
+          placeholder="请输入旧密码"
+          v-model="user.oldPassword"
+          type="password"
+          show-password
+          style="width: 22%"
+        />
       </el-form-item>
       <el-form-item label="新密码" prop="newPassword">
-        <el-input placeholder="请输入新密码" type="password" show-password />
+        <el-input
+          placeholder="请输入新密码"
+          v-model="user.newPassword"
+          type="password"
+          show-password
+          style="width: 22%"
+        />
       </el-form-item>
       <el-form-item label="确认密码" prop="confirmPassword">
-        <el-input placeholder="请确认密码" type="password" show-password />
+        <el-input
+          placeholder="请确认密码"
+          v-model="user.confirmPassword"
+          type="password"
+          show-password
+          style="width: 22%"
+        />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submit"  color="#ffdac6" class="sel">确认修改</el-button>
-        <el-button type="danger" @click="close">重新填写</el-button>
+        <el-button type="primary" @click="submit" color="#ffdac6" class="sel">确认修改</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -50,14 +67,11 @@ const rules = ref({
 
 /** 提交按钮 */
 function submit() {
-  proxy.$refs.pwdRef.validate(valid => {
-    if (valid) {
-      updateUserPwd(user.oldPassword, user.newPassword).then(response => {
-        proxy.$modal.msgSuccess('修改成功')
-      })
-    }
+  updateUserPwd(user.oldPassword, user.newPassword).then(response => {
+    proxy.$modal.msgSuccess('修改成功')
   })
 }
+
 /** 关闭按钮 */
 function close() {
   proxy.$tab.closePage()
@@ -71,5 +85,4 @@ function close() {
 .sel {
   color: #ff5800;
 }
-
 </style>
