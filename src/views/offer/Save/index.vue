@@ -11,7 +11,7 @@
       </el-steps>
     </OfferSaveTitle>
     <div class="offer-save-content">
-      <Customer v-if="stepsKey === 0"></Customer>
+      <Customer ref="customerRef" v-if="stepsKey === 0"></Customer>
       <OfferSaveProduct v-else-if="stepsKey === 1"></OfferSaveProduct>
       <OfferPart v-else-if="stepsKey === 2"></OfferPart>
       <OfferSavePayment v-else-if="stepsKey === 3"></OfferSavePayment>
@@ -30,13 +30,21 @@ import OfferSaveProduct from './product/index'
 import OfferSavePayment from './Payment'
 import OfferPart from './part'
 import Customer from './Customer'
+import useOfferStore from '@/store/modules/offer'
 
 import { ref } from 'vue'
 
 const stepsKey = ref(0)
+const customerRef = ref(null)
 
-const stepsNext = () => {
-  stepsKey.value += 1
+const offerStore = useOfferStore()
+
+const stepsNext = async () => {
+  const data = await customerRef.value.getValues()
+  if (data) {
+    offerStore.setCustomerData(data)
+    stepsKey.value += 1
+  }
 }
 
 const stepsPrev = () => {

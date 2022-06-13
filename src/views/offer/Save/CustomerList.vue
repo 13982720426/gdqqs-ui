@@ -3,19 +3,19 @@
     <el-radio-group v-model="checked" @change="radioChange">
         <div v-for="item in props.dataSource" class="list-item">
           <div class="item-radio">
-            <el-radio :label="item.id">{{" "}}</el-radio>
+            <el-radio :label="item.customerId">{{" "}}</el-radio>
           </div>
           <div class="item-body">
             <el-descriptions :column="3" size="small">
-              <el-descriptions-item label="客户名称">xxxxx</el-descriptions-item>
-              <el-descriptions-item label="部门">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="客户性质">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="联系人">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="联系电话">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="邮箱">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="地址">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="邮政编码">kooriookami</el-descriptions-item>
-              <el-descriptions-item label="备注">kooriookami</el-descriptions-item>
+              <el-descriptions-item label="客户名称">{{ item.customerName }}</el-descriptions-item>
+              <el-descriptions-item label="部门">{{ item.partment }}</el-descriptions-item>
+              <el-descriptions-item label="客户性质">{{ item.customerNature }}</el-descriptions-item>
+              <el-descriptions-item label="联系人">{{ item.contact }}</el-descriptions-item>
+              <el-descriptions-item label="联系电话">{{ item.contactTell }}</el-descriptions-item>
+              <el-descriptions-item label="邮箱">{{ item.contactEmail }}</el-descriptions-item>
+              <el-descriptions-item label="地址">{{ item.contactAddress }}</el-descriptions-item>
+              <el-descriptions-item label="邮政编码">{{ item.postCode }}</el-descriptions-item>
+              <el-descriptions-item label="备注">{{ item.remark }}</el-descriptions-item>
             </el-descriptions>
           </div>
         </div>
@@ -42,7 +42,7 @@ const checked = ref('')
 const emits = defineEmits()
 
 const radioChange = (value) => {
-  const item = props.dataSource.find(item => item.id === value)
+  const item = props.dataSource.find(item => item.customerId === value)
   checked.value = value
   emits('change', { id: value, node: item })
 }
