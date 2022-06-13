@@ -15,7 +15,7 @@
       ref="upload"
     >
       <!-- 上传按钮 -->
-      <el-button type="primary">选取文件</el-button>
+      <el-button type="primary" :icon="icon">{{text}}</el-button>
     </el-upload>
     <!-- 上传提示 -->
     <div class="el-upload__tip" v-if="showTip">
@@ -62,6 +62,15 @@ const props = defineProps({
   isShowTip: {
     type: Boolean,
     default: true
+  },
+  // 按钮文字
+  btnText: {
+    type: String,
+    default: '选取文件'
+  },
+  btnIcon: {
+    type: String,
+    default: ''
   }
 });
 
@@ -76,6 +85,8 @@ const fileList = ref([]);
 const showTip = computed(
   () => props.isShowTip && (props.fileType || props.fileSize)
 );
+const text = computed(() => props.btnText)
+const icon = computed(() => props.btnIcon)
 
 watch(() => props.modelValue, val => {
   if (val) {

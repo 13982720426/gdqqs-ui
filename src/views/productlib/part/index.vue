@@ -19,7 +19,45 @@
             </el-form>
         </div>
 
-        <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
+        <el-tabs v-model="activeTab" class="demo-tabs">
+            <el-tab-pane label="轨道" name="first">
+                <QTable :loading="loading" :data="trackPartList" :columns="trackPartColumns"
+                    @selectionChange="handleSelectionChange">
+                    <template #default="{ row }">
+                        <el-button size="mini" type="text" icon="Edit" @click="handleUpdate(row)"
+                            v-hasPermi="['business:product:edit']">修改</el-button>
+                        <el-button size="mini" type="text" icon="Delete" @click="handleDelete(row)"
+                            v-hasPermi="['business:product:remove']">删除</el-button>
+                    </template>
+                </QTable>
+            </el-tab-pane>
+            <el-tab-pane label="滑线" name="second">
+                <QTable :loading="loading" :data="splPartList" :columns="splPartColumns"
+                    @selectionChange="handleSelectionChange">
+                    <template #default="{ row }">
+                        <el-button size="mini" type="text" icon="Edit" @click="handleUpdate(row)"
+                            v-hasPermi="['business:product:edit']">修改</el-button>
+                        <el-button size="mini" type="text" icon="Delete" @click="handleDelete(row)"
+                            v-hasPermi="['business:product:remove']">删除</el-button>
+                    </template>
+                </QTable>
+            </el-tab-pane>
+            <el-tab-pane label="大车止档型号" name="third">
+                <QTable :loading="loading" :data="crastopmodelPartList" :columns="crastopmodelPartColumns"
+                    @selectionChange="handleSelectionChange">
+                    <template #default="{ row }">
+                        <el-button size="mini" type="text" icon="Edit" @click="handleUpdate(row)"
+                            v-hasPermi="['business:product:edit']">修改</el-button>
+                        <el-button size="mini" type="text" icon="Delete" @click="handleDelete(row)"
+                            v-hasPermi="['business:product:remove']">删除</el-button>
+                    </template>
+                </QTable>
+            </el-tab-pane>
+            <el-tab-pane label="油漆" name="fourth"></el-tab-pane>
+            <el-tab-pane label="产品部件" name="six"></el-tab-pane>
+        </el-tabs>
+
+        <!-- <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column label="起重机类型" align="center" prop="craneType">
                 <template #default="{ row }">
@@ -62,14 +100,12 @@
         </el-table>
 
         <pagination v-show="total > 0" :total="total" v-model:page="queryParams.pageNum"
-            v-model:limit="queryParams.pageSize" @pagination="getList" />
-
+            v-model:limit="queryParams.pageSize" @pagination="getList" /> -->
     </div>
     <SaveTitle :title="saveTitle" v-show="!showList">
         <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="150px">
             <el-row>
                 <el-col :span="8">
-
                     <el-form-item label="起重机类型" prop="craneType">
                         <el-select v-model="form.craneType" placeholder="请选择" clearable>
                             <el-option v-for="dict in q_crane_type" :key="dict.value" :label="dict.label"
@@ -254,9 +290,44 @@
     </SaveTitle>
 </template>
 
-<script setup name="Product">
-import { listProduct, getProduct, delProduct, addProduct, updateProduct } from "@/api/business/product";
-import SaveTitle from '@/views/offer/components/Title'
+<script setup name="Part">
+import {
+    listTrackpart,
+    getTrackpart,
+    addTrackpart,
+    updateTrackpart,
+    delTrackpart,
+} from "@/api/business/trackpart";
+import {
+    listSplpart,
+    getSplpart,
+    addSplpart,
+    updateSplpart,
+    delSplpart,
+} from "@/api/business/splpart";
+import {
+    listCrastopmodelpart,
+    getCrastopmodelpart,
+    addCrastopmodelpart,
+    updateCrastopmodelpart,
+    delCrastopmodelpart,
+} from "@/api/business/crastopmodelpart";
+import {
+    listPaintpart,
+    getPaintpart,
+    addPaintpart,
+    updatePaintpart,
+    delPaintpart,
+} from "@/api/business/paintpart";
+import {
+    listProductpart,
+    getProductpart,
+    addProductpart,
+    updateProductpart,
+    delProductpart,
+} from "@/api/business/productpart";
+import SaveTitle from "@/views/offer/components/Title";
+import QTable from "../components/QTable.vue";
 
 const { proxy } = getCurrentInstance();
 const router = useRouter();
@@ -270,6 +341,132 @@ const multiple = ref(true);
 const total = ref(0);
 const showList = ref(true);
 const saveTitle = ref("新增产品");
+const activeTab = ref("first");
+const trackPartList = ref([]);
+const trackPartColumns = ref([
+    {
+        id: 1,
+        prop: "partType",
+        label: "部件类型",
+        align: "center",
+        format: () => { },
+    },
+    {
+        id: 2,
+        prop: "fixedMode",
+        label: "固定方式",
+        align: "center",
+        format: () => { },
+    },
+    {
+        id: 3,
+        prop: "trackModel",
+        label: "轨道型号",
+        align: "center",
+        format: () => { },
+    },
+    {
+        id: 4,
+        prop: "sgltrackLength",
+        label: "单根长度(米)",
+        align: "center",
+    },
+    {
+        id: 5,
+        prop: "sgltrackWeight",
+        label: "单根重量(公斤/米)",
+        align: "center",
+    },
+    {
+        id: 6,
+        prop: "trackUnprice",
+        label: "轨道单价(元/公斤)",
+        align: "center",
+    },
+    {
+        id: 7,
+        prop: "tppUnprice",
+        label: "压板单价",
+        align: "center",
+    },
+    {
+        id: 8,
+        prop: "cpUnprice",
+        label: "联结板单价",
+        align: "center",
+    },
+    {
+        id: 9,
+        prop: "thsUnprice",
+        label: "吊装台班单价",
+        align: "center",
+    },
+]);
+const splPartList = ref([]);
+const splPartColumns = ref([{
+    id: 1,
+    prop: "partType",
+    label: "部件类型",
+    align: "center",
+    format: () => { },
+}, {
+    id: 2,
+    prop: "splLevel",
+    label: "滑线级数",
+    align: "center",
+}, {
+    id: 3,
+    prop: "electricMax",
+    label: "最大电流",
+    align: "center",
+}, {
+    id: 4,
+    prop: "trolleyUnprice",
+    label: "滑触线单价",
+    align: "center",
+},
+{
+    id: 5,
+    prop: "collector",
+    label: "集电器",
+    align: "center",
+},
+{
+    id: 6,
+    prop: "installUnprice",
+    label: "安装费单价",
+    align: "center",
+},
+{
+    id: 7,
+    prop: "idlightUnprice",
+    label: "指示灯单价",
+    align: "center",
+},
+{
+    id: 8,
+    prop: "rcableUnprice",
+    label: "上升电缆单价",
+    align: "center",
+}])
+const crastopmodelPartList = ref([]);
+const crastopmodelPartColumns = ref([{
+    id: 1,
+    prop: "partType",
+    label: "部件类型",
+    align: "center",
+    format: () => { },
+}, {
+    id: 2,
+    prop: "weight",
+    label: "重量",
+    align: "center",
+}, {
+    id: 3,
+    prop: "unprice",
+    label: "单价",
+    align: "center",
+}])
 
 const data = reactive({
     queryParams: {
@@ -277,8 +474,7 @@ const data = reactive({
         pageSize: 10,
     },
     form: {},
-    rules: {
-    }
+    rules: {},
 });
 
 const { queryParams, form, rules } = toRefs(data);
@@ -303,7 +499,7 @@ const {
     q_lift_speed,
     q_crab_speed,
     q_cart_speed,
-    q_pressure_max
+    q_pressure_max,
 } = proxy.useDict(
     "q_crane_type",
     "q_oper_mode",
@@ -358,19 +554,34 @@ function spanFormat(row, column) {
 //起升高度翻译
 function liftHeightFormat(row, column) {
     if (row.craneType == 1) {
-        return proxy.selectDictLabel(q_single_crane_lift_height.value, row.liftHeight);
+        return proxy.selectDictLabel(
+            q_single_crane_lift_height.value,
+            row.liftHeight
+        );
     } else if (row.craneType == 2) {
-        return proxy.selectDictLabel(q_double_crane_lift_height.value, row.liftHeight);
+        return proxy.selectDictLabel(
+            q_double_crane_lift_height.value,
+            row.liftHeight
+        );
     } else if (row.craneType == 3) {
-        return proxy.selectDictLabel(q_susp_crane_lift_height.value, row.liftHeight);
+        return proxy.selectDictLabel(
+            q_susp_crane_lift_height.value,
+            row.liftHeight
+        );
     }
 }
 // 工作级别翻译
 function workLevelFormat(row, column) {
     if (row.craneType == 1) {
-        return proxy.selectDictLabel(q_single_crane_work_level.value, row.workLevel);
+        return proxy.selectDictLabel(
+            q_single_crane_work_level.value,
+            row.workLevel
+        );
     } else if (row.craneType == 2) {
-        return proxy.selectDictLabel(q_double_crane_work_level.value, row.workLevel);
+        return proxy.selectDictLabel(
+            q_double_crane_work_level.value,
+            row.workLevel
+        );
     } else if (row.craneType == 3) {
         return proxy.selectDictLabel(q_susp_crane_work_level.value, row.workLevel);
     }
@@ -379,16 +590,35 @@ function workLevelFormat(row, column) {
 /** 查询产品列表 */
 function getList() {
     loading.value = true;
-    listProduct(queryParams.vallue).then(response => {
-        productList.value = response.rows;
-        total.value = response.total;
-        loading.value = false;
-    });
+    if (activeTab.value == 'first') {
+        listTrackpart(queryParams.value).then((response) => {
+            trackPartList.value = response.rows;
+            total.value = response.total;
+            loading.value = false;
+        });
+    } else if (activeTab.value == 'second') {
+        listSplpart(queryParams.value).then((response) => {
+            splPartList.value = response.rows;
+            total.value = response.total;
+            loading.value = false;
+        });
+    } else if (activeTab.value == 'third') {
+        listSplpart(queryParams.value).then((response) => {
+            splPartList.value = response.rows;
+            total.value = response.total;
+            loading.value = false;
+        });
+        crastopmodelPartList
+    } else if (activeTab.value == 'fourth') {
+
+    } else if (activeTab.value == 'six') {
+
+    }
 }
 
 // 取消按钮
 function cancel() {
-    showList.value = true
+    showList.value = true;
     reset();
 }
 // 表单重置
@@ -416,16 +646,16 @@ function reset() {
 
 /** 提交按钮 */
 function submitForm() {
-    proxy.$refs["saveFormRef"].validate(valid => {
+    proxy.$refs["saveFormRef"].validate((valid) => {
         if (valid) {
             if (form.value.productId != null) {
-                updateProduct(form.value).then(response => {
+                updateProduct(form.value).then((response) => {
                     proxy.$modal.msgSuccess("修改成功");
                     showList.value = true;
                     getList();
                 });
             } else {
-                addProduct(form.value).then(response => {
+                addProduct(form.value).then((response) => {
                     proxy.$modal.msgSuccess("新增成功");
                     showList.value = true;
                     getList();
@@ -447,9 +677,9 @@ function resetQuery() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-    ids.value = selection.map(item => item.productId)
-    single.value = selection.length !== 1
-    multiple.value = !selection.length
+    ids.value = selection.map((item) => item.productId);
+    single.value = selection.length !== 1;
+    multiple.value = !selection.length;
 }
 /** 新增按钮操作 */
 function handleAdd() {
@@ -458,36 +688,45 @@ function handleAdd() {
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
-    const productId = row.productId || ids.value
-    getProduct(productId).then(response => {
-        form.value = response.data;
-        showList.value = false;
-        saveTitle.value = "修改产品"
-    });
+    console.log("🚀 ~ file: index.vue ~ line 562 ~ handleUpdate ~ row", row)
+    const productId = row.productId || ids.value;
+    // getProduct(productId).then((response) => {
+    //     form.value = response.data;
+    //     showList.value = false;
+    //     saveTitle.value = "修改产品";
+    // });
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
     const productIds = row.productId || ids.value;
-    proxy.$modal.confirm('是否确认删除产品编号为"' + productIds + '"的数据项？').then(function () {
-        return delProduct(productIds);
-    }).then(() => {
-        getList();
-        proxy.$modal.msgSuccess("删除成功");
-    }).catch(() => { });
+    proxy.$modal
+        .confirm('是否确认删除产品编号为"' + productIds + '"的数据项？')
+        .then(function () {
+            return delProduct(productIds);
+        })
+        .then(() => {
+            getList();
+            proxy.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => { });
 }
 /** 导出按钮操作 */
 function handleExport() {
-    this.download('business/product/export', {
-        ...queryParams.vallue
-    }, `product_${new Date().getTime()}.xlsx`)
+    this.download(
+        "business/product/export",
+        {
+            ...queryParams.vallue,
+        },
+        `product_${new Date().getTime()}.xlsx`
+    );
 }
 
 getList();
 </script>
 <style lang="scss" scoped>
 .save-container {
-    background-color: #FFFFFF;
+    background-color: #ffffff;
 }
 
 .search-tool {
