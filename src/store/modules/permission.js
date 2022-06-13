@@ -3,9 +3,20 @@ import { getRouters } from '@/api/menu'
 import Layout from '@/layout/index'
 import ParentView from '@/components/ParentView'
 import InnerLink from '@/layout/components/InnerLink'
+import {cloneDeep} from "lodash-es";
 
 // 匹配views里面所有的.vue文件
 const modules = import.meta.glob('./../../views/**/*.vue')
+
+const extraRoute = [
+  {
+    component: "offer/Save/index",
+    hidden: true,
+    meta: {title: "报价管理新增", icon: "#", noCache: false, link: null},
+    name: "OfferSave",
+    path: "offer/save",
+  }
+]
 
 const usePermissionStore = defineStore(
   'permission',
@@ -55,9 +66,15 @@ const usePermissionStore = defineStore(
 // 遍历后台传来的路由字符串，转换为组件对象
 function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter(route => {
+
     if (type && route.children) {
       route.children = filterChildren(route.children)
     }
+
+    if (route.path === '/' && route.children) {
+      route.children = [...route.children, ...cloneDeep(extraRoute)]
+    }
+
     if (route.component) {
       // Layout ParentView 组件特殊处理
       if (route.component === 'Layout') {
@@ -70,6 +87,7 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
         route.component = loadView(route.component)
       }
     }
+
     if (route.children != null && route.children && route.children.length) {
       route.children = filterAsyncRouter(route.children, route, type)
     } else {

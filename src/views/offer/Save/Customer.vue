@@ -1,0 +1,193 @@
+<!-- 客户信息 -->
+<template>
+  <div class="offer-save-customer">
+    <el-form
+        ref="form"
+        :model="formData"
+        label-position="left"
+    >
+      <OfferSaveTitle title="客户信息">
+
+        <el-form-item label="客户名称" prop="customer" required>
+          <el-space>
+            <el-input v-model="formData.customer" @input="customerSearchChange" />
+            <el-button type="primary" >
+              新增
+            </el-button>
+          </el-space>
+        </el-form-item>
+        <el-form-item v-if="!!dataSource.length">
+          <List :dataSource="dataSource" @change="onListChange"/>
+        </el-form-item>
+
+      </OfferSaveTitle>
+      <OfferSaveTitle title="车间信息">
+        <div v-for="(item, index) in formData.workshopInfo" :key="item.key" class="work-list-item">
+          <el-form-item label="车间名称" :prop="['formData', 'workshopInfo', index, 'name']">
+            <el-space>
+              <el-input v-model="formData.workshopInfo[index].name" style="width: 210px;"></el-input>
+              <el-button v-if="index === 0" @click="addWork()">添加车间信息</el-button>
+              <el-button v-if="index !== 0" @click="removeWork(item.key)">删除</el-button>
+            </el-space>
+          </el-form-item>
+          <div class="work-list-item-form">
+            <el-row :gutter="12">
+              <el-col :span="6">
+                <el-form-item :prop="['formData', 'workshopInfo', index, 'railModel']" :labelWidth="100" label="轨道型号" >
+                  <el-select v-model="formData.workshopInfo[index].railModel">
+                    <el-option v-for="optionItem in modelList" :key="optionItem.dictCode" :value="optionItem.dictValue" :label="optionItem.dictLabel" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item :prop="['formData', 'workshopInfo', index, 'workshopLength']" :labelWidth="100" label="车间长度(m)">
+                  <el-input-number :min="1" :max="999" controls-position="right" style="width: 210px;" v-model="formData.workshopInfo[index].workshopLength"></el-input-number>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item :prop="['formData', 'workshopInfo', index, 'workshopSpan']" :labelWidth="100" label="车间跨度(m)">
+                  <el-select v-model="formData.workshopInfo[index].workshopSpan">
+                    <el-option v-for="optionItem in widthList" :key="optionItem.dictCode" :value="optionItem.dictValue" :label="optionItem.dictLabel" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+            </el-row>
+            <el-row :gutter="12">
+              <el-col :span="6">
+                <el-form-item :prop="['formData', 'workshopInfo', index, 'liftingHeight']" :labelWidth="100" label="起升高度(m)">
+                  <el-select v-model="formData.workshopInfo[index].liftingHeight">
+                    <el-option v-for="optionItem in heightList" :key="optionItem.dictCode" :value="optionItem.dictValue" :label="optionItem.dictLabel" />
+                  </el-select>
+                </el-form-item>
+              </el-col>
+              <el-col :span="6">
+                <el-form-item  :prop="['formData', 'workshopInfo', index, 'amount']" :labelWidth="100" label="起重机数量">
+                  <el-input-number :min="1" :max="999" controls-position="right" style="width: 210px;" v-model="formData.workshopInfo[index].amount"></el-input-number>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+        </div>
+      </OfferSaveTitle>
+    </el-form>
+  </div>
+</template>
+
+<script setup name="CustomerInformation">
+import OfferSaveTitle from '../components/Title'
+import List from './CustomerList'
+import { listCustomer } from '@/api/business/customer'
+import {ref, reactive, computed, onMounted} from 'vue';
+import { debounce, cloneDeep, omit } from 'lodash-es'
+import {useDictionaryStore} from "../../../store/modules/dict";
+
+const input = ref('')
+const dataSource = ref([])
+const modelList = ref([])
+const widthList = ref([])
+const heightList = ref([])
+const form = ref(null)
+const dictionaryStore = useDictionaryStore();
+
+const formData = reactive({
+  customer: '',
+  customerId: '',
+  workshopInfo: []
+})
+
+const rules = reactive({
+  customer: [
+    {required: true, message: '请选择客户', trigger: 'blur'}
+  ]
+})
+
+const DEFAULT_WORK_ITEM = {
+  key: '1',
+  name: undefined,
+  railModel: undefined,
+  workshopLength: undefined,
+  workshopSpan: undefined,
+  liftingHeight: undefined,
+  amount: 1,
+}
+
+formData.workshopInfo.push(cloneDeep(DEFAULT_WORK_ITEM))
+
+const onListChange = ({id, node}) => {
+  formData.customerId = id
+}
+
+const customerSearch = debounce(async function (value) { // 客户模糊搜索
+  const params = {}
+  if (value) {
+    params.customerName = value
+  }
+  const resp = await listCustomer(params)
+  if (resp.code === 200) {
+    dataSource.value = resp.rows
+  }
+}, 300)
+
+const customerSearchChange = (e) => {
+  console.log(e)
+  customerSearch(e)
+}
+const addWork = () => {
+  formData.workshopInfo.unshift({
+    ...cloneDeep(DEFAULT_WORK_ITEM),
+    key: new Date().valueOf()
+  })
+}
+
+const removeWork = (key) => {
+  const index = formData.workshopInfo.findIndex(item => item.key === key)
+  if (index > -1) {
+    formData.workshopInfo.splice(index, 1)
+  }
+}
+
+const getValues = async () => {
+  const data = await form.value.validate()
+  if (data) {
+    const newData = cloneDeep(formData)
+    newData.workshopInfo = JSON.stringify(newData.workshopInfo)
+    return omit(newData, ['customer'])
+  }
+}
+
+onMounted(() => {
+  dictionaryStore.getData('q_track_model').then( res => {
+    modelList.value = res
+  })
+
+  dictionaryStore.getData('q_single_crane_model').then( res => {
+    widthList.value = res
+  })
+
+  dictionaryStore.getData('q_single_crane_model').then( res => {
+    heightList.value = res
+  })
+})
+defineExpose({
+  getValues
+})
+
+</script>
+
+<style lang="scss" scoped>
+.offer-save-customer {
+  .title {
+    margin-bottom: 24px;
+  }
+
+  .work-list-item {
+
+    .work-list-item-form {
+      background-color: #FAFAFA;
+      padding: 12px 8px;
+      margin: 12px 0;
+    }
+  }
+
+}
+</style>
