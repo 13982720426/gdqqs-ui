@@ -16,46 +16,34 @@
             <el-row :gutter="12">
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="起重机类型">
-                  <el-select v-model="amountItem.type" @change="onCraneChange(workshopItem.key, amountItem.type)">
-                    <el-option
-                        v-for="item in crane"
-                        :value="item.dictValue"
-                        :label="item.dictLabel"
-                    />
-                  </el-select>
+                  <DictSelect
+                      v-model="amountItem.type"
+                      dictType="q_crane_type"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="操作方式">
-                  <el-select v-model="amountItem.handle">
-                    <el-option
-                        v-for="item in handleType"
-                        :value="item.dictValue"
-                        :label="item.dictLabel"
-                    />
-                  </el-select>
+                  <DictSelect
+                      v-model="amountItem.handle"
+                      dictType="q_oper_mode"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="起升重量">
-                  <el-select v-model="amountItem.weightData">
-                    <el-option
-                        v-for="item in weightData"
-                        :value="item.dictValue"
-                        :label="item.dictLabel"
-                    />
-                  </el-select>
+                  <DictSelect
+                      v-model="amountItem.weight"
+                      dictType="q_lift_weight"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="工作级别">
-                  <el-select v-model="amountItem.level">
-                    <el-option
-                        v-for="item in levelData[workshopItem.key]"
-                        :value="item.dictValue"
-                        :label="item.dictLabel"
-                    />
-                  </el-select>
+                  <DictSelect
+                      v-model="amountItem.level"
+                      :dictType="getLevelByType(workshopItem.key)"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -68,7 +56,7 @@
     </OfferSaveTitle>
     <el-dialog
         v-model="dialogVisible"
-        width="30%"
+        width="800px"
         title="选择部件"
     >
       <el-table
@@ -89,16 +77,11 @@
 
 <script setup name="OfferSaveProduct">
 import OfferSaveTitle from '../../components/Title'
+import DictSelect from './DictSelect'
 import useOfferStore from '@/store/modules/offer'
 import {onMounted} from "vue";
-import {getDicts} from "@/api/system/dict/data";
 
 const offerStore = useOfferStore()
-
-const crane = ref([])
-const handleType = ref([])
-const weightData = ref([])
-const levelData = ref({})
 const dialogVisible = ref(false)
 
 const formModel = reactive([])
@@ -107,37 +90,15 @@ const selectPart = (key) => {
   dialogVisible.value = true
 }
 
-const onCraneChange = async (value, type) => {
-  let data = []
-  if (type === '1') {
-    console.log(await getDict('q_single_crane_work_level'))
-    data = await getDict('q_single_crane_work_level')
-  } else if (type === '2') {
-    console.log(await getDict('q_double_crane_work_level'))
-    data = await getDict('q_double_crane_work_level')
-  } else if (type === '3') {
-    data = await getDict('q_susp_crane_work_level')
+const getLevelByType = (value) => {
+  switch(value) {
+    case '2':
+      return 'q_double_crane_work_level';
+    case '3':
+      return 'q_double_crane_work_level';
+    default:
+      return 'q_single_crane_work_level';
   }
-
-  levelData.value[value] = data
-  console.log(levelData.value)
-}
-
-const getDict = (type) => {
-  return new Promise((resolve) => {
-    getDicts(type).then(resp => {
-      if (resp.code === 200) {
-        const data = resp.data.map(item => ({
-          dictCode: item.dictCode,
-          dictLabel: item.dictLabel,
-          dictType: item.dictType,
-          status: item.status,
-          dictValue: item.dictValue
-        }))
-        resolve(data)
-      }
-    })
-  })
 }
 
 onMounted(() => {
@@ -156,17 +117,6 @@ onMounted(() => {
     })
   })
 
-  getDict('q_crane_type').then(resp => {
-    crane.value = resp
-  })
-
-  getDict('q_oper_mode').then(resp => {
-    handleType.value = resp
-  })
-
-  getDict('q_lift_weight').then(resp => {
-    weightData.value = resp
-  })
 })
 
 </script>

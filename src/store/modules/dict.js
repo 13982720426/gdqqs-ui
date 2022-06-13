@@ -1,7 +1,9 @@
-import {listData} from '@/api/system/dict/data'
 import {getDicts} from "../../api/system/dict/data";
+import {Observable} from "rxjs";
 
-export const useDictionaryStore = defineStore(
+let SUBSCRIBE_MAP = []
+
+const useDictionaryStore = defineStore(
     'dictionary',
     {
         state: () => ({
@@ -12,30 +14,46 @@ export const useDictionaryStore = defineStore(
                 console.log(type, data)
                 this.data[type] = data
             },
-            async getData(type) {
-                console.log(this.data[type])
-                if (this.data[type]) {
-                    return this.data[type]
-                } else {
-                    await this.queryData(type)
-                    return this.getData(type)
-                }
+            getData(type) {
+                return new Observable((subscriber) => {
+                    console.log(subscriber)
+                    if (this.data[type]) {
+                        subscriber.next(this.data[type])
+                    } else {
+                        if (!SUBSCRIBE_MAP.some(item => item.type === type)) {
+                            this.queryData(type)
+                        }
+
+                        SUBSCRIBE_MAP.push({
+                            type,
+                            next: (value) => subscriber.next(value),
+                            complete: () => subscriber.complete(),
+                        })
+                    }
+                })
             },
             async queryData(type) {
                 const resp = await getDicts(type)
                 if (resp.code === 200) {
-                    this.setData(
-                        type,
-                        resp.data.map(item => ({
-                            dictCode: item.dictCode,
-                            dictLabel: item.dictLabel,
-                            dictType: item.dictType,
-                            status: item.status,
-                            dictValue: item.dictValue
-                        }))
-                    )
+                    const dictArray = resp.data.map(item => ({
+                        dictCode: item.dictCode,
+                        dictLabel: item.dictLabel,
+                        dictType: item.dictType,
+                        status: item.status,
+                        dictValue: item.dictValue
+                    }))
+                    SUBSCRIBE_MAP = SUBSCRIBE_MAP.filter(item => {
+                        if (item.type === type) {
+                            item.next(dictArray)
+                            return false
+                        }
+                        return true
+                    })
+                    this.setData( type, dictArray )
                 }
             }
         }
     }
 )
+
+export default useDictionaryStore

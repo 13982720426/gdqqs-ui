@@ -34,9 +34,10 @@
             <el-row :gutter="12">
               <el-col :span="6">
                 <el-form-item :prop="['formData', 'workshopInfo', index, 'railModel']" :labelWidth="100" label="轨道型号" >
-                  <el-select v-model="formData.workshopInfo[index].railModel">
-                    <el-option v-for="optionItem in modelList" :key="optionItem.dictCode" :value="optionItem.dictValue" :label="optionItem.dictLabel" />
-                  </el-select>
+                  <DictSelect
+                      v-model="formData.workshopInfo[index].railModel"
+                      dictType="q_track_model"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -46,18 +47,20 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item :prop="['formData', 'workshopInfo', index, 'workshopSpan']" :labelWidth="100" label="车间跨度(m)">
-                  <el-select v-model="formData.workshopInfo[index].workshopSpan">
-                    <el-option v-for="optionItem in widthList" :key="optionItem.dictCode" :value="optionItem.dictValue" :label="optionItem.dictLabel" />
-                  </el-select>
+                  <DictSelect
+                      v-model="formData.workshopInfo[index].workshopSpan"
+                      dictType="q_single_crane_model"
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
             <el-row :gutter="12">
               <el-col :span="6">
                 <el-form-item :prop="['formData', 'workshopInfo', index, 'liftingHeight']" :labelWidth="100" label="起升高度(m)">
-                  <el-select v-model="formData.workshopInfo[index].liftingHeight">
-                    <el-option v-for="optionItem in heightList" :key="optionItem.dictCode" :value="optionItem.dictValue" :label="optionItem.dictLabel" />
-                  </el-select>
+                  <DictSelect
+                      v-model="formData.workshopInfo[index].liftingHeight"
+                      dictType="q_single_crane_model"
+                  />
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -76,18 +79,14 @@
 <script setup name="CustomerInformation">
 import OfferSaveTitle from '../components/Title'
 import List from './CustomerList'
+import DictSelect from './product/DictSelect'
 import { listCustomer } from '@/api/business/customer'
 import {ref, reactive, computed, onMounted} from 'vue';
 import { debounce, cloneDeep, omit } from 'lodash-es'
-import {useDictionaryStore} from "../../../store/modules/dict";
 
 const input = ref('')
 const dataSource = ref([])
-const modelList = ref([])
-const widthList = ref([])
-const heightList = ref([])
 const form = ref(null)
-const dictionaryStore = useDictionaryStore();
 
 const formData = reactive({
   customer: '',
@@ -129,7 +128,6 @@ const customerSearch = debounce(async function (value) { // 客户模糊搜索
 }, 300)
 
 const customerSearchChange = (e) => {
-  console.log(e)
   customerSearch(e)
 }
 const addWork = () => {
@@ -155,19 +153,6 @@ const getValues = async () => {
   }
 }
 
-onMounted(() => {
-  dictionaryStore.getData('q_track_model').then( res => {
-    modelList.value = res
-  })
-
-  dictionaryStore.getData('q_single_crane_model').then( res => {
-    widthList.value = res
-  })
-
-  dictionaryStore.getData('q_single_crane_model').then( res => {
-    heightList.value = res
-  })
-})
 defineExpose({
   getValues
 })
