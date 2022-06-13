@@ -70,7 +70,7 @@
         </el-table-column>
 
         <el-table-column label="联系人" align="center" prop="contact" width="120" />
-        <el-table-column label="电话" align="center" prop="phonenum" width="120" />
+        <el-table-column label="电话" align="center" prop="contactTell" width="120" />
         <el-table-column label="邮箱" align="center" prop="contactEmail" width="120" />
         <el-table-column label="地址" align="center" prop="contactAddress" width="150" />
         <el-table-column label="邮政编码" align="center" prop="postCode" width="120" />
@@ -157,8 +157,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="联系电话" prop="phonenum">
-              <el-input maxlength="30" v-model="form.phonenum" placeholder="请输入" />
+            <el-form-item label="联系电话" prop="contactTell">
+              <el-input maxlength="30" v-model="form.contactTell" placeholder="请输入" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -234,12 +234,11 @@ const data = reactive({
 
 const { queryParams, form } = toRefs(data)
 
-/** 查询角色列表 */
+/** 查询客户列表 */
 function getList() {
   loading.value = true
   listCustomer(queryParams.value).then(response => {
     customerList.value = response.rows
-    console.log(response.rows, 'response.rows')
     total.value = response.total
     loading.value = false
   })
@@ -288,6 +287,7 @@ function reset() {
     contactEmail: undefined,
     contactAddress: undefined,
     postCode: undefined,
+    contactTell:undefined,
     remark: undefined,
   }
 }
@@ -322,19 +322,32 @@ const dataScopeOptions = ref([
 ])
 
 const rules = ref({
-  customerName: [{ required: true, message: '客户姓名不能为空', trigger: 'blur' }],
-  partment: [{ required: true, message: '部门不能为空', trigger: 'blur' }],
+  customerName: [
+    { required: true, message: '客户名称不能为空', trigger: 'blur' },
+    { max: 64, message: '客户名称长度不超过64个字符', trigger: 'blur' },
+  ],
+  partment: [
+    { required: true, message: '部门不能为空', trigger: 'blur' },
+    { max: 32, message: '部门长度不超过32个字符', trigger: 'blur' },
+  ],
   customerNature: [{ required: true, message: '客户性质不能为空', trigger: 'blur' }],
-  contact: [{ required: true, message: '联系人不能为空', trigger: 'blur' }],
-  contactAddress: [{ required: true, message: '地址不能为空', trigger: 'blur' }],
+  contact: [
+    { required: true, message: '联系人不能为空', trigger: 'blur' },
+    { max: 32, message: '联系人长度不超过32个字符', trigger: 'blur' },
+  ],
+  contactAddress: [
+    { required: true, message: '地址不能为空', trigger: 'blur' },
+    { max: 64, message: '地址长度不超过32个字符', trigger: 'blur' },
+  ],
   contactEmail: [
     { required: true, message: '邮箱不能为空', trigger: 'blur' },
     { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] },
   ],
-  phonenum: [
+  contactTell: [
     { required: true, message: '联系电话不能为空', trigger: 'blur' },
     { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
   ],
+  postCode: [{ max: 6, message: '请输入正确的邮政编码', trigger: 'blur' }],
 })
 
 /** 提交按钮 */
