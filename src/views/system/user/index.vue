@@ -27,7 +27,7 @@
           <el-option
             v-for="dict in sys_normal_disable"
             :key="dict.value"
-            :label="dict.label"
+            :label="dict.label === '正常'? '启用':'禁用'"
             :value="dict.value"
           />
         </el-select>

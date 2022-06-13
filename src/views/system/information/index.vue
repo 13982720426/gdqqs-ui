@@ -42,69 +42,6 @@
             </div>
           </el-col>
         </el-row>
-
-        <el-dialog
-          :title="title"
-          v-model="open"
-          width="800px"
-          append-to-body
-          @opened="modalOpened"
-          @close="closeDialog"
-        >
-          <el-row>
-            <el-col :xs="24" :md="12" :style="{ height: '350px' }">
-              <vue-cropper
-                ref="cropper"
-                :img="options.img"
-                :info="true"
-                :autoCrop="options.autoCrop"
-                :autoCropWidth="options.autoCropWidth"
-                :autoCropHeight="options.autoCropHeight"
-                :fixedBox="options.fixedBox"
-                @realTime="realTime"
-                v-if="visible"
-              />
-            </el-col>
-            <el-col :xs="24" :md="12" :style="{ height: '350px' }">
-              <div class="avatar-upload-preview">
-                <img :src="options.previews.url" :style="options.previews.img" />
-              </div>
-            </el-col>
-          </el-row>
-          <br />
-          <el-row>
-            <el-col :lg="2" :md="2">
-              <el-upload
-                action="#"
-                :http-request="requestUpload"
-                :show-file-list="false"
-                :before-upload="beforeUpload"
-              >
-                <el-button>
-                  选择
-                  <el-icon class="el-icon--right"><Upload /></el-icon>
-                </el-button>
-              </el-upload>
-            </el-col>
-            <el-col :lg="{ span: 1, offset: 2 }" :md="2">
-              <el-button icon="Plus" @click="changeScale(1)"></el-button>
-            </el-col>
-            <el-col :lg="{ span: 1, offset: 1 }" :md="2">
-              <el-button icon="Minus" @click="changeScale(-1)"></el-button>
-            </el-col>
-            <el-col :lg="{ span: 1, offset: 1 }" :md="2">
-              <el-button icon="RefreshLeft" @click="rotateLeft()"></el-button>
-            </el-col>
-            <el-col :lg="{ span: 1, offset: 1 }" :md="2">
-              <el-button icon="RefreshRight" @click="rotateRight()"></el-button>
-            </el-col>
-            <el-col :lg="{ span: 2, offset: 6 }" :md="2">
-              <el-button type="primary" @click="open = false" color="#ffdac6" class="sel">
-                确 定
-              </el-button>
-            </el-col>
-          </el-row>
-        </el-dialog>
       </el-form-item>
       <el-form-item label="手机号码" prop="phonenumber">
         <el-input maxlength="11" v-model="state.user.phonenumber" style="width: 22%" />
@@ -121,7 +58,6 @@
           style="width: 22%"
         />
       </el-form-item>
-
       <el-form-item>
         <el-button type="primary" @click="submit" color="#ffdac6" class="sel">确认修改</el-button>
         <el-button type="danger" @click="close">重新填写</el-button>
@@ -184,7 +120,9 @@
           <el-button icon="RefreshRight" @click="rotateRight()"></el-button>
         </el-col>
         <el-col :lg="{ span: 2, offset: 6 }" :md="2">
-          <el-button type="primary" @click="uploadImg()">确 定</el-button>
+          <el-button type="primary" @click="open = false" color="#ffdac6" class="sel">
+            确 定
+          </el-button>
         </el-col>
       </el-row>
     </el-dialog>
@@ -207,7 +145,6 @@ const state = reactive({
 function getUser() {
   getUserProfile().then(response => {
     state.user = response.data
-    console.log(response.data)
   })
 }
 
@@ -224,13 +161,9 @@ const rules = ref({
     { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
   ],
 })
-
-const upimg = ref()
 /** 提交按钮 */
 function submit() {
-  console.log(upimg.value)
-  console.log(proxy.$refs.upimg)
-
+  uploadImg()
   updateUserProfile(state.user).then(response => {
     proxy.$modal.msgSuccess('修改成功')
   })
@@ -245,7 +178,6 @@ const userStore = useUserStore()
 
 const open = ref(false)
 const visible = ref(false)
-const title = ref('修改头像')
 
 //图片裁剪数据
 const options = reactive({

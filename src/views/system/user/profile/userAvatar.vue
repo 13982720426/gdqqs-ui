@@ -1,9 +1,5 @@
 <template>
   <div class="user-info-head" @click="editCropper()"><img :src="options.img" title="点击上传头像" class="img-circle img-lg" /></div>
-  <!-- <div class="user-info-head" @click="editCropper()">
-    <el-icon><UploadFilled /></el-icon>
-    上传头像
-  </div> -->
   <el-dialog
     :title="title"
     v-model="open"
