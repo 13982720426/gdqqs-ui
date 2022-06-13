@@ -14,7 +14,7 @@
           <el-option
             v-for="dict in sys_normal_disable"
             :key="dict.value"
-            :label="dict.label === '正常'? '启用':'禁用'"
+            :label="dict.label === '正常' ? '启用' : '禁用'"
             :value="dict.value"
           />
         </el-select>
@@ -70,6 +70,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
+            class="sel"
             type="text"
             icon="Edit"
             @click="handleUpdate(scope.row)"
@@ -78,6 +79,7 @@
             修改
           </el-button>
           <el-button
+            class="sel"
             type="text"
             icon="Plus"
             @click="handleAdd(scope.row)"
@@ -86,6 +88,7 @@
             新增
           </el-button>
           <el-button
+            class="sel"
             v-if="scope.row.parentId != 0"
             type="text"
             icon="Delete"
@@ -153,7 +156,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button color="#ffdac6" type="primary" class="sel" @click="submitForm">确 定</el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>

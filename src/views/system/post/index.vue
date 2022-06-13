@@ -28,13 +28,15 @@
           <el-option
             v-for="dict in sys_normal_disable"
             :key="dict.value"
-            :label="dict.label === '正常'? '启用':'禁用'"
+            :label="dict.label === '正常' ? '启用' : '禁用'"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" color="#ffdac6" class="sel" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button type="primary" color="#ffdac6" class="sel" icon="Search" @click="handleQuery">
+          搜索
+        </el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
@@ -42,7 +44,8 @@
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
         <el-button
-        color="#ffdac6" class="sel"
+          color="#ffdac6"
+          class="sel"
           type="primary"
           icon="Plus"
           @click="handleAdd"
@@ -95,19 +98,24 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+      >
         <template #default="scope">
           <el-button
+            class="sel"
             type="text"
-            icon="Edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:post:edit']"
           >
             修改
           </el-button>
           <el-button
+            class="sel"
             type="text"
-            icon="Delete"
             @click="handleDelete(scope.row)"
             v-hasPermi="['system:post:remove']"
           >
@@ -152,7 +160,9 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button type="primary" @click="submitForm" color="#ffdac6" class="sel">
+            确 定
+          </el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>

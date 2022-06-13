@@ -29,7 +29,7 @@
           <el-option
             v-for="dict in sys_normal_disable"
             :key="dict.value"
-            :label="dict.label === '正常'? '启用':'禁用'"
+            :label="dict.label === '正常' ? '启用' : '禁用'"
             :value="dict.value"
           />
         </el-select>
@@ -115,10 +115,16 @@
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+      >
         <template #default="scope">
           <el-tooltip content="修改" placement="top" v-if="scope.row.roleId !== 1">
             <el-button
+              class="sel"
               type="text"
               icon="Edit"
               @click="handleUpdate(scope.row)"
@@ -127,6 +133,7 @@
           </el-tooltip>
           <el-tooltip content="删除" placement="top" v-if="scope.row.roleId !== 1">
             <el-button
+              class="sel"
               type="text"
               icon="Delete"
               @click="handleDelete(scope.row)"
@@ -135,6 +142,7 @@
           </el-tooltip>
           <el-tooltip content="数据权限" placement="top" v-if="scope.row.roleId !== 1">
             <el-button
+              class="sel"
               type="text"
               icon="CircleCheck"
               @click="handleDataScope(scope.row)"
@@ -143,6 +151,7 @@
           </el-tooltip>
           <el-tooltip content="分配用户" placement="top" v-if="scope.row.roleId !== 1">
             <el-button
+              class="sel"
               type="text"
               icon="User"
               @click="handleAuthUser(scope.row)"

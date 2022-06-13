@@ -1,53 +1,52 @@
 <template>
   <div class="app-container">
     <div v-show="custable">
-      <el-row :gutter="10" class="mb8">
-        <el-col :span="16">
-          <el-button
-            class="sel"
-            color="#ffdac6"
-            icon="Plus"
-            @click="handleAdd"
-            v-hasPermi="['customer:add']"
-          >
-            新增
-          </el-button>
-        </el-col>
-        <el-col :span="8">
-          <el-form
-            class="selform"
-            :model="queryParams"
-            ref="queryRef"
-            :inline="true"
-            label-width="68px"
-          >
-            <el-form-item prop="status">
-              <el-input
-                v-model="queryParams.customerName"
-                placeholder="客户名称模糊搜索"
-                clearable
-                style="width: 240px"
-                @keyup.enter="handleQuery"
-              />
-            </el-form-item>
-            <el-form-item>
-              <el-button
-                type="primary"
-                color="#ffdac6"
-                class="sel"
-                icon="Search"
-                @click="handleQuery"
-              >
-                搜索
-              </el-button>
-              <el-button icon="Refresh" @click="resetQuery">重置</el-button>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
+      <div class="header">
+        <div>
+          <el-space>
+            <el-button
+              class="sel"
+              color="#ffdac6"
+              icon="Plus"
+              @click="handleAdd"
+              v-hasPermi="['customer:add']"
+            >
+              新增
+            </el-button>
+          </el-space>
+        </div>
+
+        <div>
+          <el-space>
+            <el-input
+              v-model="queryParams.customerName"
+              placeholder="客户名称模糊搜索"
+              clearable
+              style="width: 240px"
+              @keyup.enter="handleQuery"
+            />
+
+            <el-button
+              type="primary"
+              color="#ffdac6"
+              class="sel"
+              icon="Search"
+              @click="handleQuery"
+            >
+              搜索
+            </el-button>
+            <el-button icon="Refresh" @click="resetQuery">重置</el-button>
+          </el-space>
+        </div>
+      </div>
 
       <!-- 表格数据 -->
-      <el-table v-loading="loading" :data="customerList" @selection-change="handleSelectionChange">
+      <el-table
+        style="width: 100%"
+        v-loading="loading"
+        :data="customerList"
+        @selection-change="handleSelectionChange"
+      >
         <el-table-column type="selection" width="55" align="center" />
         <el-table-column label="客户名称" align="center" prop="customerName" width="120" />
         <el-table-column
@@ -69,19 +68,49 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="联系人" align="center" prop="contact" width="120" />
-        <el-table-column label="电话" align="center" prop="contactTell" width="120" />
-        <el-table-column label="邮箱" align="center" prop="contactEmail" width="120" />
-        <el-table-column label="地址" align="center" prop="contactAddress" width="150" />
-        <el-table-column label="邮政编码" align="center" prop="postCode" width="120" />
-        <el-table-column label="创建时间" align="center" prop="createTime">
+        <el-table-column label="联系人" align="center" prop="contact" />
+        <el-table-column label="电话" align="center" prop="contactTell" width="130" />
+        <el-table-column
+          label="邮箱"
+          :show-overflow-tooltip="true"
+          align="center"
+          prop="contactEmail"
+          width="150"
+        />
+        <el-table-column
+          label="地址"
+          :show-overflow-tooltip="true"
+          align="center"
+          prop="contactAddress"
+          width="200"
+        />
+        <el-table-column label="邮政编码" align="center" prop="postCode" />
+        <el-table-column
+          label="创建时间"
+          :show-overflow-tooltip="true"
+          align="center"
+          prop="createTime"
+          width="200"
+        >
           <template #default="scope">
             <span>{{ parseTime(scope.row.createTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="创建人" align="center" width="120" prop="createBy" />
-        <el-table-column label="备注" align="center" width="120" prop="remark" />
-        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <el-table-column label="创建人" align="center" prop="createBy" />
+        <el-table-column
+          label="备注"
+          :show-overflow-tooltip="true"
+          align="center"
+          prop="remark"
+          width="200"
+        />
+        <el-table-column
+          label="操作"
+          width="130"
+          align="center"
+          class-name="small-padding fixed-width"
+          fixed="right"
+        >
           <template #default="scope">
             <el-button
               class="sel"
@@ -287,7 +316,7 @@ function reset() {
     contactEmail: undefined,
     contactAddress: undefined,
     postCode: undefined,
-    contactTell:undefined,
+    contactTell: undefined,
     remark: undefined,
   }
 }
@@ -389,5 +418,10 @@ getList()
 .inform {
   height: 100%;
   background: #ffffff;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 </style>
