@@ -27,14 +27,14 @@
           <el-option
             v-for="dict in sys_normal_disable"
             :key="dict.value"
-            :label="dict.label"
+            :label="dict.label === '正常' ? '启用' : '禁用'"
             :value="dict.value"
           />
         </el-select>
       </el-form-item>
       <el-form-item prop="status">
         <el-input
-          v-model="queryParams.realName"
+          v-model="queryParams.userName"
           placeholder="姓名模糊搜索"
           clearable
           style="width: 240px"
@@ -143,6 +143,7 @@
         align="center"
         width="150"
         class-name="small-padding fixed-width"
+        fixed="right"
       >
         <template #default="scope">
           <el-button
@@ -271,7 +272,9 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button color="#ffdac6" type="primary" class="sel" @click="submitForm">
+            确 定
+          </el-button>
           <el-button @click="cancel">取 消</el-button>
         </div>
       </template>
@@ -403,6 +406,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = []
+  queryParams.value.userName = ''
   proxy.resetForm('queryRef')
   handleQuery()
 }
