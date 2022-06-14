@@ -232,9 +232,11 @@ import {
   updateProductpart,
   delProductpart,
 } from '@/api/business/productpart'
+import { listProduct } from '@/api/business/product'
 import SaveTitle from '@/views/offer/components/Title'
 import QTable from '../components/QTable.vue'
 import Save from './save.vue'
+import { reactive } from 'vue-demi'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
@@ -432,21 +434,21 @@ const productPartColumns = ref([
     prop: 'partType',
     label: '全部部件类型',
     align: 'center',
-    format: (row) => productFormat(row),
+    format: row => productFormat(row),
   },
   {
     id: 2,
-    prop: 'craneType',
+    prop: 'qProduct.craneType',
     label: '起重机类型',
     align: 'center',
-    format:(row)=>craneTypeFormat(row)
+    format: row => craneTypeFormat(row),
   },
   {
     id: 3,
-    prop: 'craneModel',
+    prop: 'qProduct.craneModel',
     label: '起重机型号',
     align: 'center',
-    format:(row)=>craneModelFormat(row)
+    format: row => craneModelFormat(row),
   },
   {
     id: 4,
@@ -456,21 +458,21 @@ const productPartColumns = ref([
   },
   {
     id: 5,
-    prop: 'span',
+    prop: 'qProduct.span',
     label: '跨度',
     align: 'center',
-    format:(row)=>spanFormat(row)
+    format: row => spanFormat(row),
   },
   {
     id: 6,
-    prop: 'liftHeight',
+    prop: 'qProduct.liftHeight',
     label: '起升高度',
     align: 'center',
     format: row => liftHeightFormat(row),
   },
   {
     id: 7,
-    prop: 'workLevel',
+    prop: 'qProduct.workLevel',
     label: '工作级别',
     align: 'center',
     format: row => workLevelFormat(row),
@@ -498,7 +500,7 @@ const productPartColumns = ref([
     prop: 'unit',
     label: '单位',
     align: 'center',
-    format:(row)=>unitFormat(row)
+    format: row => unitFormat(row),
   },
   {
     id: 12,
@@ -514,9 +516,10 @@ const data = reactive({
   },
   form: {},
   rules: {},
+  productsub: {},
 })
 
-const { queryParams, form, rules } = toRefs(data)
+const { queryParams, form, rules, productsub } = toRefs(data)
 
 const {
   q_crane_type,
@@ -572,39 +575,34 @@ const {
   'q_unit'
 )
 
-// 起重机类型翻译
+// 超重机类型翻译
 function craneTypeFormat(row, column) {
-  return proxy.selectDictLabel(q_crane_type.value, row.craneType)
+  return proxy.selectDictLabel(q_crane_type.value, row?.qProduct?.craneType)
 }
 // 操作方式翻译
 function craneOperationFormat(row, column) {
-  return proxy.selectDictLabel(q_oper_mode.value, row.craneOperation)
-}
-//起重机单位
-function unitFormat(row, column) {
-  return proxy.selectDictLabel(q_unit.value, row.unit)
+  return proxy.selectDictLabel(q_oper_mode.value, row?.qProduct?.craneOperation)
 }
 // 起重机型号翻译
 function craneModelFormat(row, column) {
-  if (row.craneType == 1) {
-    return proxy.selectDictLabel(q_single_crane_model.value, row.craneModel)
-  } else if (row.craneType == 2) {
-    return proxy.selectDictLabel(q_double_crane_model.value, row.craneModel)
-  } else if (row.craneType == 3) {
-    return proxy.selectDictLabel(q_susp_crane_model.value, row.craneModel)
-  }
+  return proxy.selectDictLabel(q_double_crane_model.value, row?.qProduct?.craneModel)
 }
 // 跨度翻译
 function spanFormat(row, column) {
-  return proxy.selectDictLabel(q_single_crane_span.value, row.span)
+  return proxy.selectDictLabel(q_double_crane_span.value, row?.qProduct?.span)
 }
 //起升高度翻译
 function liftHeightFormat(row, column) {
-  return proxy.selectDictLabel(q_single_crane_lift_height.value, row.liftHeight)
+  return proxy.selectDictLabel(q_double_crane_lift_height.value, row?.qProduct?.liftHeight)
 }
 // 工作级别翻译
 function workLevelFormat(row, column) {
-  return proxy.selectDictLabel(q_single_crane_work_level.value, row.workLevel)
+  return proxy.selectDictLabel(q_double_crane_work_level.value, row?.qProduct?.workLevel)
+}
+
+//起重机单位
+function unitFormat(row, column) {
+  return proxy.selectDictLabel(q_unit.value, row.unit)
 }
 //安装部件翻译
 function installPartsFormat(row, column) {
@@ -623,7 +621,7 @@ function productFormat(row, column) {
   return proxy.selectDictLabel(q_part_type.value, row.partType)
 }
 
-/** 查询产品列表 */
+/** 查询列表 */
 function getList() {
   loading.value = true
   if (activeTab.value == 'first') {
@@ -653,7 +651,7 @@ function getList() {
   } else if (activeTab.value == 'six') {
     listProductpart(queryParams.value).then(response => {
       productPartList.value = response.rows
-      console.log(response.rows,'response.rows')
+      console.log(response.rows, 'response.rows')
       total.value = response.total
       loading.value = false
     })
@@ -677,12 +675,10 @@ function reset() {
 
 /** 提交按钮 */
 function submitForm() {
-  // console.log(proxy.$refs['saveFormRef'].$refs['saveFormRef'])
   proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate(valid => {
     if (valid) {
       //轨道
       if (activeTab.value === 'first') {
-        console.log(form.value, 'first')
         if (form.value.trackPartId != null) {
           updateTrackpart(form.value).then(response => {
             proxy.$modal.msgSuccess('修改成功')
@@ -719,7 +715,6 @@ function submitForm() {
       }
       //大车
       if (activeTab.value === 'third') {
-        console.log(form.value, 'third')
         if (form.value.cartPartId != null) {
           updateCrastopmodelpart(form.value).then(response => {
             proxy.$modal.msgSuccess('修改成功')
@@ -756,8 +751,6 @@ function submitForm() {
       }
       //产品部件
       if (activeTab.value === 'six') {
-        console.log(form.value, 'hgkugh')
-        console.log(form.value.partType, 'six')
         if (form.value.productPartId != null) {
           updateProductpart(form.value).then(response => {
             proxy.$modal.msgSuccess('修改成功')
@@ -766,12 +759,35 @@ function submitForm() {
             getList()
           })
         } else {
-          addProductpart(form.value).then(response => {
-            proxy.$modal.msgSuccess('新增成功')
-            showList.value = false
-            opentable.value = true
-            getList()
+          listProduct().then(res => {
+            productsub.value = res.rows
+            const item = res.rows.find(
+              e =>
+                e.craneModel == form.value.craneModel &&
+                e.craneType == form.value.craneType &&
+                e.workLevel == form.value.workLevel &&
+                e.craneOperation == form.value.craneOperation &&
+                e.liftHeight == form.value.liftHeight
+            )
+            if (item) {
+              form.value.productId = item.productId
+              console.log(item.productId)
+              // addProductpart(form.value).then(response => {
+              //   proxy.$modal.msgSuccess('新增成功')
+              //   showList.value = false
+              //   opentable.value = true
+              //   getList()
+              // })
+            } else {
+              proxy.$modal.msgError('新增失败，没有此产品')
+            }
           })
+          // addProductpart(form.value).then(response => {
+          //   proxy.$modal.msgSuccess('新增成功')
+          //   showList.value = false
+          //   opentable.value = true
+          //   getList()
+          // })
         }
       }
     }
@@ -878,7 +894,6 @@ function handleUpdate(row) {
 function handleDelete(row) {
   //轨道删除
   if (activeTab.value == 'first') {
-    console.log(row, 'delrow')
     const trackPartId = row.trackPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -893,7 +908,6 @@ function handleDelete(row) {
   }
   //滑线删除
   if (activeTab.value == 'second') {
-    console.log(row, 'second')
     const splPartId = row.splPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -908,7 +922,6 @@ function handleDelete(row) {
   }
   //大车删除
   if (activeTab.value == 'third') {
-    console.log(row, 'third')
     const cartPartId = row.cartPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -923,7 +936,6 @@ function handleDelete(row) {
   }
   //油漆删除
   if (activeTab.value == 'fourth') {
-    console.log(row, 'fourth')
     const paintPartId = row.paintPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -938,7 +950,6 @@ function handleDelete(row) {
   }
   //产品部件删除
   if (activeTab.value == 'six') {
-    console.log(row, 'six')
     const productPartId = row.productPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')

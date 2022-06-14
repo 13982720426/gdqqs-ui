@@ -408,6 +408,7 @@
           <el-form-item label="上传工厂价BOM清单" prop="uploadPrice">
             <file-upload
               :modelValue="form.uploadPrice"
+              :uploadUrl="upUrl"
               :fileType="['.xls', '.xlsx']"
               btnText="上传文件"
               btnIcon="Upload"
@@ -433,7 +434,7 @@ import {
   updateProduct,
 } from '@/api/business/product'
 import SaveTitle from '@/views/offer/components/Title'
-
+const upUrl = ref(import.meta.env.VITE_APP_BASE_API +'/business/product/readExcel')
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 
