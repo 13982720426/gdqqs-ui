@@ -58,8 +58,8 @@
                     </el-form-item>
                 </el-col>
                        <el-col :span="8">
-                    <el-form-item label="轨道安装单价" prop="orbitalUnitprice">
-                        <el-input v-model="form.orbitalUnitprice" placeholder="请输入轨道安装单价" style="width: 60%" />
+                    <el-form-item label="轨道安装单价" prop="trackInstallPrice">
+                        <el-input v-model="form.trackInstallPrice" placeholder="请输入轨道安装单价" style="width: 60%" />
                     </el-form-item>
                 </el-col>
             </template>
@@ -73,8 +73,8 @@
                     </el-form-item>
                 </el-col>
                   <el-col :span="8">
-                    <el-form-item label="滑线名称" prop="spqPartName">
-                        <el-input v-model="form.spqPartName" placeholder="请输入最大电流" style="width: 60%" />
+                    <el-form-item label="滑线名称" prop="splPartName">
+                        <el-input v-model="form.splPartName" placeholder="请输入最大电流" style="width: 60%" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">

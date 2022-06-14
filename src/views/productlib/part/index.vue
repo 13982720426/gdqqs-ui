@@ -314,7 +314,7 @@ const trackPartColumns = ref([
   },
   {
     id: 10,
-    prop: 'orbitalUnitprice',
+    prop: 'trackInstallPrice',
     label: '轨道安装单价',
     align: 'center',
   },
@@ -326,7 +326,7 @@ const splPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: () => {},
+    format: row => installPartsFormat(row),
   },
   {
     id: 2,
@@ -336,7 +336,7 @@ const splPartColumns = ref([
   },
   {
     id: 3,
-    prop: 'spqPartName',
+    prop: 'splPartName',
     label: '滑线名称',
     align: 'center',
   },
@@ -384,7 +384,7 @@ const crastopmodelPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: () => {},
+    format: row => installPartsFormat(row),
   },
   {
     id: 2,
@@ -412,7 +412,7 @@ const paintPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: () => {},
+    format: row => installPartsFormat(row),
   },
   {
     id: 2,
@@ -651,7 +651,6 @@ function getList() {
   } else if (activeTab.value == 'six') {
     listProductpart(queryParams.value).then(response => {
       productPartList.value = response.rows
-      console.log(response.rows, 'response.rows')
       total.value = response.total
       loading.value = false
     })
@@ -771,23 +770,16 @@ function submitForm() {
             )
             if (item) {
               form.value.productId = item.productId
-              console.log(item.productId)
-              // addProductpart(form.value).then(response => {
-              //   proxy.$modal.msgSuccess('新增成功')
-              //   showList.value = false
-              //   opentable.value = true
-              //   getList()
-              // })
+              addProductpart(form.value).then(response => {
+                proxy.$modal.msgSuccess('新增成功')
+                showList.value = false
+                opentable.value = true
+                getList()
+              })
             } else {
               proxy.$modal.msgError('新增失败，没有此产品')
             }
           })
-          // addProductpart(form.value).then(response => {
-          //   proxy.$modal.msgSuccess('新增成功')
-          //   showList.value = false
-          //   opentable.value = true
-          //   getList()
-          // })
         }
       }
     }

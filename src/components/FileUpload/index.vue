@@ -88,7 +88,7 @@ const props = defineProps({
   },
   uploadUrl: {
     type: String,
-    default: '',
+    default: undefined,
   },
 })
 
@@ -100,7 +100,7 @@ const baseUrl = import.meta.env.VITE_APP_BASE_API
 const uploadFileUrl = computed(
   () => props?.uploadUrl ?? import.meta.env.VITE_APP_BASE_API + '/common/upload'
 ) // 上传的图片服务器地址
-const headers = ref({ Authorization: 'Bearer ' + getToken() })
+const headers = ref({ Authorization: 'Bearer ' + getToken(), 'Access-Control-Allow-Origin': '*' })
 const fileList = ref([])
 const showTip = computed(() => props.isShowTip && (props.fileType || props.fileSize))
 const text = computed(() => props.btnText)
@@ -131,10 +131,11 @@ watch(
 
 // 上传前校检格式和大小
 function handleBeforeUpload(file) {
+  console.log(file)
   // 校检文件类型
   if (props.fileType.length) {
     let fileExtension = ''
-    if (file.name.lastIndexOf('.') > -1) {
+    if (file.name?.lastIndexOf('.') > -1) {
       fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
       console.log(fileExtension)
     }
@@ -142,6 +143,7 @@ function handleBeforeUpload(file) {
       // console.log(type, file.type, 'type')
       if (type === '.xls' || type === '.xlsx') return true
       if (type === '.pdf' || type === '.PDF') return true
+      if ((type === '.DOCX', type === '.docx')) return true
       if (file.type.indexOf(type) > -1) return true
       if (fileExtension && fileExtension.indexOf(type) > -1) return true
       return false
@@ -182,6 +184,7 @@ function handleUploadSuccess(res, file) {
     fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value)
     uploadList.value = []
     number.value = 0
+    console.log(fileList.value, 'fileList.value')
     emit('update:modelValue', listToString(fileList.value))
     proxy.$modal.closeLoading()
   }
@@ -195,7 +198,7 @@ function handleDelete(index) {
 
 // 获取文件名称
 function getFileName(name) {
-  if (name.lastIndexOf('/') > -1) {
+  if (name?.lastIndexOf('/') > -1) {
     return name.slice(name.lastIndexOf('/') + 1)
   } else {
     return ''

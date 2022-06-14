@@ -10,7 +10,7 @@
       <el-form-item prop="roleDepartment">
         <el-select v-model="value" class="m-2" placeholder="请选择部门">
           <el-option
-            v-for="item in options"
+            v-for="item in deptOption"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -294,6 +294,10 @@ import {
   updateUser,
   addUser,
 } from '@/api/system/user'
+import {
+  listDept,
+  listDeptExcludeChild,
+} from '@/api/system/dept'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -342,6 +346,7 @@ const columns = ref([
 
 const data = reactive({
   form: {},
+  deptOption:[],
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -362,12 +367,13 @@ const data = reactive({
     ],
     email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }],
     phonenumber: [
+      { required: true, message: '联系电话不能为空', trigger: 'blur' },
       { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
     ],
   },
 })
 
-const { queryParams, form, rules } = toRefs(data)
+const { queryParams, form, rules, deptOption } = toRefs(data)
 
 /** 通过条件过滤节点  */
 const filterNode = (value, data) => {
@@ -387,10 +393,18 @@ function getTreeselect() {
 /** 查询用户列表 */
 function getList() {
   loading.value = true
+  listDept().then(res=>{
+    deptOption.value =  res.data.map(i => {
+      // console.log(element.deptName)
+      return {label: i.deptName, value: i.deptId}
+    });
+    console.log(res.data)
+  })
   listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
     loading.value = false
     userList.value = res.rows
     total.value = res.total
+
   })
 }
 /** 节点单击事件 */

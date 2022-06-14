@@ -374,7 +374,7 @@
         <el-col :span="8">
           <el-form-item label="上传设计总图" prop="uploadChart">
             <file-upload
-              :modelValue="form.uploadChart"
+              v-model:modelValue="form.uploadChart"
               :fileType="['.PDF', '.pdf']"
               btnText="上传文件"
               btnIcon="Upload"
@@ -385,7 +385,7 @@
         <el-col :span="8">
           <el-form-item label="上传起重机数据" prop="uploadCrane">
             <file-upload
-              :modelValue="form.uploadCrane"
+              v-model:modelValue="form.uploadCrane"
               :fileType="['.DOCX', '.docx']"
               btnText="上传文件"
               btnIcon="Upload"
@@ -442,7 +442,7 @@ const productList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
-const single = ref(true)
+const single = ref(true)     
 const multiple = ref(true)
 const total = ref(0)
 const showList = ref(true)
@@ -592,6 +592,7 @@ function reset() {
 
 /** 提交按钮 */
 function submitForm() {
+  console.log(form.value,'form')
   proxy.$refs['saveFormRef'].validate(valid => {
     if (valid) {
       if (form.value.productId != null) {
