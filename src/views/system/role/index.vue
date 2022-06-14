@@ -560,6 +560,7 @@ function getMenuAllCheckedKeys() {
 }
 /** 提交按钮 */
 function submitForm() {
+  console.log(proxy.$refs)
   proxy.$refs['roleRef'].validate(valid => {
     if (valid) {
       if (form.value.roleId != undefined) {

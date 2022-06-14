@@ -3,7 +3,8 @@
         <el-table-column v-for="item in columns" :key="item.id" :label="item.label" :prop="item.prop"
             :align="item.align">
             <template #default="{ row }">
-                <span>{{ item.format ? item.format(row[item.key]) : row[item.key] }}</span>
+            <!-- {{row}} -->
+                <span>{{ item.format ? item.format(row) : row[item.prop] }}</span>
             </template>
         </el-table-column>
 
