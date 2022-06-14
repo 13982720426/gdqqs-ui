@@ -12,8 +12,8 @@
     </OfferSaveTitle>
     <div class="offer-save-content">
       <Customer ref="customerRef" v-if="stepsKey === 0"></Customer>
-      <OfferSaveProduct v-else-if="stepsKey === 1"></OfferSaveProduct>
-      <OfferPart v-else-if="stepsKey === 2"></OfferPart>
+      <OfferSaveProduct ref="productRef" v-else-if="stepsKey === 1"></OfferSaveProduct>
+      <OfferPart ref="partRef" v-else-if="stepsKey === 2"></OfferPart>
       <OfferSavePayment v-else-if="stepsKey === 3"></OfferSavePayment>
     </div>
     <div class="offer-save-footer">
@@ -36,15 +36,32 @@ import { ref } from 'vue'
 
 const stepsKey = ref(0)
 const customerRef = ref(null)
+const productRef = ref(null)
+const partRef = ref(null)
 
 const offerStore = useOfferStore()
 
 const stepsNext = async () => {
-  const data = await customerRef.value.getValues()
-  if (data) {
-    offerStore.setCustomerData(data)
+    if (stepsKey.value === 0) {
+      const data = await customerRef.value.getValues()
+      console.log('customerRef',data)
+      if (!data) {
+        return
+      }
+      offerStore.setCustomerData(data)
+    } else if (stepsKey.value === 1) {
+      const data = await productRef.value.getValues()
+      console.log('productRef',data)
+      if (!data) {
+        return
+      }
+    } else if (stepsKey.value === 2) {
+      const data = await partRef.value.getValues()
+      if (!data) {
+        return
+      }
+    }
     stepsKey.value += 1
-  }
 }
 
 const stepsPrev = () => {

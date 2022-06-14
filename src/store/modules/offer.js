@@ -22,6 +22,7 @@ export default defineStore(
             getCustomerData() {
               return {
                   customerId: this.customer.customerId,
+                  customerItem: this.customer.customerItem,
                   workshopInfo: JSON.parse(this.customer.workshopInfo || '[]')
               }
             },

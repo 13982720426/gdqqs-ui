@@ -22,12 +22,9 @@ const props = defineProps({
   }
 })
 
-const emits = defineEmits(['update'])
-
 const dataSource = ref([])
 
 const queryData = (value) => {
-  console.log('queryData',value)
   if (value) {
     dictionaryStore.getData(value).subscribe(data => {
       dataSource.value = data || []

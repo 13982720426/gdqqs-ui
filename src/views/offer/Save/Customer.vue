@@ -17,7 +17,7 @@
           </el-space>
         </el-form-item>
         <el-form-item v-if="!!dataSource.length">
-          <List :dataSource="dataSource" @change="onListChange"/>
+          <List :dataSource="dataSource" @select="onListChange"/>
         </el-form-item>
 
       </OfferSaveTitle>
@@ -112,8 +112,9 @@ const DEFAULT_WORK_ITEM = {
 
 formData.workshopInfo.push(cloneDeep(DEFAULT_WORK_ITEM))
 
-const onListChange = ({id, node}) => {
+const onListChange = ({id , node}) => {
   formData.customerId = id
+  formData.customerItem = node
 }
 
 const customerSearch = debounce(async function (value) { // 客户模糊搜索
