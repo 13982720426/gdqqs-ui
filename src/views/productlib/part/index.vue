@@ -4,8 +4,9 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
+            color="#ffdac6"
+            class="sel"
             type="primary"
-            plain
             icon="Plus"
             @click="handleAdd"
             v-hasPermi="['business:product:add']"
@@ -30,13 +31,15 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+          <el-button color="#ffdac6" class="sel" type="primary" icon="Search" @click="handleQuery">
+            搜索
+          </el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
 
-    <el-tabs v-model="activeTab" class="demo-tabs">
+    <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="轨道" name="first">
         <QTable
           :loading="loading"
@@ -46,6 +49,7 @@
         >
           <template #default="{ row }">
             <el-button
+              class="sel"
               type="text"
               icon="Edit"
               @click="handleUpdate(row)"
@@ -54,6 +58,7 @@
               修改
             </el-button>
             <el-button
+              class="sel"
               type="text"
               icon="Delete"
               @click="handleDelete(row)"
@@ -73,6 +78,7 @@
         >
           <template #default="{ row }">
             <el-button
+              class="sel"
               type="text"
               icon="Edit"
               @click="handleUpdate(row)"
@@ -81,6 +87,7 @@
               修改
             </el-button>
             <el-button
+              class="sel"
               type="text"
               icon="Delete"
               @click="handleDelete(row)"
@@ -100,6 +107,7 @@
         >
           <template #default="{ row }">
             <el-button
+              class="sel"
               type="text"
               icon="Edit"
               @click="handleUpdate(row)"
@@ -108,6 +116,7 @@
               修改
             </el-button>
             <el-button
+              class="sel"
               type="text"
               icon="Delete"
               @click="handleDelete(row)"
@@ -127,6 +136,7 @@
         >
           <template #default="{ row }">
             <el-button
+              class="sel"
               type="text"
               icon="Edit"
               @click="handleUpdate(row)"
@@ -135,6 +145,7 @@
               修改
             </el-button>
             <el-button
+              class="sel"
               type="text"
               icon="Delete"
               @click="handleDelete(row)"
@@ -154,6 +165,7 @@
         >
           <template #default="{ row }">
             <el-button
+              class="sel"
               type="text"
               icon="Edit"
               @click="handleUpdate(row)"
@@ -162,6 +174,7 @@
               修改
             </el-button>
             <el-button
+              class="sel"
               type="text"
               icon="Delete"
               @click="handleDelete(row)"
@@ -177,7 +190,7 @@
   <SaveTitle :title="saveTitle" v-show="showList">
     <Save :form="form" :rules="rules" :type="saveType" ref="saveFormRef" />
     <div class="save-footer">
-      <el-button type="primary" @click="submitForm">确 定</el-button>
+      <el-button color="#ffdac6" class="sel" type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
   </SaveTitle>
@@ -245,21 +258,21 @@ const trackPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: (row) => installPartsFormat(row),
+    format: row => installPartsFormat(row),
   },
   {
     id: 2,
     prop: 'fixedMode',
     label: '固定方式',
     align: 'center',
-    format: (row) => fixedWayFormat(row),
+    format: row => fixedWayFormat(row),
   },
   {
     id: 3,
     prop: 'trackModel',
     label: '轨道型号',
     align: 'center',
-    format: (row) => orbitModelFormat(row),
+    format: row => orbitModelFormat(row),
   },
   {
     id: 4,
@@ -297,6 +310,12 @@ const trackPartColumns = ref([
     label: '吊装台班单价',
     align: 'center',
   },
+  {
+    id: 10,
+    prop: 'orbitalUnitprice',
+    label: '轨道安装单价',
+    align: 'center',
+  },
 ])
 const splPartList = ref([])
 const splPartColumns = ref([
@@ -315,36 +334,42 @@ const splPartColumns = ref([
   },
   {
     id: 3,
+    prop: 'spqPartName',
+    label: '滑线名称',
+    align: 'center',
+  },
+  {
+    id: 4,
     prop: 'electricMax',
     label: '最大电流',
     align: 'center',
   },
   {
-    id: 4,
+    id: 5,
     prop: 'trolleyUnprice',
     label: '滑触线单价',
     align: 'center',
   },
   {
-    id: 5,
+    id: 6,
     prop: 'collector',
     label: '集电器',
     align: 'center',
   },
   {
-    id: 6,
+    id: 7,
     prop: 'installUnprice',
     label: '安装费单价',
     align: 'center',
   },
   {
-    id: 7,
+    id: 8,
     prop: 'idlightUnprice',
     label: '指示灯单价',
     align: 'center',
   },
   {
-    id: 8,
+    id: 9,
     prop: 'rcableUnprice',
     label: '上升电缆单价',
     align: 'center',
@@ -407,18 +432,21 @@ const productPartColumns = ref([
     prop: 'partType',
     label: '全部部件类型',
     align: 'center',
+    format: (row) => productFormat(row),
   },
   {
     id: 2,
     prop: 'craneType',
     label: '起重机类型',
     align: 'center',
+    format:(row)=>craneTypeFormat(row)
   },
   {
     id: 3,
     prop: 'craneModel',
     label: '起重机型号',
     align: 'center',
+    format:(row)=>craneModelFormat(row)
   },
   {
     id: 4,
@@ -431,18 +459,21 @@ const productPartColumns = ref([
     prop: 'span',
     label: '跨度',
     align: 'center',
+    format:(row)=>spanFormat(row)
   },
   {
     id: 6,
     prop: 'liftHeight',
     label: '起升高度',
     align: 'center',
+    format: row => liftHeightFormat(row),
   },
   {
     id: 7,
     prop: 'workLevel',
     label: '工作级别',
     align: 'center',
+    format: row => workLevelFormat(row),
   },
   {
     id: 8,
@@ -467,6 +498,7 @@ const productPartColumns = ref([
     prop: 'unit',
     label: '单位',
     align: 'center',
+    format:(row)=>unitFormat(row)
   },
   {
     id: 12,
@@ -510,6 +542,8 @@ const {
   q_install_parttype,
   q_fixed_mode,
   q_track_model,
+  q_part_type,
+  q_unit,
 } = proxy.useDict(
   'q_crane_type',
   'q_oper_mode',
@@ -533,16 +567,22 @@ const {
   'q_pressure_max',
   'q_install_parttype',
   'q_fixed_mode',
-  'q_track_model'
+  'q_track_model',
+  'q_part_type',
+  'q_unit'
 )
 
-// 超重机类型翻译
+// 起重机类型翻译
 function craneTypeFormat(row, column) {
   return proxy.selectDictLabel(q_crane_type.value, row.craneType)
 }
 // 操作方式翻译
 function craneOperationFormat(row, column) {
   return proxy.selectDictLabel(q_oper_mode.value, row.craneOperation)
+}
+//起重机单位
+function unitFormat(row, column) {
+  return proxy.selectDictLabel(q_unit.value, row.unit)
 }
 // 起重机型号翻译
 function craneModelFormat(row, column) {
@@ -556,54 +596,33 @@ function craneModelFormat(row, column) {
 }
 // 跨度翻译
 function spanFormat(row, column) {
-  if (row.craneType == 1) {
-    return proxy.selectDictLabel(q_single_crane_span.value, row.span)
-  } else if (row.craneType == 2) {
-    return proxy.selectDictLabel(q_double_crane_span.value, row.span)
-  } else if (row.craneType == 3) {
-    return proxy.selectDictLabel(q_susp_crane_span.value, row.span)
-  }
+  return proxy.selectDictLabel(q_single_crane_span.value, row.span)
 }
 //起升高度翻译
 function liftHeightFormat(row, column) {
-  if (row.craneType == 1) {
-    return proxy.selectDictLabel(q_single_crane_lift_height.value, row.liftHeight)
-  } else if (row.craneType == 2) {
-    return proxy.selectDictLabel(q_double_crane_lift_height.value, row.liftHeight)
-  } else if (row.craneType == 3) {
-    return proxy.selectDictLabel(q_susp_crane_lift_height.value, row.liftHeight)
-  }
+  return proxy.selectDictLabel(q_single_crane_lift_height.value, row.liftHeight)
 }
 // 工作级别翻译
 function workLevelFormat(row, column) {
-  if (row.craneType == 1) {
-    return proxy.selectDictLabel(q_single_crane_work_level.value, row.workLevel)
-  } else if (row.craneType == 2) {
-    return proxy.selectDictLabel(q_double_crane_work_level.value, row.workLevel)
-  } else if (row.craneType == 3) {
-    return proxy.selectDictLabel(q_susp_crane_work_level.value, row.workLevel)
-  }
+  return proxy.selectDictLabel(q_single_crane_work_level.value, row.workLevel)
 }
 //安装部件翻译
 function installPartsFormat(row, column) {
-  if (row.partType == 1) {
-    return proxy.selectDictLabel(q_install_parttype.value, row.partType)
-  } else if (row.partType == 2) {
-    return proxy.selectDictLabel(q_install_parttype.value, row.partType)
-  } else if (row.partType == 3) {
-    return proxy.selectDictLabel(q_install_parttype.value, row.partType)
-  } else if (row.partType == 4) {
-    return proxy.selectDictLabel(q_install_parttype.value, row.partType)
-  }
+  return proxy.selectDictLabel(q_install_parttype.value, row.partType)
 }
 //固定方式翻译
 function fixedWayFormat(row, column) {
-    return proxy.selectDictLabel(q_fixed_mode.value, row.fixedMode)
+  return proxy.selectDictLabel(q_fixed_mode.value, row.fixedMode)
 }
 //轨道型号翻译
 function orbitModelFormat(row, column) {
-    return proxy.selectDictLabel(q_track_model.value, row.trackModel)
+  return proxy.selectDictLabel(q_track_model.value, row.trackModel)
 }
+//产品部件类型翻译
+function productFormat(row, column) {
+  return proxy.selectDictLabel(q_part_type.value, row.partType)
+}
+
 /** 查询产品列表 */
 function getList() {
   loading.value = true
@@ -634,12 +653,16 @@ function getList() {
   } else if (activeTab.value == 'six') {
     listProductpart(queryParams.value).then(response => {
       productPartList.value = response.rows
+      console.log(response.rows,'response.rows')
       total.value = response.total
       loading.value = false
     })
   }
 }
-
+function handleClick(tab) {
+  activeTab.value = tab.props.name
+  getList()
+}
 // 取消按钮
 function cancel() {
   opentable.value = true
@@ -657,8 +680,9 @@ function submitForm() {
   // console.log(proxy.$refs['saveFormRef'].$refs['saveFormRef'])
   proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate(valid => {
     if (valid) {
-      if (activeTab.value == 'first') {
-        console.log(form.value,'first')
+      //轨道
+      if (activeTab.value === 'first') {
+        console.log(form.value, 'first')
         if (form.value.trackPartId != null) {
           updateTrackpart(form.value).then(response => {
             proxy.$modal.msgSuccess('修改成功')
@@ -675,8 +699,9 @@ function submitForm() {
           })
         }
       }
-      if (activeTab.value == 'second') {
-        if (form.value.trackPartId != null) {
+      //滑线
+      if (activeTab.value === 'second') {
+        if (form.value.splPartId != null) {
           updateSplpart(form.value).then(response => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
@@ -692,8 +717,10 @@ function submitForm() {
           })
         }
       }
-      if (activeTab.value == 'third'){
-         if (form.value.trackPartId != null) {
+      //大车
+      if (activeTab.value === 'third') {
+        console.log(form.value, 'third')
+        if (form.value.cartPartId != null) {
           updateCrastopmodelpart(form.value).then(response => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
@@ -702,6 +729,44 @@ function submitForm() {
           })
         } else {
           addCrastopmodelpart(form.value).then(response => {
+            proxy.$modal.msgSuccess('新增成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        }
+      }
+      //油漆
+      if (activeTab.value === 'fourth') {
+        if (form.value.paintPartId != null) {
+          updatePaintpart(form.value).then(response => {
+            proxy.$modal.msgSuccess('修改成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        } else {
+          addPaintpart(form.value).then(response => {
+            proxy.$modal.msgSuccess('新增成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        }
+      }
+      //产品部件
+      if (activeTab.value === 'six') {
+        console.log(form.value, 'hgkugh')
+        console.log(form.value.partType, 'six')
+        if (form.value.productPartId != null) {
+          updateProductpart(form.value).then(response => {
+            proxy.$modal.msgSuccess('修改成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        } else {
+          addProductpart(form.value).then(response => {
             proxy.$modal.msgSuccess('新增成功')
             showList.value = false
             opentable.value = true
@@ -775,15 +840,30 @@ function handleUpdate(row) {
     saveType.value = 'install'
     form.value = { partType: '2' }
   } else if (activeTab.value == 'third') {
+    const cartPartId = row.cartPartId || ids.value
+    getCrastopmodelpart(cartPartId).then(response => {
+      form.value = response.data
+      saveTitle.value = '修改大车止档型号'
+    })
     saveTitle.value = '新增大车止档型号'
     saveType.value = 'install'
     form.value = { partType: '3' }
   } else if (activeTab.value == 'fourth') {
-    saveTitle.value = '油漆'
+    const paintPartId = row.paintPartId || ids.value
+    getPaintpart(paintPartId).then(response => {
+      form.value = response.data
+      saveTitle.value = '修改油漆'
+    })
+    saveTitle.value = '新增油漆'
     saveType.value = 'install'
     form.value = { partType: '4' }
   } else if (activeTab.value == 'six') {
-    saveTitle.value = '产品部件'
+    const productPartId = row.productPartId || ids.value
+    getProductpart(productPartId).then(response => {
+      form.value = response.data
+      saveTitle.value = '修改产品部件'
+    })
+    saveTitle.value = '新增产品部件'
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
@@ -796,17 +876,81 @@ function handleUpdate(row) {
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const productIds = row.productId || ids.value
-  proxy.$modal
-    .confirm('是否确认删除产品编号为"' + productIds + '"的数据项？')
-    .then(function () {
-      return delProduct(productIds)
-    })
-    .then(() => {
-      getList()
-      proxy.$modal.msgSuccess('删除成功')
-    })
-    .catch(() => {})
+  //轨道删除
+  if (activeTab.value == 'first') {
+    console.log(row, 'delrow')
+    const trackPartId = row.trackPartId || ids.value
+    proxy.$modal
+      .confirm('是否确认删除此数据项？')
+      .then(function () {
+        return delTrackpart(trackPartId)
+      })
+      .then(() => {
+        getList()
+        proxy.$modal.msgSuccess('删除成功')
+      })
+      .catch(() => {})
+  }
+  //滑线删除
+  if (activeTab.value == 'second') {
+    console.log(row, 'second')
+    const splPartId = row.splPartId || ids.value
+    proxy.$modal
+      .confirm('是否确认删除此数据项？')
+      .then(function () {
+        return delSplpart(splPartId)
+      })
+      .then(() => {
+        getList()
+        proxy.$modal.msgSuccess('删除成功')
+      })
+      .catch(() => {})
+  }
+  //大车删除
+  if (activeTab.value == 'third') {
+    console.log(row, 'third')
+    const cartPartId = row.cartPartId || ids.value
+    proxy.$modal
+      .confirm('是否确认删除此数据项？')
+      .then(function () {
+        return delCrastopmodelpart(cartPartId)
+      })
+      .then(() => {
+        getList()
+        proxy.$modal.msgSuccess('删除成功')
+      })
+      .catch(() => {})
+  }
+  //油漆删除
+  if (activeTab.value == 'fourth') {
+    console.log(row, 'fourth')
+    const paintPartId = row.paintPartId || ids.value
+    proxy.$modal
+      .confirm('是否确认删除此数据项？')
+      .then(function () {
+        return delPaintpart(paintPartId)
+      })
+      .then(() => {
+        getList()
+        proxy.$modal.msgSuccess('删除成功')
+      })
+      .catch(() => {})
+  }
+  //产品部件删除
+  if (activeTab.value == 'six') {
+    console.log(row, 'six')
+    const productPartId = row.productPartId || ids.value
+    proxy.$modal
+      .confirm('是否确认删除此数据项？')
+      .then(function () {
+        return delProductpart(productPartId)
+      })
+      .then(() => {
+        getList()
+        proxy.$modal.msgSuccess('删除成功')
+      })
+      .catch(() => {})
+  }
 }
 /** 导出按钮操作 */
 function handleExport() {
@@ -829,5 +973,8 @@ getList()
 .search-tool {
   display: flex;
   justify-content: space-between;
+}
+.sel {
+  color: #ff5800;
 }
 </style>

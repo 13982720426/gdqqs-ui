@@ -57,6 +57,11 @@
                         <el-input v-model="form.thsUnprice" placeholder="请输入轨道吊装台班单价" style="width: 60%" />
                     </el-form-item>
                 </el-col>
+                       <el-col :span="8">
+                    <el-form-item label="轨道安装单价" prop="orbitalUnitprice">
+                        <el-input v-model="form.orbitalUnitprice" placeholder="请输入轨道安装单价" style="width: 60%" />
+                    </el-form-item>
+                </el-col>
             </template>
             <template v-else-if="form.partType == 2">
                 <el-col :span="8">
@@ -65,6 +70,11 @@
                             <el-option v-for="dict in q_spl_level" :key="dict.value" :label="dict.label"
                                 :value="dict.value" />
                         </el-select>
+                    </el-form-item>
+                </el-col>
+                  <el-col :span="8">
+                    <el-form-item label="滑线名称" prop="spqPartName">
+                        <el-input v-model="form.spqPartName" placeholder="请输入最大电流" style="width: 60%" />
                     </el-form-item>
                 </el-col>
                 <el-col :span="8">
