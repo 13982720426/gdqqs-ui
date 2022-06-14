@@ -5,7 +5,7 @@
     >
       <el-form
           ref="form"
-          :model="formData"
+          :model="formModel"
           label-position="left"
       >
         <div v-for="(workshopItem) in formModel">
@@ -25,7 +25,7 @@
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="操作方式">
                   <DictSelect
-                      v-model="amountItem.handle"
+                      v-model="amountItem.operation"
                       dictType="q_oper_mode"
                   />
                 </el-form-item>
@@ -40,15 +40,62 @@
               </el-col>
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="工作级别">
+
                   <DictSelect
+                      v-if="amountItem.type === '1'"
                       v-model="amountItem.level"
-                      :dictType="getLevelByType(workshopItem.key)"
+                      dictType="q_single_crane_work_level"
+                  />
+                  <DictSelect
+                      v-else-if="amountItem.type === '2'"
+                      v-model="amountItem.level"
+                      dictType="q_double_crane_work_level"
+                  />
+                  <DictSelect
+                      v-else-if="amountItem.type === '3'"
+                      v-model="amountItem.level"
+                      dictType="q_susp_crane_work_level"
+                  />
+                  <DictSelect
+                      v-else
+                      v-model="amountItem.level"
+                      dictType=""
                   />
                 </el-form-item>
               </el-col>
             </el-row>
-            <div v-if="amountItem.type && amountItem.handle && amountItem.weight && amountItem.level">
-              <el-button @click="selectPart">选择部件</el-button>
+            <div v-if="!!workshopItem.productData">
+              <el-descriptions :column="3" border size="small">
+                <el-descriptions-item label="型号" width="150px" label-align="right">
+                  {{ workshopItem.productData.name }}
+                </el-descriptions-item>
+                <el-descriptions-item label="额定功率(KW)" width="150px" label-align="right">
+                  {{ workshopItem.productData.ratedPower }}
+                </el-descriptions-item>
+                <el-descriptions-item label="起升速度" width="150px" label-align="right">
+                  {{ workshopItem.productData.liftSpeed }}
+                </el-descriptions-item>
+                <el-descriptions-item label="小车运行速度" width="150px" label-align="right">
+                  {{ workshopItem.productData.crabSpeed }}
+                </el-descriptions-item>
+                <el-descriptions-item label="大车运行速度" width="150px" label-align="right">
+                  {{ workshopItem.productData.cartSpeed }}
+                </el-descriptions-item>
+                <el-descriptions-item width="150px" label-align="right">
+                </el-descriptions-item>
+                <el-descriptions-item label="总成本合计" width="150px" label-align="right">
+                  {{ workshopItem.partQuote.factory_price_count }}
+                </el-descriptions-item>
+                <el-descriptions-item label="预计利润" width="150px" label-align="right">
+                  {{ workshopItem.partQuote.profit }}
+                </el-descriptions-item>
+                <el-descriptions-item label="销售总价" width="150px" label-align="right">
+                  {{ workshopItem.partQuote.price }}
+                </el-descriptions-item>
+              </el-descriptions>
+            </div>
+            <div v-if="amountItem.type && amountItem.operation && amountItem.weight && amountItem.level">
+              <el-button @click="selectPart(amountItem, workshopItem.name)">选择部件</el-button>
             </div>
           </div>
         </div>
@@ -56,21 +103,56 @@
     </OfferSaveTitle>
     <el-dialog
         v-model="dialogVisible"
-        width="800px"
+        width="900px"
         title="选择部件"
     >
+      <el-select v-model="productId" style="width: 50%;margin-bottom: 12px;" placeholder="请选择产品" @change="onProductChange">
+        <el-option
+          v-for="item in productList"
+          :label="item.name"
+          :value="item.name"
+        />
+      </el-select>
       <el-table
           style="width: 100%"
+          :data="partDataSource"
+          border
       >
-        <el-table-column prop="offerName" label="产品"/>
         <el-table-column prop="offerCode" label="部件" width="180" />
-        <el-table-column prop="createTime" label="数量" width="160" />
-        <el-table-column prop="customerName" label="单位" width="180" />
-        <el-table-column prop="contractPrice" label="品牌" width="180" />
-        <el-table-column prop="contractPrice" label="部件编码" width="180" />
-        <el-table-column prop="contractPrice" label="税率" width="180" />
-        <el-table-column prop="contractPrice" label="金地球工厂价" width="180" />
+        <el-table-column prop="brand" label="品牌" width="180" />
+        <el-table-column prop="part_code" label="部件编码" width="180" >
+          <template #default="scope">
+            <el-radio-group v-model="scope.row.part_code_value">
+              <el-radio v-for="item in scope.row.part_code" :label="item" />
+            </el-radio-group>
+          </template>
+        </el-table-column>
+        <el-table-column prop="unm" label="数量" width="80" />
+        <el-table-column prop="unit" label="单位" width="100" />
+        <el-table-column prop="price" label="金地球成本价(不含税)" width="180" />
+        <el-table-column prop="taxrate" label="税率" width="120" >
+          <template #default="scope">
+            <el-input-number v-model="scope.row.taxrate" :min="0" :max="100" controls-position="right" style="width: 100%;"/>
+          </template>
+        </el-table-column>
+        <el-table-column prop="brand" label="品牌" width="100" />
+        <el-table-column prop="factory_price" label="金地球工厂价" width="140" >
+          <template #default="scope">
+            {{ (Number(scope.row.unm) * Number(scope.row.price) * Number(scope.row.taxrate || 0)).toFixed(2) }}
+          </template>
+        </el-table-column>
       </el-table>
+      <div>
+        <div>工厂价合计(元) {{ partDialogData.factory_price_count }}</div>
+        <div>预计利润率 {{ partDialogData.profit }}%</div>
+        <div>销售报价(元) {{ partDialogData.price }}</div>
+      </div>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="cancel">取消</el-button>
+          <el-button type="primary" @click="savePartData" >确认</el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -79,38 +161,106 @@
 import OfferSaveTitle from '../../components/Title'
 import DictSelect from './DictSelect'
 import useOfferStore from '@/store/modules/offer'
-import {onMounted} from "vue";
+import {onMounted, defineExpose, computed} from "vue";
+import {listProduct} from "@/api/business/product";
+import {cloneDeep, omit} from "lodash-es";
 
 const offerStore = useOfferStore()
 const dialogVisible = ref(false)
-
+const partDataSource = ref([])
+const productList = ref([])
+const form = ref()
+const productId = ref()
 const formModel = reactive([])
 
-const selectPart = (key) => {
+const selectPart = (data, workshopItemName) => {
+  queryPart(data, workshopItemName)
   dialogVisible.value = true
 }
 
-const getLevelByType = (value) => {
-  switch(value) {
-    case '2':
-      return 'q_double_crane_work_level';
-    case '3':
-      return 'q_double_crane_work_level';
-    default:
-      return 'q_single_crane_work_level';
+const cancel = () => {
+  dialogVisible.value = false
+}
+
+const savePartData = () => {
+  const productItem = productList.value.find(item => item.name === productId.value)
+  formModel.forEach(item => {
+    if (productItem.workshopItemName === item.name) {
+      item.partData = cloneDeep(partDataSource.value)
+      item.partQuote = partDialogData
+      item.productData = {
+        name: productItem.name,
+        ratedPower: productItem.ratedPower,
+        liftSpeed: productItem.liftSpeed,
+        crabSpeed: productItem.crabSpeed,
+        cartSpeed: productItem.cartSpeed,
+      }
+    }
+  })
+  cancel()
+}
+
+const queryPart = async (data, workshopItemName) => {
+  const resp = await listProduct({
+    crane_type: data.type,
+    crane_operation: data.operation,
+    work_level: data.level
+  })
+  if (resp.code === 200) {
+  // 遍历BOM清单
+    productList.value = []
+    resp.rows.forEach(item => {
+      if (item.bomParams) {
+        const bomData = JSON.parse(item.bomParams)
+        bomData.data = bomData.data.map(item => {
+          item.part_code = item.part_code.split(',')
+          item.part_code_value = item.part_code.length === 1 ? item.part_code[0] : undefined
+          console.log(item)
+          return item
+        })
+        productList.value.push({
+          ...bomData,
+          ratedPower: item.ratedPower,
+          liftSpeed: item.liftSpeed,
+          crabSpeed: item.crabSpeed,
+          cartSpeed: item.cartSpeed,
+          workshopItemName
+        })
+      }
+    })
   }
 }
 
-onMounted(() => {
-  const workshopData = offerStore.getCustomerData().workshopInfo
+const onProductChange = (value) => {
+  const item = productList.value.find(item => item.name === value)
+  partDataSource.value = item.data
+}
 
-  workshopData.forEach(item => {
+const partDialogData = computed(() => {
+  const factory_price_count = partDataSource.value.reduce((prev, next) => {
+    const price = (Number(next.unm) * Number(next.price) * Number(next.taxrate || 0)).toFixed(2)
+    return prev + Number(price)
+  }, 0)
+
+  const profitMargin = Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
+  const price = (factory_price_count * (1 + (profitMargin/ 100))).toFixed(2)
+
+  return {
+    factory_price_count,
+    profit: profitMargin,
+    price
+  }
+})
+
+onMounted(() => {
+  const customerData = offerStore.getCustomerData()
+  customerData.workshopInfo.forEach(item => {
     formModel.push({
       name: item.name,
       key: item.key,
       amount: new Array(item.amount).fill(1).map(b => ({
         type: undefined,
-        handle: undefined,
+        operation: undefined,
         weight: undefined,
         level: undefined
       }))
@@ -119,6 +269,18 @@ onMounted(() => {
 
 })
 
+const getValues = async () => {
+  const data = await form.value.validate()
+  if (data) {
+    const newData = cloneDeep(formModel)
+    console.log(formModel)
+    return omit(newData, ['product'])
+  }
+}
+
+defineExpose({
+  getValues
+})
 </script>
 
 <style lang="scss" scoped>
