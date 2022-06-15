@@ -192,16 +192,16 @@ function handleUploadError(err) {
 function handleUploadSuccess(res, file) {
   console.log(res)
   if (res.data) {
-    uploadList.value.push({ name: res.data.fileName, url: res.data.url, bomParams: res.data.bomParams })
+    uploadList.value.push({ name: res.data.fileName, url: res.data.fileName, bomParams: res.data.bomParams })
   } else {
-    uploadList.value.push({ name: res.fileName, url: res.url })
+    uploadList.value.push({ name: res.fileName, url: res.fileName })
   }
   if (uploadList.value.length === number.value) {
     fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value)
     uploadList.value = []
     number.value = 0
     console.log(fileList.value, 'fileList.value2')
-    emit('update:modelValue', listToString(fileList.value))
+    emit('update:modelValue', fileList.value)
     proxy.$modal.closeLoading()
   }
 }

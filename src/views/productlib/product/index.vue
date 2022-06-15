@@ -18,7 +18,7 @@
             type="primary"
             icon="Download"
             size="mini"
-            @click="handleExport"
+            @click="handleIxport"
             color="#ffdac6"
             class="sel"
             v-hasPermi="['business:product:import']"
@@ -29,7 +29,7 @@
             type="primary"
             icon="UploadFilled"
             size="mini"
-            @click="handleAdd"
+            @click="handleExport"
             color="#ffdac6"
             class="sel"
             v-hasPermi="['business:product:export']"
@@ -96,7 +96,13 @@
           <span>{{ workLevelFormat(row) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column
+        label="操作"
+        align="center"
+        class-name="small-padding fixed-width"
+        fixed="right"
+        width="160"
+      >
         <template #default="scope">
           <el-button
             size="mini"
@@ -130,6 +136,7 @@
       @pagination="getList"
     />
   </div>
+
   <SaveTitle :title="saveTitle" v-show="!showList">
     <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="150px">
       <el-row>
@@ -437,17 +444,42 @@
               btnText="上传文件"
               btnIcon="Upload"
               :isShowTip="false"
-              @update:modelValue = "getvalues"
+              @update:modelValue="getvalues"
             />
           </el-form-item>
         </el-col>
       </el-row>
+      <span style="font-size: 12px; padding-bottom: 50px">型号：</span>
+      <QTable :loading="loading" :data="excelList" :columns="excelListColumns" class="tab"></QTable>
     </el-form>
     <div class="save-footer">
       <el-button type="primary" @click="submitForm" color="#ffdac6" class="sel">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
   </SaveTitle>
+  <el-dialog :title="title" v-model="open" width="400px">
+    <el-upload
+      class="upload-demo"
+      drag
+      action="https://jsonplaceholder.typicode.com/posts/"
+      multiple
+    >
+      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+      <div class="el-upload__text">
+        请将文件拖拽到这里 或者
+        <em>点击上传文件</em>
+      </div>
+
+      <template #tip>
+        <div class="el-upload__tip">只能上传xls/xlsx文件</div>
+      </template>
+    </el-upload>
+
+    <div class="save-footer">
+      <el-button type="primary" @click="submitfile" color="#ffdac6" class="sel">确 定</el-button>
+      <el-button @click="open = false">取 消</el-button>
+    </div>
+  </el-dialog>
 </template>
 
 <script setup name="Product">
@@ -458,11 +490,14 @@ import {
   addProduct,
   updateProduct,
 } from '@/api/business/product'
+import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
+import { UploadFilled } from '@element-plus/icons-vue'
 const upUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel')
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 
+const excelList = ref([])
 const productList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)
@@ -472,6 +507,63 @@ const multiple = ref(true)
 const total = ref(0)
 const showList = ref(true)
 const saveTitle = ref('新增产品')
+const open = ref(false)
+const excelListColumns = ref([
+  {
+    id: 1,
+    prop: 'partType',
+    label: '部件',
+    align: 'center',
+  },
+  {
+    id: 2,
+    prop: 'fixedMode',
+    label: '型号',
+    align: 'center',
+  },
+  {
+    id: 3,
+    prop: 'trackModel',
+    label: '品牌',
+    align: 'center',
+  },
+  {
+    id: 4,
+    prop: 'sgltrackLength',
+    label: '数量',
+    align: 'center',
+  },
+  {
+    id: 5,
+    prop: 'sgltrackWeight',
+    label: '单位',
+    align: 'center',
+  },
+  {
+    id: 6,
+    prop: 'trackUnprice',
+    label: '进地球成本价(不含税)',
+    align: 'center',
+  },
+  {
+    id: 7,
+    prop: 'tppUnprice',
+    label: '税率',
+    align: 'center',
+  },
+  {
+    id: 8,
+    prop: 'cpUnprice',
+    label: '工厂价加点',
+    align: 'center',
+  },
+  {
+    id: 9,
+    prop: 'thsUnprice',
+    label: '金地球工厂价',
+    align: 'center',
+  },
+])
 
 const data = reactive({
   queryParams: {
@@ -589,6 +681,11 @@ function getList() {
   })
 }
 
+//文件上传
+function submitfile(){
+
+}
+
 // 取消按钮
 function cancel() {
   showList.value = true
@@ -618,9 +715,9 @@ function reset() {
   proxy.resetForm('saveFormRef')
 }
 
-function getvalues(data){
-  form.value.uploadPrice = data
-  console.log(data,'getvaluesgetvaluesgetvalues')
+function getvalues(data) {
+  form.value.uploadPrice = data.fileName
+  console.log(data, 'getvaluesgetvaluesgetvalues')
 }
 
 /** 提交按钮 */
@@ -629,19 +726,19 @@ function submitForm() {
     if (valid) {
       console.log(form.value.bomParams, 'bomParams')
       console.log(form.value, 'uploadPrice')
-      // if (form.value.productId != null) {
-      //   updateProduct(form.value).then(response => {
-      //     proxy.$modal.msgSuccess('修改成功')
-      //     showList.value = true
-      //     getList()
-      //   })
-      // } else {
-      //   addProduct(form.value).then(response => {
-      //     proxy.$modal.msgSuccess('新增成功')
-      //     showList.value = true
-      //     getList()
-      //   })
-      // }
+      if (form.value.productId != null) {
+        updateProduct(form.value).then(response => {
+          proxy.$modal.msgSuccess('修改成功')
+          showList.value = true
+          getList()
+        })
+      } else {
+        addProduct(form.value).then(response => {
+          proxy.$modal.msgSuccess('新增成功')
+          showList.value = true
+          getList()
+        })
+      }
     }
   })
 }
@@ -681,7 +778,7 @@ function handleUpdate(row) {
 function handleDelete(row) {
   const productIds = row.productId || ids.value
   proxy.$modal
-    .confirm('是否确认删除产品编号为"' + productIds + '"的数据项？')
+    .confirm('是否确认删除此数据项？')
     .then(function () {
       return delProduct(productIds)
     })
@@ -693,13 +790,17 @@ function handleDelete(row) {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  this.download(
+  proxy.download(
     'business/product/export',
     {
       ...queryParams.vallue,
     },
     `product_${new Date().getTime()}.xlsx`
   )
+}
+/**导入 */
+function handleIxport() {
+  open.value = true
 }
 
 getList()
@@ -715,5 +816,13 @@ getList()
 }
 .sel {
   color: #ff5800;
+}
+.tab {
+  font-size: 12px;
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+.el-upload-dragger {
+  width: 600px !important;
 }
 </style>
