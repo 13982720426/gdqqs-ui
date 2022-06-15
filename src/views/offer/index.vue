@@ -22,74 +22,43 @@
       </div>
       <div>
         <el-space>
-          <el-input v-model="searchText" style="width: 200px;" placeholder="请输入报价单名称" />
+          <el-input v-model="searchText" style="width: 200px;" placeholder="请输入报价单名称"/>
           <el-button type="primary" @click="queryData(searchText)">查询</el-button>
           <el-button @click="onReset()">重置</el-button>
         </el-space>
       </div>
     </div>
-<!--    <el-row :gutter="10" class="mb8">-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="Plus"-->
-<!--            v-hasPermi="['offer:add']"-->
-<!--            @click="jumpAdd"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="info"-->
-<!--            plain-->
-<!--            icon="Upload"-->
-<!--            v-hasPermi="['offer:import']"-->
-<!--        >导入-->
-<!--        </el-button>-->
-<!--      </el-col>-->
-<!--    </el-row>-->
     <el-table
         :data="dataSource"
         style="width: 100%"
     >
       <el-table-column prop="offerName" label="报价单名称"/>
-      <el-table-column prop="offerCode" label="编号" width="180" />
-      <el-table-column prop="createTime" label="报价时间" width="160" />
-      <el-table-column prop="customerName" label="客户信息" width="180" />
-      <el-table-column prop="contractPrice" label="合同价格" width="180" />
-      <el-table-column prop="profit" label="利润" width="180" />
-      <el-table-column prop="createUserName" label="创建人" width="180" />
+      <el-table-column prop="offerCode" label="编号" width="180"/>
+      <el-table-column prop="createTime" label="报价时间" width="160"/>
+      <el-table-column prop="customerName" label="客户信息" width="180"/>
+      <el-table-column prop="contractPrice" label="合同价格" width="180"/>
+      <el-table-column prop="profit" label="利润" width="180"/>
+      <el-table-column prop="createUserName" label="创建人" width="180"/>
       <el-table-column prop="name" label="操作" width="300" fixed="right">
-        <template #default>
-          <el-button>详情查看</el-button>
-          <el-button>编辑</el-button>
+        <template #default="{row}">
+          <el-button @click="view(row.offerId)">详情查看</el-button>
+          <el-button @click="edit(row.offerId)">编辑</el-button>
           <el-button>导出</el-button>
         </template>
       </el-table-column>
     </el-table>
-<!--    <el-tabs-->
-<!--      v-model="activeName"-->
-<!--      @tab-change="tabsChange"-->
-<!--    >-->
-<!--      <el-tab-pane label="所有报价单" name="All">-->
-<!--        <BaseTable type="All" />-->
-<!--      </el-tab-pane>-->
-<!--      <el-tab-pane label="已报价" name="Quoted">-->
-<!--        <BaseTable type="Quoted" />-->
-<!--      </el-tab-pane>-->
-<!--      <el-tab-pane label="已完成" name="Finish">-->
-<!--        <BaseTable type="Finish" />-->
-<!--      </el-tab-pane>-->
-<!--    </el-tabs>-->
   </div>
 </template>
 
 <script setup name="offer">
 import BaseTable from './BaseTable'
-import { queryList } from '@/api/offer'
+import {queryList} from '@/api/offer'
 import {ref, onMounted} from 'vue'
 import {useRouter} from "vue-router";
+import {delOffer} from "../../api/business/offer";
+import useOfferStore from '@/store/modules/offer'
+
+const offerStore = useOfferStore()
 
 const router = useRouter();
 const activeName = ref('All')
@@ -109,7 +78,28 @@ const queryData = async (name) => {
 }
 
 const jumpAdd = () => {
+  offerStore.init()
   router.push('/offer/save');
+}
+
+const edit = (id) => {
+  router.push({
+    path: `/offer/save`,
+    query: {
+      id,
+      type: 'edit'
+    }
+  });
+}
+
+const view = (id) => {
+  router.push({
+    path: `/offer/save`,
+    query: {
+      id,
+      type: 'view'
+    }
+  });
 }
 
 const onReset = () => {
@@ -117,8 +107,16 @@ const onReset = () => {
   queryData()
 }
 
+const deleteOffer = async (id) => {
+  const resp = await delOffer(id)
+  if (resp.code) {
+    queryData()
+  }
+}
+
 onMounted(() => {
   queryData()
+  offerStore.init()
 })
 
 </script>

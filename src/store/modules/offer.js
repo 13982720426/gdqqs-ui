@@ -4,7 +4,9 @@ export default defineStore(
         state: () => ({
             customer: {},
             product: [],
-            partData: {}
+            partData: {},
+            payData: {},
+            type: 'add'
         }),
         actions: {
             setCustomerData(data) {
@@ -16,15 +18,21 @@ export default defineStore(
             setPartData(data) {
                 this.partData = data
             },
+            setPaymentData(data) {
+                this.payData = data
+            },
+            updateType(data) {
+                this.type = data
+            },
             getCustomerData() {
-              return {
-                  customerId: this.customer.customerId,
-                  customerItem: this.customer.customerItem,
-                  workshopInfo: JSON.parse(this.customer.workshopInfo || '[]')
-              }
+                return {
+                    customerId: this.customer.customerId,
+                    customerItem: this.customer.customerItem,
+                    workshopInfo: JSON.parse(this.customer.workshopInfo || '[]')
+                }
             },
             getProductData() {
-              return this.product
+                return this.product
             },
             getProductInfo() {
                 const workshopInfo = this.getCustomerData().workshopInfo
@@ -48,16 +56,15 @@ export default defineStore(
             getPartData() {
                 return this.partData
             },
-            getAllData() {
-                if (Object.keys(this.customer).length && Object.keys(this.product).length && Object.keys(this.partData).length) {
-                    return {
-                        customer: this.customer,
-                        product: this.product,
-                        partData: this.partData
-                    }
-                } else {
-                    return false
-                }
+            getPayData() {
+                return this.payData
+            },
+            init() {
+                this.customer = {}
+                this.product = []
+                this.partData = {}
+                this.payData = {}
+                this.type = 'add'
             }
         }
     }
