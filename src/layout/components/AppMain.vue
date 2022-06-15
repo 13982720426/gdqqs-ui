@@ -8,7 +8,9 @@
     <router-view v-slot="{ Component, route }">
       <transition name="fade-transform" mode="out-in">
         <keep-alive :include="cachedViews">
-          <component :is="Component" :key="route.path" />
+          <div :key="route.name">
+            <component :is="Component" :key="route.path" />
+          </div>
         </keep-alive>
       </transition>
     </router-view>
@@ -19,10 +21,12 @@
 import Breadcrumb from "@/components/Breadcrumb";
 import useTagsViewStore from "@/store/modules/tagsView";
 import useSettingsStore from "@/store/modules/settings";
+import {useRouter} from "vue-router";
 
 const tagsViewStore = useTagsViewStore();
 const settingsStore = useSettingsStore();
 const route = useRoute();
+
 tagsViewStore.addCachedView(route);
 const cachedViews = computed(() => {
   return tagsViewStore.cachedViews;

@@ -1,9 +1,9 @@
 <template>
   <div class="customer-list">
     <el-radio-group v-model="checked" @change="radioChange">
-        <div v-for="item in props.dataSource" class="list-item">
+        <div v-for="item in $props.dataSource" class="list-item">
           <div class="item-radio">
-            <el-radio :label="item.customerId">{{" "}}</el-radio>
+            <el-radio :label="item.customerId" :value="item.customerId">{{" "}}</el-radio>
           </div>
           <div class="item-body">
             <el-descriptions :column="3" size="small">
@@ -24,7 +24,7 @@
 </template>
 
 <script setup name="CustomerList">
-import { defineProps, defineEmits, ref } from 'vue'
+import { defineProps, defineEmits, } from 'vue'
 
 const props = defineProps({
   dataSource: {
@@ -32,17 +32,19 @@ const props = defineProps({
     default: () => []
   },
   checked: {
-    type: [String, undefined],
-    default: undefined
+    type: String,
+    default: ''
   }
 })
 
-const checked = ref('')
+const checked = ref()
+checked.value = props.checked
 
 const emits = defineEmits(['select'])
-
+//
 const radioChange = (value) => {
   const item = props.dataSource.find(item => item.customerId === value)
+  console.log(item)
   checked.value = value
   emits('select', { id: value, node: item })
 }

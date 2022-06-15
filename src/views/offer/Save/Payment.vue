@@ -4,44 +4,53 @@
         ref="form"
         :model="formModel"
     >
-    <div>
+    <div style="margin-bottom: 16px;">
       <el-button>导出为WORD</el-button>
       <el-button>导出为PDF</el-button>
     </div>
+      <OfferSaveTitle title="报价名称">
+        <el-row>
+          <el-col span="10">
+            <el-form-item label="报价名称">
+              <el-input :disabled="offerStore.type === 'view'" v-model="formModel.offerName" placeholder="请输入报价名称" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </OfferSaveTitle>
     <OfferSaveTitle title="付款方式">
 
          <el-row gutter="24">
            <el-col span="12">
              <el-form-item label="客户类型">
-               <DictSelect v-model="formModel.customerType" dictType="q_customer_type" @change="customerChange"/>
+               <DictSelect :disabled="offerStore.type === 'view'" v-model="formModel.customerType" dictType="q_customer_type" @change="customerChange"/>
              </el-form-item>
            </el-col>
            <el-col span="12">
              <div>
                <el-form-item>
                  <div style="display: flex; width: 100%;">
-                   <el-input v-model="formModel.contract" style="width: 120px;margin-right: 12px;"/> 合同签订时支付
+                   <el-input :disabled="offerStore.type === 'view'" v-model="formModel.contract" style="width: 120px;margin-right: 12px;"/> 合同签订时支付
                  </div>
                </el-form-item>
              </div>
              <div v-if="formModel.customerType !== '1'">
                <el-form-item>
                  <div style="display: flex; width: 100%;">
-                    <el-input v-model="formModel.site" style="width: 120px;margin-right: 12px;"/> 整套起重机发运客户现场前支付
+                    <el-input :disabled="offerStore.type === 'view'" v-model="formModel.site" style="width: 120px;margin-right: 12px;"/> 整套起重机发运客户现场前支付
                  </div>
                </el-form-item>
              </div>
              <div>
                <el-form-item>
                  <div style="display: flex; width: 100%;">
-                    <el-input v-model="formModel.play" style="width: 120px;margin-right: 12px;"/> 安装调试完毕取到起重机使用登记证
+                    <el-input :disabled="offerStore.type === 'view'" v-model="formModel.play" style="width: 120px;margin-right: 12px;"/> 安装调试完毕取到起重机使用登记证
                  </div>
                </el-form-item>
              </div>
              <div v-if="formModel.customerType !== '1'">
                <el-form-item>
                  <div style="display: flex; width: 100%;">
-                    <el-input v-model="formModel.week" style="width: 120px;margin-right: 12px;"/> 质保期到期后一周内支付
+                    <el-input :disabled="offerStore.type === 'view'" v-model="formModel.week" style="width: 120px;margin-right: 12px;"/> 质保期到期后一周内支付
                  </div>
                </el-form-item>
              </div>
@@ -72,7 +81,7 @@
       本报价从报价日起有效期为
       <div style="display: inline-block">
         <el-form-item>
-          <el-input v-model="formModel.validityPeriod" style="width: 60px;margin: 0 6px;"/>
+          <el-input :disabled="offerStore.type === 'view'" v-model="formModel.validityPeriod" style="width: 60px;margin: 0 6px;"/>
         </el-form-item>
       </div>
       天
@@ -85,6 +94,9 @@
 import OfferSaveTitle from '../components/Title'
 import DictSelect from './product/DictSelect'
 import {defineExpose, reactive} from "vue";
+import useOfferStore from '@/store/modules/offer'
+
+const offerStore = useOfferStore()
 
 const form = ref()
 const formModel = reactive({
@@ -93,7 +105,8 @@ const formModel = reactive({
   site: '0%', //
   play: '50%',
   week: '0%',
-  validityPeriod: 30
+  validityPeriod: 30,
+  offerName: ''
 })
 
 const customerChange = (value) => {
@@ -108,6 +121,15 @@ const customerChange = (value) => {
   }
 }
 
+offerStore.$subscribe((_, state) => {
+  const { payData } = state
+  if (Object.keys(payData)) {
+    for (const key in payData) {
+      formModel[key] = payData[key]
+    }
+  }
+})
+
 const getValues = async () => {
   const data = await form.value.validate()
   console.log(data)
@@ -116,6 +138,7 @@ const getValues = async () => {
       return {
         customerType: formModel.customerType,
         contract: formModel.contract,
+        offerName: formModel.offerName,
         play: formModel.play
       }
     } else {

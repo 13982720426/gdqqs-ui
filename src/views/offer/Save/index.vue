@@ -11,10 +11,10 @@
       </el-steps>
     </OfferSaveTitle>
     <div class="offer-save-content">
-      <Customer ref="customerRef" v-if="stepsKey === 0"></Customer>
-      <OfferSaveProduct ref="productRef" v-else-if="stepsKey === 1"></OfferSaveProduct>
-      <OfferPart ref="partRef" v-else-if="stepsKey === 2"></OfferPart>
-      <OfferSavePayment ref="payRef" v-else-if="stepsKey === 3"></OfferSavePayment>
+      <Customer ref="customerRef" v-show="stepsKey === 0"></Customer>
+      <OfferSaveProduct ref="productRef" v-show="stepsKey === 1"></OfferSaveProduct>
+      <OfferPart ref="partRef" v-show="stepsKey === 2"></OfferPart>
+      <OfferSavePayment ref="payRef" v-show="stepsKey === 3"></OfferSavePayment>
     </div>
     <div class="offer-save-footer">
       <el-button :disabled="stepsKey === 3" @click="stepsNext()">下一步</el-button>
@@ -33,9 +33,11 @@ import Customer from './Customer'
 import useOfferStore from '@/store/modules/offer'
 import { addOffer } from '@/api/offer'
 const router = useRouter();
-
-import { ref } from 'vue'
 import {useRouter} from "vue-router";
+import {onMounted, reactive} from "vue";
+import {getOffer} from "@/api/business/offer";
+import {getCustomer} from "../../../api/business/customer";
+import {updateOffer} from "../../../api/business/offer";
 
 const stepsKey = ref(0)
 const customerRef = ref(null)
@@ -45,16 +47,23 @@ const payRef = ref(null)
 
 const offerStore = useOfferStore()
 
+const offerState = reactive({
+  id: '',
+  type: ''
+})
+
+offerState.id = router.currentRoute.value.query.id
+offerState.type = router.currentRoute.value.query.type
+
 const saveData = async () => {
   const data = await payRef.value.getValues()
-  console.log(data)
   if (!data) {
     return
   }
   // 第一步骤信息
   const customer = offerStore.getCustomerData()
   // 第二步骤信息
-  const productInfo = offerStore.getProductInfo()
+  const productInfo = offerStore.getProductData()
   // 获取产品报价
   const productPrice = offerStore.getAllProductPrice()
   // 第三步骤信息
@@ -71,11 +80,14 @@ const saveData = async () => {
       partInfo.transportTotalData.sales +
       partInfo.installTotalData.sales +
       partInfo.marketTotalData.sales
+
+  const {offerName, ...paymentInfo} = data
   // 组装所有数据
   const obj = {
     contractPrice: (allSales + productPrice).toFixed(2), // 合同价格
-    paymentMethodInfo: JSON.stringify(data), // 付款方式json
+    paymentMethodInfo: JSON.stringify(paymentInfo), // 付款方式json
     customerId: customer.customerId,
+    offerName: offerName,
     productInfo: JSON.stringify(productInfo), // 产品信息json
     profit: allProfit.toFixed(2), // 利润
     workshopInfo: JSON.stringify(customer.workshopInfo), // 车间信息json
@@ -100,13 +112,17 @@ const saveData = async () => {
       statistics: partInfo.marketTotalData
     }), // 市场监管局特检费json
   }
-  console.log(obj)
-  const resp = await addOffer(obj)
+  const offerId = router.currentRoute.value.query.id
+  const resp = router.currentRoute.value.query.id ? await updateOffer({...obj, offerId: offerId}) :await addOffer(obj)
   if (resp.code === 200) {
     router.push('/offer')
   }
 }
 
+/**
+ * 下一步
+ * @returns {Promise<void>}
+ */
 const stepsNext = async () => {
     if (stepsKey.value === 0) {
       const data = await customerRef.value.getValues()
@@ -130,14 +146,81 @@ const stepsNext = async () => {
     stepsKey.value += 1
 }
 
+/**
+ * 上一步，需要给用户确认是否保存当前信息
+ */
 const stepsPrev = () => {
+  // TODO 确认是否保存当前信息
   stepsKey.value -= 1
 }
+
+const queryDetail = async () => {
+  const resp = await getOffer(offerState.id)
+
+  if (resp.code === 200) {
+    try {
+      const paymentMethodInfo = JSON.parse(resp.data.paymentMethodInfo) // 付款方式json
+      const productInfo = JSON.parse(resp.data.productInfo) // 产品信息json
+      const workshopInfo = JSON.parse(resp.data.workshopInfo) // 车间信息json
+
+      const trackInfo = JSON.parse(resp.data.trackInfo) // 轨道信息json
+      const splInfo = JSON.parse(resp.data.splInfo) // 滑线信息json
+      const transportPriceInfo = JSON.parse(resp.data.transportPriceInfo) // 运输费json
+      const installPriceInfo = JSON.parse(resp.data.installPriceInfo) // 安装及吊装费json
+      const inspectPriceInfo = JSON.parse(resp.data.inspectPriceInfo) // 市场监管局特检费json
+      const partInfo = {
+        track: trackInfo.dataSource,
+        trackData: trackInfo.statistics,
+        slipLine: splInfo.dataSource,
+        slipLineData: splInfo.statistics,
+        transportTotalData: transportPriceInfo.statistics,
+        craneDataSource: transportPriceInfo.dataSource,
+        installTotalData: installPriceInfo.statistics,
+        installDataSource: installPriceInfo.dataSource,
+        marketTotalData: inspectPriceInfo.statistics,
+        marketDataSource: inspectPriceInfo.dataSource,
+      }
+      console.log(partInfo)
+      const customerResp = await getCustomer(resp.data.customerId)
+      // 获取客户详情
+      offerStore.setCustomerData({
+        customerId: resp.data.customerId,
+        customerItem: customerResp.code === 200 ? customerResp.data : {},
+        workshopInfo: JSON.stringify(workshopInfo),
+      })
+      offerStore.setProductData(productInfo)
+      offerStore.setPartData(partInfo)
+      offerStore.setPaymentData({
+        ...paymentMethodInfo,
+        offerName: resp.data.offerName
+      })
+
+    } catch (e) {
+      console.warn(e)
+    }
+  }
+}
+
+watch(() => router.currentRoute.value.query.id, (value) => {
+  if (!!value) {
+    queryDetail()
+    offerStore.updateType(offerState.type)
+  }
+})
+
+onMounted(() => {
+  if (!!offerState.id) {
+    queryDetail()
+    offerStore.updateType(offerState.type)
+  }
+})
 
 </script>
 
 <style scoped lang="scss">
 .offer-save-warp {
+  padding-bottom: 24px;
+
   .title {
     margin-bottom: 24px;
   }

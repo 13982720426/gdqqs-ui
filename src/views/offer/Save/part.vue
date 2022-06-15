@@ -3,22 +3,25 @@
     <OfferSaveTitle title="轨道数据">
       <div>
         <div v-for="item in workshopData">
-          <div>
-            车间名称: {{ item.name }}
+          <div style="margin-bottom: 16px;">
+            车间名称：{{ item.name }}
           </div>
           <div>
             <el-table
                 :data="QuoteData.track[item.key]"
             >
               <el-table-column type="index" label="序号" width="80"/>
-              <el-table-column prop="fixed" label="固定方式" width="100">
-                <template #default="scope">
-                  <DictSelect v-model="scope.row.fixed" dictType="q_fixed_mode"/>
-                </template>
-              </el-table-column>
-              <el-table-column prop="model" label="型号" width="100">
+              <el-table-column prop="fixed" label="固定方式" width="140">
                 <template #default="scope">
                   <DictSelect
+                      :disabled="offerStore.type === 'view'"
+                      v-model="scope.row.fixed" dictType="q_fixed_mode"/>
+                </template>
+              </el-table-column>
+              <el-table-column prop="model" label="型号" width="140">
+                <template #default="scope">
+                  <DictSelect
+                      :disabled="offerStore.type === 'view'"
                       v-model="scope.row.model"
                       dictType="q_track_model"
                       @change="(value) => { queryTrackByModel(value, scope.row, item.key)}"
@@ -34,6 +37,7 @@
               <el-table-column prop="hoistingTables" label="吊装台班数量" width="120">
                 <template #default="scope">
                   <el-input-number
+                      :disabled="offerStore.type === 'view'"
                       v-model="scope.row.hoistingTables"
                       :min="1"
                       :max="999999"
@@ -45,6 +49,7 @@
               <el-table-column prop="cartStops" label="大车止挡数量" width="120">
                 <template #default="scope">
                   <el-input-number
+                      :disabled="offerStore.type === 'view'"
                       v-model="scope.row.cartStops"
                       :min="1"
                       :max="999999"
@@ -83,53 +88,57 @@
               </el-table-column>
               <el-table-column width="100" label="操作" fixed="right">
                 <template #default="scope">
-                  <el-button @click="onTrackDelete(scope.row.key)">
+                  <el-button @click="onTrackDelete(item.key,scope.row.key)">
                     删除
                   </el-button>
                 </template>
               </el-table-column>
             </el-table>
-            <el-button @click="onTrackAdd(item)">新增</el-button>
+            <div class="add-btn" @click="onTrackAdd(item)">新增</div>
           </div>
         </div>
-        <div>
+        <div style="margin-bottom: 16px;">
           <el-descriptions size="small" :column="4">
             <el-descriptions-item
                 v-for="workshopItem in workshopData"
-                :label="`${workshopItem.name} 成本合计`">
-              {{ workshopFree(QuoteData.track[workshopItem.key]) }}
+                :label="`${workshopItem.name}成本合计`">
+              <span class="number">{{ workshopFree(QuoteData.track[workshopItem.key]) }}</span>
             </el-descriptions-item>
           </el-descriptions>
           <el-descriptions size="small" :column="4">
-            <el-descriptions-item label="总成本合计">{{ trackData.total }}</el-descriptions-item>
+            <el-descriptions-item label="总成本合计"><span class="number">{{ trackData.total }}</span></el-descriptions-item>
             <el-descriptions-item label="预计利润">
-              <el-input-number v-model="trackData.profitMargin"/>
+              <el-input-number :disabled="offerStore.type === 'view'" size="small" v-model="trackData.profitMargin" />
               %
             </el-descriptions-item>
             <el-descriptions-item label="销售总价">
-              {{
-                salesItemCalculate(trackData)
-              }}
+              <span class="number">{{ salesItemCalculate(trackData) }}</span>
             </el-descriptions-item>
             <el-descriptions-item label="利润额">
-              {{ totalItemCalculate(trackData) }}
+              <span class="number">{{ totalItemCalculate(trackData) }}</span>
             </el-descriptions-item>
           </el-descriptions>
         </div>
       </div>
     </OfferSaveTitle>
-    <OfferSaveTitle title="滑线数据">
+    <OfferSaveTitle title="滑触线数据">
       <div>
-        <div v-for="item in workshopData">
-          <div>
-            车间名称： {{ item.name }}
-            <el-select v-model="item.slipLine" @change="(value) => {slipLineChange(value, item)}">
-              <el-option
-                  v-for="slipItem in slipLineOptions"
-                  :label="slipItem.splPartName"
-                  :value="slipItem.splPartId"
-              />
-            </el-select>
+        <div v-for="(item, index) in workshopData">
+          <div :style="{
+            marginBottom: '16px',
+            marginTop: index > 0 ? '16px' : 0,
+          }">
+            <span style="padding-right: 24px">车间名称：{{ item.name }}</span>
+            <span>
+              滑触线:
+              <el-select :disabled="offerStore.type === 'view'" v-model="slipLineData.id" @change="(value) => {slipLineChange(value, item)}" placeholder="请选择滑触线">
+                <el-option
+                    v-for="slipItem in slipLineOptions"
+                    :label="slipItem.splPartName"
+                    :value="slipItem.splPartId"
+                />
+              </el-select>
+            </span>
           </div>
           <div>
             <el-table :data="QuoteData.slipLine[item.key]">
@@ -141,7 +150,7 @@
               <el-table-column prop="installLength" label="滑线安装数量" width="120"/>
               <el-table-column prop="idlight" label="指示灯数量" width="100">
                 <template #default="{row}">
-                  <el-select v-model="row.idlight">
+                  <el-select :disabled="offerStore.type === 'view'" v-model="row.idlight">
                     <el-option label="1" :value="1"/>
                     <el-option label="2" :value="2"/>
                     <el-option label="3" :value="3"/>
@@ -187,7 +196,7 @@
             </el-table>
           </div>
         </div>
-        <div>
+        <div style="margin-top: 16px;">
           <el-descriptions size="small" :column="4">
             <el-descriptions-item
                 v-for="workshopItem in workshopData"
@@ -196,17 +205,14 @@
             </el-descriptions-item>
           </el-descriptions>
           <el-descriptions size="small" :column="4">
-            <el-descriptions-item label="总成本合计">{{ slipLineData.total }}</el-descriptions-item>
+            <el-descriptions-item label="总成本合计"><span class="number">{{ slipLineData.total }}</span></el-descriptions-item>
             <el-descriptions-item label="预计利润">
-              <el-input-number v-model="slipLineData.profitMargin"/>
+              <el-input-number :disabled="offerStore.type === 'view'" size="small" v-model="slipLineData.profitMargin"/>
               %
             </el-descriptions-item>
-            <el-descriptions-item label="销售总价">{{
-                salesItemCalculate(slipLineData)
-              }}
-            </el-descriptions-item>
+            <el-descriptions-item label="销售总价"><span class="number">{{ salesItemCalculate(slipLineData) }}</span> </el-descriptions-item>
             <el-descriptions-item label="利润额">
-              {{ totalItemCalculate(slipLineData) }}
+              <span class="number">{{ totalItemCalculate(slipLineData) }}</span>
             </el-descriptions-item>
           </el-descriptions>
         </div>
@@ -225,6 +231,7 @@
             <el-table-column prop="freight" label="起重机安装">
               <template #default="{row}">
                 <el-input-number
+                    :disabled="offerStore.type === 'view'"
                     v-model="row.freight"
                     :min="1"
                     :max="999999"
@@ -244,19 +251,21 @@
             </el-table-column>
           </el-table>
         </div>
-        <el-descriptions size="small" :column="4">
-          <el-descriptions-item label="总成本合计">{{ transportTotalData.total }}</el-descriptions-item>
-          <el-descriptions-item label="预计利润">
-            <el-input-number v-model="transportTotalData.profitMargin"/>
-            %
-          </el-descriptions-item>
-          <el-descriptions-item label="销售总价">
-            {{salesItemCalculate(transportTotalData)}}
-          </el-descriptions-item>
-          <el-descriptions-item label="利润额">
-            {{ totalItemCalculate(transportTotalData) }}
-          </el-descriptions-item>
-        </el-descriptions>
+        <div style="margin-top: 16px;">
+          <el-descriptions size="small" :column="4">
+            <el-descriptions-item label="总成本合计"><span class="number">{{ transportTotalData.total }}</span></el-descriptions-item>
+            <el-descriptions-item label="预计利润">
+              <el-input-number :disabled="offerStore.type === 'view'" size="small" v-model="transportTotalData.profitMargin"/>
+              %
+            </el-descriptions-item>
+            <el-descriptions-item label="销售总价">
+              <span class="number">{{ salesItemCalculate(transportTotalData) }}</span>
+            </el-descriptions-item>
+            <el-descriptions-item label="利润额">
+              <span class="number">{{ totalItemCalculate(transportTotalData) }}</span>
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
       </div>
     </OfferSaveTitle>
     <OfferSaveTitle title="起重机安装及吊装费">
@@ -272,6 +281,7 @@
             <el-table-column prop="install" label="起重机安装">
               <template #default="{row}">
                 <el-input-number
+                    :disabled="offerStore.type === 'view'"
                     v-model="row.install"
                     :min="1"
                     :max="999999"
@@ -282,6 +292,7 @@
             <el-table-column prop="hoisting" label="起重机吊装">
               <template #default="{row}">
                 <el-input-number
+                    :disabled="offerStore.type === 'view'"
                     v-model="row.hoisting"
                     :min="1"
                     :max="999999"
@@ -302,19 +313,19 @@
             </el-table-column>
           </el-table>
         </div>
-        <div>
+        <div style="margin-top: 16px;">
           <el-descriptions size="small" :column="4">
-            <el-descriptions-item label="总成本合计">{{ installTotalData.total }}</el-descriptions-item>
+            <el-descriptions-item label="总成本合计"><span class="number">{{ installTotalData.total }}</span></el-descriptions-item>
             <el-descriptions-item label="预计利润">
-              <el-input-number v-model="installTotalData.profitMargin"/>
+              <el-input-number :disabled="offerStore.type === 'view'" size="small" v-model="installTotalData.profitMargin"/>
               %
             </el-descriptions-item>
-            <el-descriptions-item label="销售总价">{{
+            <el-descriptions-item label="销售总价"><span class="number">{{
                 salesItemCalculate(installTotalData)
-              }}
+              }}</span>
             </el-descriptions-item>
             <el-descriptions-item label="利润额">
-              {{ totalItemCalculate(installTotalData) }}
+              <span class="number">{{ totalItemCalculate(installTotalData) }}</span>
             </el-descriptions-item>
           </el-descriptions>
         </div>
@@ -343,28 +354,30 @@
             </el-table-column>
           </el-table>
         </div>
-        <div>
+        <div style="margin-top: 16px;">
           <el-descriptions size="small" :column="5">
             <el-descriptions-item label="招待费总数">
               <el-input-number
+                  :disabled="offerStore.type === 'view'"
                   v-model="marketTotalData.hospitality"
                   :min="1"
                   :max="999999"
                   controls-position="right"
+                  size="small"
                   style="width: 100px"
               />
             </el-descriptions-item>
-            <el-descriptions-item label="总成本合计">{{ marketTotalData.total }}</el-descriptions-item>
+            <el-descriptions-item label="总成本合计"><span class="number">{{ marketTotalData.total }}</span></el-descriptions-item>
             <el-descriptions-item label="预计利润">
-              <el-input-number v-model="marketTotalData.profitMargin"/>
+              <el-input-number :disabled="offerStore.type === 'view'" size="small" v-model="marketTotalData.profitMargin"/>
               %
             </el-descriptions-item>
-            <el-descriptions-item label="销售总价">{{
+            <el-descriptions-item label="销售总价"><span class="number">{{
                 salesItemCalculate(marketTotalData)
-              }}
+              }}</span>
             </el-descriptions-item>
             <el-descriptions-item label="利润额">
-              {{ totalItemCalculate(marketTotalData) }}
+              <span class="number">{{ totalItemCalculate(marketTotalData) }}</span>
             </el-descriptions-item>
           </el-descriptions>
         </div>
@@ -450,7 +463,8 @@ const slipLineData = ref({
   name: '滑触线', // 说明
   count: 0, // 数量
   sales: 0,
-  profit: 0
+  profit: 0,
+  id: ''
 })
 
 // 起重机运输费用统计
@@ -545,8 +559,11 @@ const onTrackAdd = (workshop) => {
  * 轨道数据删除
  * @param key
  */
-const onTrackDelete = (key) => {
-
+const onTrackDelete = (workshopId, key) => {
+  const index = QuoteData.track[workshopId].findIndex(item => item.key === key)
+  if (index > -1) {
+    QuoteData.track[workshopId].splice(index, 1)
+  }
 }
 
 /**
@@ -574,10 +591,11 @@ const onSlipLineAdd = (workshopKey) => {
 
 const findProduct = (key) => {
   const productItems = cloneDeep(offerStore.getProductData())
+  console.log('findProduct', productItems)
   let productItem = {}
-  offerStore.getCustomerData().workshopInfo.forEach((workshopItem, index) => {
-    if (key === workshopItem.key) {
-      productItem = productItems[index]
+  productItems.forEach(item => {
+    if (key === item.key) {
+      productItem = item
     }
   })
   return productItem
@@ -759,7 +777,8 @@ const initCraneTable = () => {
   const _data = cloneDeep(offerStore.getProductData())
   let marketTotal = 0
   let amountCount = 0
-  offerStore.getCustomerData().workshopInfo.forEach((workshopItem, index) => {
+
+  offerStore.getCustomerData().workshopInfo.forEach(workshopItem => {
     workshopData.value.push({
       ...workshopItem,
       total: 0, // 总成本合计
@@ -767,10 +786,13 @@ const initCraneTable = () => {
       totalPrice: 0, // 销售总价
       profitAmount: 0 // 利润额
     })
-    const item = _data[index]
-    const workshopName = item.name
-    amountCount += item.amount.length
-    item.amount.forEach(amountItem => {
+  })
+  console.log(_data)
+  _data.forEach(pItem => {
+    console.log(pItem)
+    const workshopName = pItem.name
+    amountCount += pItem.amount.length
+    pItem.amount.forEach(amountItem => {
       const newObject = {
         workshopName,
         model: amountItem.productData.name,
@@ -836,7 +858,7 @@ const getTax = async () => {
   if (resp.code === 200 && resp.data.length) {
     tax.value = Number(resp.data[0].dictValue)
   }
-  await initCraneTable()
+  // await initCraneTable()
 }
 
 const craneDataTotal = (row, _tax) => {
@@ -889,7 +911,7 @@ watch(() => craneDataSource.value, (value) => {
   const total = value.reduce((prev, next) => {
     return prev + next.total
   }, 0)
-  transportTotalData.value.total = total
+  transportTotalData.value.total = numberToFixed(total)
   countDataSource.value[2] = transportTotalData.value
 }, {deep: true})
 
@@ -897,7 +919,7 @@ watch(() => installDataSource.value, (value) => {
   const total = value.reduce((prev, next) => {
     return prev + next.total
   }, 0)
-  installTotalData.value.total = total
+  installTotalData.value.total = numberToFixed(total)
   countDataSource.value[3] = installTotalData.value
 }, {deep: true})
 
@@ -907,6 +929,74 @@ watch(() => marketDataSource.value, (value) => {
 
 watch([() => transportTotalData.value.total, () => transportTotalData.value.profitMargin], () => {
   console.log(transportTotalData.value)
+})
+
+offerStore.$subscribe((_, state) => {
+  const { customer, product, partData} = state
+  if (customer.workshopInfo && product.length) {
+    workshopData.value = []
+    const workshopInfo = JSON.parse(customer.workshopInfo)
+    workshopInfo.forEach(workshopItem => { // 回显车间数据
+      workshopData.value.push({
+        ...workshopItem,
+        total: 0, // 总成本合计
+        profitMargin: 1.1, // 预计利润率
+        totalPrice: 0, // 销售总价
+        profitAmount: 0 // 利润额
+      })
+    })
+
+    if (Object.keys(partData).length) { // 回显
+      QuoteData.track = partData.track
+      QuoteData.slipLine = partData.slipLine
+      craneDataSource.value = partData.craneDataSource // 起重机运输
+      installDataSource.value = partData.installDataSource // 安装
+      marketDataSource.value = partData.marketDataSource // 市场
+      trackData.value = partData.trackData // 轨道统计
+      slipLineData.value = partData.slipLineData // 滑线统计
+      transportTotalData.value = partData.transportTotalData // 起重机运输统计
+      installTotalData.value = partData.installTotalData // 安装统计
+      marketTotalData.value = partData.marketTotalData // 市场统计
+    } else {
+      let marketTotal = 0
+      let amountCount = 0
+
+      const _craneDataSource = [] // 起重机运输
+      const _installDataSource = [] // 起重机运输
+      const _marketDataSource = [] // 起重机运输
+
+
+      product.forEach(pItem => { // 读取起重机数量，生成列表
+        const workshopName = pItem.name
+        amountCount += pItem.amount.length
+        pItem.amount.forEach(amountItem => {
+          const newObject = {
+            workshopName,
+            model: amountItem.productData.name,
+            weight: amountItem.weight,
+          }
+          let AcceptanceFee = 0
+          if (amountItem.weight > 3) {
+            AcceptanceFee = 1000
+          }
+          marketTotal += numberToFixed(AcceptanceFee * tax.value)
+          _craneDataSource.push({...cloneDeep(newObject), freight: 2500, taxPayment: 0, total: 0})
+          _installDataSource.push({...cloneDeep(newObject), install: 1000, hoisting: 1500, taxPayment: 0, total: 0})
+          _marketDataSource.push({...cloneDeep(newObject), acceptance: AcceptanceFee, taxPayment: 0})
+        })
+      })
+
+      marketTotalData.value.total = marketTotal
+      craneDataSource.value = _craneDataSource
+      installDataSource.value = _installDataSource
+      marketDataSource.value = _marketDataSource
+
+      transportTotalData.value.count = amountCount
+      installTotalData.value.count = amountCount
+      marketTotalData.value.count = amountCount
+    }
+
+  }
 })
 
 onMounted(() => {
@@ -937,9 +1027,26 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+$color: #FF5800;
+
 .offer-save-part {
   .title {
     margin-bottom: 24px;
+  }
+
+  .add-btn {
+    width: 100%;
+    margin: 16px 0;
+    border: 1px dashed $color;
+    padding: 6px 0;
+    text-align: center;
+    border-radius: 2px;
+    color: $color;
+    cursor: pointer;
+  }
+
+  .number {
+    color: $color;
   }
 }
 

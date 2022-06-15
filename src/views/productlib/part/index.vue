@@ -4,30 +4,30 @@
       <el-row :gutter="10" class="mb8">
         <el-col :span="1.5">
           <el-button
-            color="#ffdac6"
-            class="sel"
-            type="primary"
-            icon="Plus"
-            @click="handleAdd"
-            v-hasPermi="['business:product:add']"
+              color="#ffdac6"
+              class="sel"
+              type="primary"
+              icon="Plus"
+              @click="handleAdd"
+              v-hasPermi="['business:product:add']"
           >
             新增
           </el-button>
         </el-col>
       </el-row>
       <el-form
-        :model="queryParams"
-        ref="queryForm"
-        :inline="true"
-        v-show="showSearch"
-        label-width="68px"
+          :model="queryParams"
+          ref="queryForm"
+          :inline="true"
+          v-show="showSearch"
+          label-width="68px"
       >
         <el-form-item prop="craneOperation">
           <el-input
-            v-model="queryParams.craneOperation"
-            placeholder="模糊搜索"
-            clearable
-            @keyup.enter="handleQuery"
+              v-model="queryParams.craneOperation"
+              placeholder="模糊搜索"
+              clearable
+              @keyup.enter="handleQuery"
           />
         </el-form-item>
         <el-form-item>
@@ -42,27 +42,27 @@
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="轨道" name="first">
         <QTable
-          :loading="loading"
-          :data="trackPartList"
-          :columns="trackPartColumns"
-          @selectionChange="handleSelectionChange"
+            :loading="loading"
+            :data="trackPartList"
+            :columns="trackPartColumns"
+            @selectionChange="handleSelectionChange"
         >
           <template #default="{ row }">
             <el-button
-              class="sel"
-              type="text"
-              icon="Edit"
-              @click="handleUpdate(row)"
-              v-hasPermi="['business:product:edit']"
+                class="sel"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(row)"
+                v-hasPermi="['business:product:edit']"
             >
               修改
             </el-button>
             <el-button
-              class="sel"
-              type="text"
-              icon="Delete"
-              @click="handleDelete(row)"
-              v-hasPermi="['business:product:remove']"
+                class="sel"
+                type="text"
+                icon="Delete"
+                @click="handleDelete(row)"
+                v-hasPermi="['business:product:remove']"
             >
               删除
             </el-button>
@@ -71,27 +71,27 @@
       </el-tab-pane>
       <el-tab-pane label="滑线" name="second">
         <QTable
-          :loading="loading"
-          :data="splPartList"
-          :columns="splPartColumns"
-          @selectionChange="handleSelectionChange"
+            :loading="loading"
+            :data="splPartList"
+            :columns="splPartColumns"
+            @selectionChange="handleSelectionChange"
         >
           <template #default="{ row }">
             <el-button
-              class="sel"
-              type="text"
-              icon="Edit"
-              @click="handleUpdate(row)"
-              v-hasPermi="['business:product:edit']"
+                class="sel"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(row)"
+                v-hasPermi="['business:product:edit']"
             >
               修改
             </el-button>
             <el-button
-              class="sel"
-              type="text"
-              icon="Delete"
-              @click="handleDelete(row)"
-              v-hasPermi="['business:product:remove']"
+                class="sel"
+                type="text"
+                icon="Delete"
+                @click="handleDelete(row)"
+                v-hasPermi="['business:product:remove']"
             >
               删除
             </el-button>
@@ -100,27 +100,27 @@
       </el-tab-pane>
       <el-tab-pane label="大车止档型号" name="third">
         <QTable
-          :loading="loading"
-          :data="crastopmodelPartList"
-          :columns="crastopmodelPartColumns"
-          @selectionChange="handleSelectionChange"
+            :loading="loading"
+            :data="crastopmodelPartList"
+            :columns="crastopmodelPartColumns"
+            @selectionChange="handleSelectionChange"
         >
           <template #default="{ row }">
             <el-button
-              class="sel"
-              type="text"
-              icon="Edit"
-              @click="handleUpdate(row)"
-              v-hasPermi="['business:product:edit']"
+                class="sel"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(row)"
+                v-hasPermi="['business:product:edit']"
             >
               修改
             </el-button>
             <el-button
-              class="sel"
-              type="text"
-              icon="Delete"
-              @click="handleDelete(row)"
-              v-hasPermi="['business:product:remove']"
+                class="sel"
+                type="text"
+                icon="Delete"
+                @click="handleDelete(row)"
+                v-hasPermi="['business:product:remove']"
             >
               删除
             </el-button>
@@ -129,27 +129,27 @@
       </el-tab-pane>
       <el-tab-pane label="油漆" name="fourth">
         <QTable
-          :loading="loading"
-          :data="paintPartList"
-          :columns="paintPartColumns"
-          @selectionChange="handleSelectionChange"
+            :loading="loading"
+            :data="paintPartList"
+            :columns="paintPartColumns"
+            @selectionChange="handleSelectionChange"
         >
           <template #default="{ row }">
             <el-button
-              class="sel"
-              type="text"
-              icon="Edit"
-              @click="handleUpdate(row)"
-              v-hasPermi="['business:product:edit']"
+                class="sel"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(row)"
+                v-hasPermi="['business:product:edit']"
             >
               修改
             </el-button>
             <el-button
-              class="sel"
-              type="text"
-              icon="Delete"
-              @click="handleDelete(row)"
-              v-hasPermi="['business:product:remove']"
+                class="sel"
+                type="text"
+                icon="Delete"
+                @click="handleDelete(row)"
+                v-hasPermi="['business:product:remove']"
             >
               删除
             </el-button>
@@ -158,27 +158,27 @@
       </el-tab-pane>
       <el-tab-pane label="产品部件" name="six">
         <QTable
-          :loading="loading"
-          :data="productPartList"
-          :columns="productPartColumns"
-          @selectionChange="handleSelectionChange"
+            :loading="loading"
+            :data="productPartList"
+            :columns="productPartColumns"
+            @selectionChange="handleSelectionChange"
         >
           <template #default="{ row }">
             <el-button
-              class="sel"
-              type="text"
-              icon="Edit"
-              @click="handleUpdate(row)"
-              v-hasPermi="['business:product:edit']"
+                class="sel"
+                type="text"
+                icon="Edit"
+                @click="handleUpdate(row)"
+                v-hasPermi="['business:product:edit']"
             >
               修改
             </el-button>
             <el-button
-              class="sel"
-              type="text"
-              icon="Delete"
-              @click="handleDelete(row)"
-              v-hasPermi="['business:product:remove']"
+                class="sel"
+                type="text"
+                icon="Delete"
+                @click="handleDelete(row)"
+                v-hasPermi="['business:product:remove']"
             >
               删除
             </el-button>

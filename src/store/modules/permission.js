@@ -12,7 +12,7 @@ const extraRoute = [
   {
     component: "offer/Save/index",
     hidden: true,
-    meta: {title: "报价管理新增", icon: "#", noCache: false, link: null},
+    meta: {title: "报价管理新增", icon: "#", noCache: true, link: null},
     name: "OfferSave",
     path: "offer/save",
   }
