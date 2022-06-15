@@ -8,7 +8,7 @@
       label-width="68px"
     >
       <el-form-item prop="roleDepartment">
-        <el-select v-model="value" class="m-2" placeholder="请选择部门">
+        <el-select v-model="queryParams.deptId" class="m-2" placeholder="请选择部门" clearable>
           <el-option
             v-for="item in deptOption"
             :key="item.value"
@@ -294,10 +294,7 @@ import {
   updateUser,
   addUser,
 } from '@/api/system/user'
-import {
-  listDept,
-  listDeptExcludeChild,
-} from '@/api/system/dept'
+import { listDept, listDeptExcludeChild } from '@/api/system/dept'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
@@ -346,7 +343,7 @@ const columns = ref([
 
 const data = reactive({
   form: {},
-  deptOption:[],
+  deptOption: [],
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -393,18 +390,15 @@ function getTreeselect() {
 /** 查询用户列表 */
 function getList() {
   loading.value = true
-  listDept().then(res=>{
-    deptOption.value =  res.data.map(i => {
-      // console.log(element.deptName)
-      return {label: i.deptName, value: i.deptId}
-    });
-    console.log(res.data)
+  listDept().then(res => {
+    deptOption.value = res.data.map(i => {
+      return { label: i.deptName, value: i.deptId }
+    })
   })
   listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
     loading.value = false
     userList.value = res.rows
     total.value = res.total
-
   })
 }
 /** 节点单击事件 */
@@ -419,8 +413,7 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  dateRange.value = []
-  queryParams.value.userName = ''
+  queryParams.value.deptId = ''
   proxy.resetForm('queryRef')
   handleQuery()
 }
@@ -596,7 +589,8 @@ function handleUpdate(row) {
   })
 }
 /** 提交按钮 */
-function submitForm() {
+function submitForm(formEL) {
+  // console.log(formEL,'formEL')
   proxy.$refs['userRef'].validate(valid => {
     if (valid) {
       if (form.value.userId != undefined) {

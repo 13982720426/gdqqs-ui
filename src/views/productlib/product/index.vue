@@ -24,12 +24,20 @@
         label-width="68px"
       >
         <el-form-item prop="craneOperation">
-          <el-input
+          <!-- <el-input
             v-model="queryParams.craneOperation"
-            placeholder="模糊搜索"
+            placeholder="操作方式模糊搜索"
             clearable
             @keyup.enter="handleQuery"
-          />
+          /> -->
+                <el-select v-model="queryParams.craneOperation" placeholder="操作方式模糊搜索" clearable>
+              <el-option
+                v-for="dict in q_oper_mode"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
         </el-form-item>
         <el-form-item>
           <el-button color="#ffdac6" class="sel" type="primary" icon="Search" @click="handleQuery">
@@ -452,6 +460,7 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    craneOperation:null
   },
   form: {},
   rules: {},
@@ -555,8 +564,9 @@ function workLevelFormat(row, column) {
 /** 查询产品列表 */
 function getList() {
   loading.value = true
-  listProduct(queryParams.vallue).then(response => {
+  listProduct(queryParams.value).then(response => {
     productList.value = response.rows
+    console.log(response,'response.rows')
     total.value = response.total
     loading.value = false
   })
@@ -586,28 +596,30 @@ function reset() {
     uploadCrane: null,
     uploadPressure: null,
     uploadPrice: null,
+    bomParams:null
   }
   proxy.resetForm('saveFormRef')
 }
 
 /** 提交按钮 */
 function submitForm() {
-  console.log(form.value,'form')
   proxy.$refs['saveFormRef'].validate(valid => {
     if (valid) {
-      if (form.value.productId != null) {
-        updateProduct(form.value).then(response => {
-          proxy.$modal.msgSuccess('修改成功')
-          showList.value = true
-          getList()
-        })
-      } else {
-        addProduct(form.value).then(response => {
-          proxy.$modal.msgSuccess('新增成功')
-          showList.value = true
-          getList()
-        })
-      }
+      console.log(form.value.bomParams,'bomParams')
+      console.log(form.value,'uploadPrice')
+      // if (form.value.productId != null) {
+      //   updateProduct(form.value).then(response => {
+      //     proxy.$modal.msgSuccess('修改成功')
+      //     showList.value = true
+      //     getList()
+      //   })
+      // } else {
+      //   addProduct(form.value).then(response => {
+      //     proxy.$modal.msgSuccess('新增成功')
+      //     showList.value = true
+      //     getList()
+      //   })
+      // }
     }
   })
 }
