@@ -557,7 +557,7 @@ const onTrackAdd = (workshop) => {
  * @param key
  */
 const onTrackDelete = (workshopId, key) => {
-  const index = QuoteData.track[workshopId].find(item => item.key === key)
+  const index = QuoteData.track[workshopId].findIndex(item => item.key === key)
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
   }
@@ -1039,6 +1039,7 @@ $color: #FF5800;
     text-align: center;
     border-radius: 2px;
     color: $color;
+    cursor: pointer;
   }
 
   .number {
