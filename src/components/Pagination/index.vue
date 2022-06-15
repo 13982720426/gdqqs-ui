@@ -94,7 +94,7 @@ function handleCurrentChange(val) {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .pagination-container {
   /* background: #fff; */
   padding: 32px 16px;
@@ -102,4 +102,25 @@ function handleCurrentChange(val) {
 .pagination-container.hidden {
   display: none;
 }
+.el-pagination.is-background .el-pager li:not(.disabled).active {
+  background-color: #fff;
+  color: #e64959;
+}
+.el-pagination.is-background .el-pager li.active {
+   color: #e64959;
+  cursor: default;
+}
+.el-pagination.is-background .el-pager li:hover {
+   color: #e64959;
+}
+.el-pagination.is-background .el-pager li:not(.disabled):hover {
+   color: #e64959;
+}
+.el-pagination.is-background .el-pager li:not(.disabled).active:hover {
+  background-color: #fff;
+  color: #e64959;
+}
+
+
+
 </style>

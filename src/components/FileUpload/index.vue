@@ -111,16 +111,24 @@ watch(
   val => {
     if (val) {
       let temp = 1
+
       // 首先将值转为数组
       const list = Array.isArray(val) ? val : props.modelValue.split(',')
+      console.log(list, 'list')
       // 然后将数组转为对象数组
       fileList.value = list.map(item => {
+        // console.log(item, 'item')
+        // let newitem = item
+        // let index = item.lastIndexOf('\/')
+        // item = item.substring(index + 1, item.length)
+        // console.log(item, 'item')
         if (typeof item === 'string') {
           item = { name: item, url: item }
         }
         item.uid = item.uid || new Date().getTime() + temp++
         return item
       })
+      console.log(fileList.value, 'fileList.value1')
     } else {
       fileList.value = []
       return []
@@ -131,24 +139,32 @@ watch(
 
 // 上传前校检格式和大小
 function handleBeforeUpload(file) {
-  console.log(file)
   // 校检文件类型
   if (props.fileType.length) {
     let fileExtension = ''
     if (file.name?.lastIndexOf('.') > -1) {
       fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
-      console.log(fileExtension)
     }
     const isTypeOk = props.fileType.some(type => {
-      // console.log(type, file.type, 'type')
-      if (type === '.xls' || type === '.xlsx') return true
-      if (type === '.pdf' || type === '.PDF') return true
-      if ((type === '.DOCX', type === '.docx')) return true
+      if (type === '.xls' || type === '.xlsx') {
+        if (fileExtension === 'xls' || fileExtension === 'xlsx') {
+          return true
+        }
+      }
+      if (type === '.pdf' || type === '.PDF') {
+        if (fileExtension === 'pdf' || fileExtension === 'PDF') {
+          return true
+        }
+      }
+      if (type === '.DOCX' || type === '.docx') {
+        if (fileExtension === 'DOCX' || fileExtension === 'docx') {
+          return true
+        }
+      }
       if (file.type.indexOf(type) > -1) return true
       if (fileExtension && fileExtension.indexOf(type) > -1) return true
       return false
     })
-    console.log(isTypeOk)
     if (!isTypeOk) {
       proxy.$modal.msgError(`文件格式不正确, 请上传${props.fileType.join('/')}格式文件!`)
       return false
@@ -179,12 +195,14 @@ function handleUploadError(err) {
 
 // 上传成功回调
 function handleUploadSuccess(res, file) {
+  console.log(file, 'file')
+  console.log(res, 'res')
   uploadList.value.push({ name: res.fileName, url: res.fileName })
   if (uploadList.value.length === number.value) {
     fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value)
     uploadList.value = []
     number.value = 0
-    console.log(fileList.value, 'fileList.value')
+    console.log(fileList.value,'fileList.value2')
     emit('update:modelValue', listToString(fileList.value))
     proxy.$modal.closeLoading()
   }

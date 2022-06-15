@@ -144,7 +144,13 @@
     <!-- 添加或修改 -->
     <div class="inform" v-show="open">
       <div style="padding: 20px">基本信息</div>
-      <el-form :model="form" :rules="rules" label-width="80px" style="padding: 20px">
+      <el-form
+        :model="form"
+        :rules="rules"
+        label-width="80px"
+        style="padding: 20px"
+        ref="upcustomer"
+      >
         <el-row :gutter="50">
           <el-col :span="6">
             <el-form-item label="客户姓名" prop="customerName">
@@ -380,21 +386,25 @@ const rules = ref({
 
 /** 提交按钮 */
 function submit() {
-  if (form.value.customerId != undefined) {
-    updateCustomer(form.value).then(response => {
-      proxy.$modal.msgSuccess('修改成功')
-      open.value = false
-      custable.value = true
-      getList()
-    })
-  } else {
-    addCustomer(form.value).then(response => {
-      proxy.$modal.msgSuccess('新增成功')
-      open.value = false
-      custable.value = true
-      getList()
-    })
-  }
+  proxy.$refs['upcustomer'].validate(valid => {
+    if (valid) {
+      if (form.value.customerId != undefined) {
+        updateCustomer(form.value).then(response => {
+          proxy.$modal.msgSuccess('修改成功')
+          open.value = false
+          custable.value = true
+          getList()
+        })
+      } else {
+        addCustomer(form.value).then(response => {
+          proxy.$modal.msgSuccess('新增成功')
+          open.value = false
+          custable.value = true
+          getList()
+        })
+      }
+    }
+  })
 }
 /** 关闭按钮 */
 function close() {
