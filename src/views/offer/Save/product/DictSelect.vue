@@ -1,5 +1,5 @@
 <template>
-  <el-select v-bind="this.$props">
+  <el-select v-bind="$props">
     <el-option
       v-for="item in dataSource"
       :key="item.dictCode"

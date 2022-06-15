@@ -9,7 +9,7 @@ export default defineConfig(({ mode, command }) => {
     return {
         // 部署生产环境和开发环境下的URL。
         // 默认情况下，vite 会假设你的应用是被部署在一个域名的根路径上
-        base: VITE_APP_ENV === 'production' ? '/' : './',
+        base: VITE_APP_ENV === 'production' ? '/' : '/',
         plugins: createVitePlugins(env, command === 'build'),
         resolve: {
             // https://cn.vitejs.dev/config/#resolve-alias
@@ -37,6 +37,17 @@ export default defineConfig(({ mode, command }) => {
                     rewrite: (p) => p.replace(/^\/dev-api/, '')
                 }
             }
+        },
+        build: {
+            outDir: 'dist',
+            minify: 'esbuild',
+            sourcemap: false,
+            chunkSizeWarningLimit: 1500,
+        },
+        define: {
+            __VUE_I18N_LEGACY_API__: JSON.stringify(false),
+            __VUE_I18N_FULL_INSTALL__: JSON.stringify(false),
+            __INTLIFY_PROD_DEVTOOLS__: JSON.stringify(false),
         },
         //fix:error:stdin>:7356:1: warning: "@charset" must be the first rule in the file
         css: {
