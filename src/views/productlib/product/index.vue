@@ -14,6 +14,28 @@
           >
             新增
           </el-button>
+          <el-button
+            type="primary"
+            icon="Download"
+            size="mini"
+            @click="handleExport"
+            color="#ffdac6"
+            class="sel"
+            v-hasPermi="['business:product:import']"
+          >
+            导入
+          </el-button>
+          <el-button
+            type="primary"
+            icon="UploadFilled"
+            size="mini"
+            @click="handleAdd"
+            color="#ffdac6"
+            class="sel"
+            v-hasPermi="['business:product:export']"
+          >
+            导出
+          </el-button>
         </el-col>
       </el-row>
       <el-form
@@ -24,20 +46,14 @@
         label-width="68px"
       >
         <el-form-item prop="craneOperation">
-          <!-- <el-input
-            v-model="queryParams.craneOperation"
-            placeholder="操作方式模糊搜索"
-            clearable
-            @keyup.enter="handleQuery"
-          /> -->
-                <el-select v-model="queryParams.craneOperation" placeholder="操作方式模糊搜索" clearable>
-              <el-option
-                v-for="dict in q_oper_mode"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
+          <el-select v-model="queryParams.craneOperation" placeholder="操作方式模糊搜索" clearable>
+            <el-option
+              v-for="dict in q_oper_mode"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button color="#ffdac6" class="sel" type="primary" icon="Search" @click="handleQuery">
@@ -404,7 +420,7 @@
         <el-col :span="8">
           <el-form-item label="上传起重机轮压数据" prop="uploadPressure">
             <file-upload
-              :modelValue="form.uploadPressure"
+              v-model:modelValue="form.uploadPressure"
               :fileType="['.DOCX', '.docx']"
               btnText="上传文件"
               btnIcon="Upload"
@@ -415,12 +431,13 @@
         <el-col :span="8">
           <el-form-item label="上传工厂价BOM清单" prop="uploadPrice">
             <file-upload
-              :modelValue="form.uploadPrice"
+              v-model:modelValue="form.uploadPrice"
               :uploadUrl="upUrl"
               :fileType="['.xls', '.xlsx']"
               btnText="上传文件"
               btnIcon="Upload"
               :isShowTip="false"
+              @update:modelValue = "getvalues"
             />
           </el-form-item>
         </el-col>
@@ -442,7 +459,7 @@ import {
   updateProduct,
 } from '@/api/business/product'
 import SaveTitle from '@/views/offer/components/Title'
-const upUrl = ref(import.meta.env.VITE_APP_BASE_API +'/business/product/readExcel')
+const upUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel')
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 
@@ -450,7 +467,7 @@ const productList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)
 const ids = ref([])
-const single = ref(true)     
+const single = ref(true)
 const multiple = ref(true)
 const total = ref(0)
 const showList = ref(true)
@@ -460,7 +477,7 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    craneOperation:null
+    craneOperation: null,
   },
   form: {},
   rules: {},
@@ -566,7 +583,7 @@ function getList() {
   loading.value = true
   listProduct(queryParams.value).then(response => {
     productList.value = response.rows
-    console.log(response,'response.rows')
+    console.log(response, 'response.rows')
     total.value = response.total
     loading.value = false
   })
@@ -596,17 +613,22 @@ function reset() {
     uploadCrane: null,
     uploadPressure: null,
     uploadPrice: null,
-    bomParams:null
+    bomParams: null,
   }
   proxy.resetForm('saveFormRef')
+}
+
+function getvalues(data){
+  form.value.uploadPrice = data
+  console.log(data,'getvaluesgetvaluesgetvalues')
 }
 
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs['saveFormRef'].validate(valid => {
     if (valid) {
-      console.log(form.value.bomParams,'bomParams')
-      console.log(form.value,'uploadPrice')
+      console.log(form.value.bomParams, 'bomParams')
+      console.log(form.value, 'uploadPrice')
       // if (form.value.productId != null) {
       //   updateProduct(form.value).then(response => {
       //     proxy.$modal.msgSuccess('修改成功')

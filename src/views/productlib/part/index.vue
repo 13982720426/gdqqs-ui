@@ -188,7 +188,7 @@
     </el-tabs>
   </div>
   <SaveTitle :title="saveTitle" v-show="showList">
-    <Save :form="form" :rules="rules" :type="saveType" ref="saveFormRef" />
+    <Save :form="form" :rules="rules" :type="saveType" ref="saveFormRef" :disabled="disabled" />
     <div class="save-footer">
       <el-button color="#ffdac6" class="sel" type="primary" @click="submitForm">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
@@ -240,6 +240,8 @@ import { reactive } from 'vue-demi'
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
+
+const disabled = ref(false)
 
 const productList = ref([])
 const loading = ref(true)
@@ -674,6 +676,23 @@ function reset() {
 
 /** 提交按钮 */
 function submitForm() {
+  if (form.value.partType === '1') {
+    activeTab.value = 'first'
+    console.log('111')
+  } else if (form.value.partType === '2') {
+    activeTab.value = 'second'
+    console.log('222')
+  } else if (form.value.partType === '3') {
+    activeTab.value = 'third'
+    console.log('333')
+  } else if (form.value.partType === '4') {
+    activeTab.value = 'fourth'
+    console.log('444')
+  } else if (form.value.partType === '3' && craneType === '1') {
+    activeTab.value = 'six'
+    console.log('555')
+  }
+  console.log(activeTab.value, form.value.partType)
   proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate(valid => {
     if (valid) {
       //轨道
@@ -806,6 +825,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   opentable.value = false
   showList.value = true
+  disabled.value = false
   if (activeTab.value == 'first') {
     saveTitle.value = '新增轨道'
     saveType.value = 'install'
@@ -827,11 +847,29 @@ function handleAdd() {
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
+  console.log(form.value.partType)
+  if (form.value.partType === '1') {
+    activeTab.value = 'first'
+    console.log(activeTab.value)
+  } else if (form.value.partType === '2') {
+    activeTab.value = 'second'
+    console.log(activeTab.value)
+  } else if (form.value.partType === '3') {
+    activeTab.value = 'third'
+    console.log(activeTab.value)
+  } else if (form.value.partType === '4') {
+    activeTab.value = 'fourth'
+    console.log(activeTab.value)
+  } else if (form.value.partType === '3' && craneType === '1') {
+    activeTab.value = 'six'
+    console.log(activeTab.value)
+  }
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
   opentable.value = false
   showList.value = true
+  disabled.value = true
   if (activeTab.value == 'first') {
     const trackPartId = row.trackPartId || ids.value
     getTrackpart(trackPartId).then(response => {

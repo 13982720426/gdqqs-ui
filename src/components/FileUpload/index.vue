@@ -117,11 +117,6 @@ watch(
       console.log(list, 'list')
       // 然后将数组转为对象数组
       fileList.value = list.map(item => {
-        // console.log(item, 'item')
-        // let newitem = item
-        // let index = item.lastIndexOf('\/')
-        // item = item.substring(index + 1, item.length)
-        // console.log(item, 'item')
         if (typeof item === 'string') {
           item = { name: item, url: item }
         }
@@ -195,14 +190,17 @@ function handleUploadError(err) {
 
 // 上传成功回调
 function handleUploadSuccess(res, file) {
-  console.log(file, 'file')
-  console.log(res, 'res')
-  uploadList.value.push({ name: res.fileName, url: res.fileName })
+  console.log(res)
+  if (res.data) {
+    uploadList.value.push({ name: res.data.fileName, url: res.data.url, bomParams: res.data.bomParams })
+  } else {
+    uploadList.value.push({ name: res.fileName, url: res.url })
+  }
   if (uploadList.value.length === number.value) {
     fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value)
     uploadList.value = []
     number.value = 0
-    console.log(fileList.value,'fileList.value2')
+    console.log(fileList.value, 'fileList.value2')
     emit('update:modelValue', listToString(fileList.value))
     proxy.$modal.closeLoading()
   }
