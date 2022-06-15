@@ -3,21 +3,18 @@ export default defineStore(
     {
         state: () => ({
             customer: {},
-            product: {},
+            product: [],
             partData: {}
         }),
         actions: {
             setCustomerData(data) {
                 this.customer = data
-                console.log(data)
             },
             setProductData(data) {
                 this.product = data
-                console.log(data)
             },
             setPartData(data) {
                 this.partData = data
-                console.log(data)
             },
             getCustomerData() {
               return {
@@ -25,6 +22,31 @@ export default defineStore(
                   customerItem: this.customer.customerItem,
                   workshopInfo: JSON.parse(this.customer.workshopInfo || '[]')
               }
+            },
+            getProductData() {
+              return this.product
+            },
+            getProductInfo() {
+                const workshopInfo = this.getCustomerData().workshopInfo
+                const arr = []
+                workshopInfo.forEach((_, index) => {
+                    arr.push(this.product[index])
+                })
+                return arr
+            },
+            getAllProductPrice() {
+                const allProduct = this.getProductInfo()
+                let price = 0
+                allProduct.forEach(item => {
+                    item.amount.forEach(amountItem => {
+                        price += Number(amountItem.partQuote.price)
+                    })
+                })
+                console.log(price)
+                return price
+            },
+            getPartData() {
+                return this.partData
             },
             getAllData() {
                 if (Object.keys(this.customer).length && Object.keys(this.product).length && Object.keys(this.partData).length) {

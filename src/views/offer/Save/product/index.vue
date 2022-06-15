@@ -8,16 +8,16 @@
           :model="formModel"
           label-position="left"
       >
-        <div v-for="(workshopItem) in formModel">
+        <div v-for="(workshopItem, index1) in formModel.product">
           <div>
             车间名称: {{ workshopItem.name }}
           </div>
-          <div class="product-item" v-for="(amountItem) in workshopItem.amount">
+          <div class="product-item" v-for="(amountItem, index) in workshopItem.amount">
             <el-row :gutter="12">
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="起重机类型">
                   <DictSelect
-                      v-model="amountItem.type"
+                      v-model="formModel.product[index1].amount[index].type"
                       dictType="q_crane_type"
                   />
                 </el-form-item>
@@ -25,7 +25,7 @@
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="操作方式">
                   <DictSelect
-                      v-model="amountItem.operation"
+                      v-model="formModel.product[index1].amount[index].operation"
                       dictType="q_oper_mode"
                   />
                 </el-form-item>
@@ -33,7 +33,7 @@
               <el-col :span="6">
                 <el-form-item :labelWidth="100" label="起升重量">
                   <DictSelect
-                      v-model="amountItem.weight"
+                      v-model="formModel.product[index1].amount[index].weight"
                       dictType="q_lift_weight"
                   />
                 </el-form-item>
@@ -43,59 +43,59 @@
 
                   <DictSelect
                       v-if="amountItem.type === '1'"
-                      v-model="amountItem.level"
+                      v-model="formModel.product[index1].amount[index].level"
                       dictType="q_single_crane_work_level"
                   />
                   <DictSelect
                       v-else-if="amountItem.type === '2'"
-                      v-model="amountItem.level"
+                      v-model="formModel.product[index1].amount[index].level"
                       dictType="q_double_crane_work_level"
                   />
                   <DictSelect
                       v-else-if="amountItem.type === '3'"
-                      v-model="amountItem.level"
+                      v-model="formModel.product[index1].amount[index].level"
                       dictType="q_susp_crane_work_level"
                   />
                   <DictSelect
                       v-else
-                      v-model="amountItem.level"
+                      v-model="formModel.product[index1].amount[index].level"
                       dictType=""
                   />
                 </el-form-item>
               </el-col>
             </el-row>
-            <div v-if="!!workshopItem.productData">
+            <div v-if="!!amountItem.productData">
               <el-descriptions :column="3" border size="small">
                 <el-descriptions-item label="型号" width="150px" label-align="right">
-                  {{ workshopItem.productData.name }}
+                  {{ amountItem.productData.name }}
                 </el-descriptions-item>
                 <el-descriptions-item label="额定功率(KW)" width="150px" label-align="right">
-                  {{ workshopItem.productData.ratedPower }}
+                  {{ amountItem.productData.ratedPower }}
                 </el-descriptions-item>
                 <el-descriptions-item label="起升速度" width="150px" label-align="right">
-                  {{ workshopItem.productData.liftSpeed }}
+                  {{ amountItem.productData.liftSpeed }}
                 </el-descriptions-item>
                 <el-descriptions-item label="小车运行速度" width="150px" label-align="right">
-                  {{ workshopItem.productData.crabSpeed }}
+                  {{ amountItem.productData.crabSpeed }}
                 </el-descriptions-item>
                 <el-descriptions-item label="大车运行速度" width="150px" label-align="right">
-                  {{ workshopItem.productData.cartSpeed }}
+                  {{ amountItem.productData.cartSpeed }}
                 </el-descriptions-item>
                 <el-descriptions-item width="150px" label-align="right">
                 </el-descriptions-item>
                 <el-descriptions-item label="总成本合计" width="150px" label-align="right">
-                  {{ workshopItem.partQuote.factory_price_count }}
+                  {{ amountItem.partQuote.factory_price_count }}
                 </el-descriptions-item>
                 <el-descriptions-item label="预计利润" width="150px" label-align="right">
-                  {{ workshopItem.partQuote.profit }}
+                  {{ amountItem.partQuote.profit }}
                 </el-descriptions-item>
                 <el-descriptions-item label="销售总价" width="150px" label-align="right">
-                  {{ workshopItem.partQuote.price }}
+                  {{ amountItem.partQuote.price }}
                 </el-descriptions-item>
               </el-descriptions>
             </div>
             <div v-if="amountItem.type && amountItem.operation && amountItem.weight && amountItem.level">
-              <el-button @click="selectPart(amountItem, workshopItem.name)">选择部件</el-button>
+              <el-button @click="selectPart(amountItem, workshopItem.key, index)">选择部件</el-button>
             </div>
           </div>
         </div>
@@ -117,6 +117,7 @@
           style="width: 100%"
           :data="partDataSource"
           border
+          @cancel="cancel"
       >
         <el-table-column prop="offerCode" label="部件" width="180" />
         <el-table-column prop="brand" label="品牌" width="180" />
@@ -171,24 +172,34 @@ const partDataSource = ref([])
 const productList = ref([])
 const form = ref()
 const productId = ref()
-const formModel = reactive([])
+const formModel = reactive({
+  product: []
+})
 
-const selectPart = (data, workshopItemName) => {
-  queryPart(data, workshopItemName)
+/**
+ *
+ * @param data
+ * @param workshopItemKey 车间名称
+ * @param index 起重机下标
+ */
+const selectPart = (data, workshopItemKey, index) => {
+  queryPart(data, workshopItemKey, index)
   dialogVisible.value = true
 }
 
 const cancel = () => {
   dialogVisible.value = false
+  partDataSource.value = []
 }
 
 const savePartData = () => {
   const productItem = productList.value.find(item => item.name === productId.value)
-  formModel.forEach(item => {
-    if (productItem.workshopItemName === item.name) {
-      item.partData = cloneDeep(partDataSource.value)
-      item.partQuote = partDialogData
-      item.productData = {
+  formModel.product.forEach(item => {
+    if (productItem.workshopItemKey === item.key) {
+      const amountItem = item.amount[productItem.index]
+      amountItem.partData = cloneDeep(partDataSource.value)
+      amountItem.partQuote = cloneDeep(partDialogData)
+      amountItem.productData = {
         name: productItem.name,
         ratedPower: productItem.ratedPower,
         liftSpeed: productItem.liftSpeed,
@@ -200,7 +211,11 @@ const savePartData = () => {
   cancel()
 }
 
-const queryPart = async (data, workshopItemName) => {
+const queryPart = async (data, workshopItemKey, index) => {
+  // TODO 判断当前是否选择过部件
+  productId.value = undefined
+  productList.value = []
+
   const resp = await listProduct({
     crane_type: data.type,
     crane_operation: data.operation,
@@ -208,7 +223,6 @@ const queryPart = async (data, workshopItemName) => {
   })
   if (resp.code === 200) {
   // 遍历BOM清单
-    productList.value = []
     resp.rows.forEach(item => {
       if (item.bomParams) {
         const bomData = JSON.parse(item.bomParams)
@@ -224,7 +238,8 @@ const queryPart = async (data, workshopItemName) => {
           liftSpeed: item.liftSpeed,
           crabSpeed: item.crabSpeed,
           cartSpeed: item.cartSpeed,
-          workshopItemName
+          workshopItemKey,
+          index
         })
       }
     })
@@ -255,7 +270,7 @@ const partDialogData = computed(() => {
 onMounted(() => {
   const customerData = offerStore.getCustomerData()
   customerData.workshopInfo.forEach(item => {
-    formModel.push({
+    formModel.product.push({
       name: item.name,
       key: item.key,
       amount: new Array(item.amount).fill(1).map(b => ({
@@ -265,6 +280,8 @@ onMounted(() => {
         level: undefined
       }))
     })
+
+    console.log(formModel)
   })
 
 })
@@ -273,8 +290,8 @@ const getValues = async () => {
   const data = await form.value.validate()
   if (data) {
     const newData = cloneDeep(formModel)
-    console.log(formModel)
-    return omit(newData, ['product'])
+    console.log('getValues',formModel.product)
+    return newData.product
   }
 }
 

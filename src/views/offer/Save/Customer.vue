@@ -134,6 +134,7 @@ const customerSearchChange = (e) => {
 const addWork = () => {
   formData.workshopInfo.unshift({
     ...cloneDeep(DEFAULT_WORK_ITEM),
+    slipLine: undefined,
     key: new Date().valueOf()
   })
 }
