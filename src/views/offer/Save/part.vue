@@ -123,8 +123,11 @@
     </OfferSaveTitle>
     <OfferSaveTitle title="滑触线数据">
       <div>
-        <div v-for="item in workshopData">
-          <div style="margin-bottom: 16px;">
+        <div v-for="(item, index) in workshopData">
+          <div :style="{
+            marginBottom: '16px',
+            marginTop: index > 0 ? '16px' : 0,
+          }">
             <span style="padding-right: 24px">车间名称：{{ item.name }}</span>
             <span>
               滑触线:
