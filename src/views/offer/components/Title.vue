@@ -1,6 +1,6 @@
 <template>
   <div class="title">
-    <label class="title-label">{{ this.$props.title}}</label>
+    <label class="title-label">{{ $props.title}}</label>
     <div class="title-content">
         <slot></slot>
     </div>
