@@ -10,7 +10,7 @@
       <el-form-item label="我的角色" prop="">
         <el-row :gutter="20">
           <el-col :span="14">
-            <el-input maxlength="30" v-model="state.user" disabled="true" />
+            <el-input maxlength="30" v-model="state.user.adminName" disabled="true" />
           </el-col>
           <el-col :span="10">
             <span>当前角色不可修改</span>
@@ -145,13 +145,17 @@ import userAvatarVue from '../user/profile/userAvatar.vue'
 import { ref } from 'vue-demi'
 
 const state = reactive({
-  user: {},
+  user: {
+    adminName:''
+  },
 })
 
 function getUser() {
   getUserProfile().then(response => {
     state.user = response.data
-    console.log(response.data)
+    state.user.adminName = response.data.roles[0].roleName
+    console.log(response.data.roles[0].roleName)
+    console.log(state.user.adminName)
   })
 }
 

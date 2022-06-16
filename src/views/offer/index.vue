@@ -11,13 +11,6 @@
           >
             新增
           </el-button>
-          <el-button
-              plain
-              icon="Plus"
-              v-hasPermi="['offer:import']"
-          >
-            导入
-          </el-button>
         </el-space>
       </div>
       <div>

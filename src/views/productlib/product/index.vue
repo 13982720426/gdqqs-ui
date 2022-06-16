@@ -508,7 +508,6 @@ import {
   delProduct,
   addProduct,
   updateProduct,
-  importTemplate,
 } from '@/api/business/product'
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
@@ -780,7 +779,6 @@ function getvalues(data) {
     excelList.value = e.bomParams
   })
   form.value.bomParams = JSON.stringify(excelList.value)
-  console.log(excelList.value, 'eeeeeeee')
 }
 
 /** 提交按钮 */
