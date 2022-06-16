@@ -18,7 +18,7 @@
             type="primary"
             icon="Download"
             size="mini"
-            @click="handleIxport"
+            @click="handleImport"
             color="#ffdac6"
             class="sel"
             v-hasPermi="['business:product:import']"
@@ -410,12 +410,14 @@
               btnText="上传文件"
               btnIcon="Upload"
               :isShowTip="false"
+              :limit="1"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="上传起重机数据" prop="uploadCrane">
             <file-upload
+              :limit="1"
               v-model:modelValue="form.uploadCrane"
               :fileType="['.DOCX', '.docx']"
               btnText="上传文件"
@@ -427,8 +429,9 @@
         <el-col :span="8">
           <el-form-item label="上传起重机轮压数据" prop="uploadPressure">
             <file-upload
+              :limit="1"
               v-model:modelValue="form.uploadPressure"
-              :fileType="['.DOCX', '.docx']"
+              :fileType="['.DOCX', '.docx', '.doc']"
               btnText="上传文件"
               btnIcon="Upload"
               :isShowTip="false"
@@ -438,53 +441,62 @@
         <el-col :span="8">
           <el-form-item label="上传工厂价BOM清单" prop="uploadPrice">
             <file-upload
+              :limit="1"
               v-model:modelValue="form.uploadPrice"
               :uploadUrl="upUrl"
               :fileType="['.xls', '.xlsx']"
               btnText="上传文件"
               btnIcon="Upload"
               :isShowTip="false"
-              @update:modelValue="getvalues"
+              @uploadSuccess="getvalues"
             />
           </el-form-item>
         </el-col>
       </el-row>
       <span style="font-size: 12px; padding-bottom: 50px">型号：</span>
-      <QTable :loading="loading" :data="excelList" :columns="excelListColumns" class="tab"></QTable>
+      <QTable :loading="loading" :data="excelList" :columns="excelListColumns" :showOper="false" class="tab"></QTable>
     </el-form>
     <div class="save-footer">
       <el-button type="primary" @click="submitForm" color="#ffdac6" class="sel">确 定</el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
   </SaveTitle>
-  <el-dialog :title="title" v-model="open" width="400px">
-    <el-link :href="`${baseUrl}`" :underline="false" target="_blank">
-      <span class="el-icon-document">模板下载</span>
-    </el-link>
+
+  <!-- 导入对话框 -->
+  <el-dialog :title="upload.title" v-model="upload.open" width="400px" append-to-body>
     <el-upload
-      class="upload-demo"
+      ref="uploadRef"
+      :limit="1"
+      accept=".xlsx, .xls"
+      :headers="upload.headers"
+      :action="upload.url + '?updateSupport=' + upload.updateSupport"
+      :disabled="upload.isUploading"
+      :on-progress="handleFileUploadProgress"
+      :on-success="handleFileSuccess"
+      :auto-upload="false"
       drag
-      :action="productUrl"
-      :before-upload="handleBeforeUpload"
-      multiple
-      :headers="headers"
-      :fileType="['.xls', '.xlsx']"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
       <div class="el-upload__text">
-        请将文件拖拽到这里 或者
-        <em>点击上传文件</em>
+        将文件拖到此处，或
+        <em>点击上传</em>
       </div>
-
       <template #tip>
-        <div class="el-upload__tip">只能上传xls/xlsx文件</div>
+        <div class="el-upload__tip text-center">
+          <div class="el-upload__tip">
+            <el-checkbox v-model="upload.updateSupport" />
+            是否更新已经存在的数据
+          </div>
+          <span>仅允许导入xls、xlsx格式文件。</span>
+        </div>
       </template>
     </el-upload>
-
-    <div class="save-footer">
-      <el-button type="primary" @click="submitfile" color="#ffdac6" class="sel">确 定</el-button>
-      <el-button @click="open = false">取 消</el-button>
-    </div>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button type="primary" @click="submitFileForm">确 定</el-button>
+        <el-button @click="upload.open = false">取 消</el-button>
+      </div>
+    </template>
   </el-dialog>
 </template>
 
@@ -496,16 +508,17 @@ import {
   delProduct,
   addProduct,
   updateProduct,
+  importTemplate,
 } from '@/api/business/product'
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
 const upUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel')
 const productUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData')
+const mb = ref('') //模板下载地址
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const headers = ref({ Authorization: 'Bearer ' + getToken(), 'Access-Control-Allow-Origin': '*' })
-const excelList = ref([])
 const productList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)
@@ -516,46 +529,47 @@ const total = ref(0)
 const showList = ref(true)
 const saveTitle = ref('新增产品')
 const open = ref(false)
+const excelList = ref([])
 const excelListColumns = ref([
   {
     id: 1,
-    prop: 'partType',
+    prop: '0',
     label: '部件',
     align: 'center',
   },
   {
     id: 2,
-    prop: 'fixedMode',
+    prop: '1',
     label: '型号',
     align: 'center',
   },
   {
     id: 3,
-    prop: 'trackModel',
+    prop: '2',
     label: '品牌',
     align: 'center',
   },
   {
     id: 4,
-    prop: 'sgltrackLength',
+    prop: '3',
     label: '数量',
     align: 'center',
   },
   {
     id: 5,
-    prop: 'sgltrackWeight',
+    prop: '4',
     label: '单位',
     align: 'center',
   },
   {
     id: 6,
-    prop: 'trackUnprice',
+    prop: '5',
     label: '进地球成本价(不含税)',
     align: 'center',
   },
   {
     id: 7,
-    prop: 'tppUnprice',
+    prop: '6',
     label: '税率',
     align: 'center',
   },
@@ -567,7 +581,7 @@ const excelListColumns = ref([
   },
   {
     id: 9,
-    prop: 'thsUnprice',
+    prop: '7',
     label: '金地球工厂价',
     align: 'center',
   },
@@ -692,6 +706,44 @@ function getList() {
 //文件上传
 function submitfile() {}
 
+/*** 导入参数 */
+const upload = reactive({
+  // 是否显示弹出层
+  open: false,
+  // 弹出层标题
+  title: '',
+  // 是否禁用上传
+  isUploading: false,
+  // 是否更新已经存在的数据
+  updateSupport: 0,
+  // 设置上传的请求头部
+  headers: { Authorization: 'Bearer ' + getToken() },
+  // 上传的地址
+  url: import.meta.env.VITE_APP_BASE_API + '/business/product/importData',
+})
+/** 导入按钮操作 */
+function handleImport() {
+  upload.title = '产品导入'
+  upload.open = true
+}
+
+/**文件上传中处理 */
+const handleFileUploadProgress = (event, file, fileList) => {
+  upload.isUploading = true
+}
+/** 文件上传成功处理 */
+const handleFileSuccess = (response, file, fileList) => {
+  upload.open = false
+  upload.isUploading = false
+  proxy.$refs['uploadRef'].handleRemove(file)
+  proxy.$msgSuccess('导入成功')
+  getList()
+}
+/** 提交上传文件 */
+function submitFileForm() {
+  proxy.$refs['uploadRef'].submit()
+}
+
 // 取消按钮
 function cancel() {
   showList.value = true
@@ -716,22 +768,25 @@ function reset() {
     uploadCrane: null,
     uploadPressure: null,
     uploadPrice: null,
-    bomParams: null,
+    bomParams: undefined,
   }
   proxy.resetForm('saveFormRef')
 }
 
 function getvalues(data) {
-  form.value.uploadPrice = data.fileName
-  console.log(data, 'getvaluesgetvaluesgetvalues')
+  // form.value.bomParams = JSON.parse(data.bomParams)
+  data.forEach(e => {
+    // excelList.value.push(e.bomParams)
+    excelList.value = e.bomParams
+  })
+  form.value.bomParams = JSON.stringify(excelList.value)
+  console.log(excelList.value, 'eeeeeeee')
 }
 
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs['saveFormRef'].validate(valid => {
     if (valid) {
-      console.log(form.value.bomParams, 'bomParams')
-      console.log(form.value, 'uploadPrice')
       if (form.value.productId != null) {
         updateProduct(form.value).then(response => {
           proxy.$modal.msgSuccess('修改成功')
@@ -798,28 +853,16 @@ function handleDelete(row) {
 //上传格式检验
 // 上传前校检格式和大小
 function handleBeforeUpload(file) {
-  console.log(file, fileType, '9999999999999999999999999999999999999999')
-  console.log(fileType)
+  console.log(file, '9999999999999999999999999999999999999999')
   // 校检文件类型
-  if (fileType.length) {
-    let fileExtension = ''
-    if (file.name?.lastIndexOf('.') > -1) {
-      fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
-    }
-    const isTypeOk = fileType.some(type => {
-      if (type === '.xls' || type === '.xlsx') {
-        if (fileExtension === 'xls' || fileExtension === 'xlsx') {
-          return true
-        }
-      }
-      if (file.type.indexOf(type) > -1) return true
-      if (fileExtension && fileExtension.indexOf(type) > -1) return true
-      return false
-    })
-    if (!isTypeOk) {
-      proxy.$modal.msgError(`文件格式不正确, 请上传${fileType.join('/')}格式文件!`)
-      return false
-    }
+  let fileExtension = ''
+  if (file.name?.lastIndexOf('.') > -1) {
+    fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
+  }
+  console.log(fileExtension, 'fileExtension')
+
+  if (fileExtension !== 'xls' || fileExtension !== 'xlsx') {
+    proxy.$modal.msgError(`文件格式不正确, 请上传${fileType.join('/')}格式文件!`)
   }
   // 校检文件大小
   if (fileSize) {
@@ -844,9 +887,9 @@ function handleExport() {
   )
 }
 /**导入 */
-function handleIxport() {
-  open.value = true
-}
+// function handleIxport() {
+//   open.value = true
+// }
 
 getList()
 </script>

@@ -11,24 +11,30 @@
         <!-- {{ row }} -->
         <span>
           {{ item.format ? item.format(row) : deepFormat(row, item.prop) }}
+
         </span>
       </template>
     </el-table-column>
 
-    <el-table-column
+    <!-- <template v-if="showOperq"> -->
+      <el-table-column
       label="操作"
       align="center"
       class-name="small-padding fixed-width"
       fixed="right"
       width="200"
+      v-if="showOperq"
     >
       <template #default="{ row }">
         <slot :row="row"></slot>
       </template>
     </el-table-column>
+    <!-- </template> -->
   </el-table>
 </template>
 <script setup name="QTable">
+import { computed } from "vue-demi"
+
 const emit = defineEmits()
 const props = defineProps({
   // 表格数据
@@ -46,7 +52,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  showOper: {
+    type: Boolean,
+    default: true,
+  },
 })
+ 
+const showOperq = computed(()=>props.showOper)
 
 // 返回选择的每一项
 function selectionChange(selection) {

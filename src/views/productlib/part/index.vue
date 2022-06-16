@@ -22,10 +22,46 @@
         v-show="showSearch"
         label-width="68px"
       >
-        <el-form-item prop="craneOperation">
+        <el-form-item prop="trackModel" v-show="orbitModel">
           <el-input
-            v-model="queryParams.craneOperation"
-            placeholder="模糊搜索"
+            v-model="queryParams.trackModel"
+            placeholder="轨道型号模糊搜索"
+            clearable
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+
+        <el-form-item prop="splPartName" v-show="slipLine">
+          <el-input
+            v-model="queryParams.splPartName"
+            placeholder="滑线名称模糊搜索"
+            clearable
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+
+        <el-form-item prop="unprice" v-show="orbit">
+          <el-input
+            v-model="queryParams.unprice"
+            placeholder="轨道模糊搜索"
+            clearable
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+
+        <el-form-item prop="model" v-show="paint">
+          <el-input
+            v-model="queryParams.model"
+            placeholder="油漆型号模糊搜索"
+            clearable
+            @keyup.enter="handleQuery"
+          />
+        </el-form-item>
+
+        <el-form-item prop="craneModel" v-show="crane">
+          <el-input
+            v-model="queryParams.craneModel"
+            placeholder="起重机型号模糊搜索"
             clearable
             @keyup.enter="handleQuery"
           />
@@ -227,6 +263,12 @@ import SaveTitle from '@/views/offer/components/Title'
 import QTable from '../components/QTable.vue'
 import Save from './save.vue'
 import { reactive } from 'vue-demi'
+
+const orbitModel = ref(true)
+const slipLine = ref(false)
+const orbit = ref(false)
+const paint = ref(false)
+const crane = ref(false)
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
@@ -505,6 +547,11 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
+    trackModel: undefined,
+    splPartName: undefined,
+    unprice: undefined,
+    model: undefined,
+    craneModel: undefined,
   },
   form: {},
   rules: {},
@@ -650,6 +697,37 @@ function getList() {
 }
 function handleClick(tab) {
   activeTab.value = tab.props.name
+  if (activeTab.value == 'first') {
+    orbitModel.value = true
+    slipLine.value = false
+    orbit.value = false
+    paint.value = false
+    crane.value = false
+  } else if (activeTab.value == 'second') {
+    orbitModel.value = false
+    slipLine.value = true
+    orbit.value = false
+    paint.value = false
+    crane.value = false
+  } else if (activeTab.value == 'third') {
+    orbitModel.value = false
+    slipLine.value = false
+    orbit.value = true
+    paint.value = false
+    crane.value = false
+  } else if (activeTab.value == 'fourth') {
+    orbitModel.value = false
+    slipLine.value = false
+    orbit.value = false
+    paint.value = true
+    crane.value = false
+  } else if (activeTab.value == 'six') {
+    orbitModel.value = false
+    slipLine.value = false
+    orbit.value = false
+    paint.value = false
+    crane.value = true
+  }
   getList()
 }
 // 取消按钮
@@ -666,19 +744,19 @@ function reset() {
 
 /** 提交按钮 */
 function submitForm() {
-  if (form.value.partType === '1') {
+  if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
     console.log('111')
-  } else if (form.value.partType === '2') {
+  } else if (form.value.partType === '2' && form.value.craneType === undefined) {
     activeTab.value = 'second'
     console.log('222')
-  } else if (form.value.partType === '3') {
+  } else if (form.value.partType === '3' && form.value.craneType === undefined) {
     activeTab.value = 'third'
     console.log('333')
-  } else if (form.value.partType === '4') {
+  } else if (form.value.partType === '4' && form.value.craneType === undefined) {
     activeTab.value = 'fourth'
     console.log('444')
-  } else if (form.value.partType === '3' && craneType === '1') {
+  } else if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'six'
     console.log('555')
   }
@@ -837,20 +915,20 @@ function handleAdd() {
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
-  console.log(form.value.partType)
-  if (form.value.partType === '1') {
+  console.log(form.value, 'form.value')
+  if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
     console.log(activeTab.value)
-  } else if (form.value.partType === '2') {
+  } else if (form.value.partType === '2' && form.value.craneType === undefined) {
     activeTab.value = 'second'
     console.log(activeTab.value)
-  } else if (form.value.partType === '3') {
+  } else if (form.value.partType === '3' && form.value.craneType === undefined) {
     activeTab.value = 'third'
     console.log(activeTab.value)
-  } else if (form.value.partType === '4') {
+  } else if (form.value.partType === '4' && form.value.craneType === undefined) {
     activeTab.value = 'fourth'
     console.log(activeTab.value)
-  } else if (form.value.partType === '3' && craneType === '1') {
+  } else if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'six'
     console.log(activeTab.value)
   }

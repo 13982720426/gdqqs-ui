@@ -96,6 +96,7 @@ const { proxy } = getCurrentInstance()
 const emit = defineEmits()
 const number = ref(0)
 const uploadList = ref([])
+const newuploadList = ref([])
 const baseUrl = import.meta.env.VITE_APP_BASE_API
 const uploadFileUrl = computed(
   () => props?.uploadUrl ?? import.meta.env.VITE_APP_BASE_API + '/common/upload'
@@ -151,8 +152,8 @@ function handleBeforeUpload(file) {
           return true
         }
       }
-      if (type === '.DOCX' || type === '.docx') {
-        if (fileExtension === 'DOCX' || fileExtension === 'docx') {
+      if (type === '.DOCX' || type === '.docx' || type === '.doc') {
+        if (fileExtension === 'DOCX' || fileExtension === 'docx' || fileExtension === 'doc') {
           return true
         }
       }
@@ -192,16 +193,22 @@ function handleUploadError(err) {
 function handleUploadSuccess(res, file) {
   console.log(res)
   if (res.data) {
-    uploadList.value.push({ name: res.data.fileName, url: res.data.fileName, bomParams: res.data.bomParams })
+    uploadList.value.push({
+      name: res.data.fileName,
+      url: res.data.fileName,
+      bomParams: res.data.bomParams,
+    })
   } else {
     uploadList.value.push({ name: res.fileName, url: res.fileName })
   }
   if (uploadList.value.length === number.value) {
     fileList.value = fileList.value.filter(f => f.url !== undefined).concat(uploadList.value)
+    newuploadList.value = fileList.value
     uploadList.value = []
     number.value = 0
     console.log(fileList.value, 'fileList.value2')
-    emit('update:modelValue', fileList.value)
+    emit('update:modelValue', listToString(fileList.value))
+    emit('uploadSuccess', newuploadList.value)
     proxy.$modal.closeLoading()
   }
 }

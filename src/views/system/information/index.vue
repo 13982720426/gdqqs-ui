@@ -1,10 +1,16 @@
 <template>
   <div class="inform">
-    <el-form :model="state.user" :rules="rules" label-width="80px" style="padding: 20px">
-      <el-form-item label="我的角色" prop="nickName">
+    <el-form
+      :model="state.user"
+      ref="userinfo"
+      :rules="rules"
+      label-width="80px"
+      style="padding: 20px"
+    >
+      <el-form-item label="我的角色" prop="">
         <el-row :gutter="20">
           <el-col :span="14">
-            <el-input maxlength="30" v-model="state.user.nickName" disabled="true" />
+            <el-input maxlength="30" v-model="state.user" disabled="true" />
           </el-col>
           <el-col :span="10">
             <span>当前角色不可修改</span>
@@ -21,8 +27,8 @@
           </el-col>
         </el-row>
       </el-form-item>
-      <el-form-item label="用户名" prop="userName">
-        <el-input maxlength="30" v-model="state.user.userName" style="width: 22%" />
+      <el-form-item label="用户名" prop="nickName">
+        <el-input maxlength="30" v-model="state.user.nickName" style="width: 22%" />
       </el-form-item>
       <el-form-item label="性别">
         <el-radio-group v-model="state.user.sex">
@@ -145,6 +151,7 @@ const state = reactive({
 function getUser() {
   getUserProfile().then(response => {
     state.user = response.data
+    console.log(response.data)
   })
 }
 
@@ -163,9 +170,11 @@ const rules = ref({
 })
 /** 提交按钮 */
 function submit() {
-  uploadImg()
-  updateUserProfile(state.user).then(response => {
-    proxy.$modal.msgSuccess('修改成功')
+  proxy.$refs['saveFormRef'].validate(valid => {
+    uploadImg()
+    updateUserProfile(state.user).then(response => {
+      proxy.$modal.msgSuccess('修改成功')
+    })
   })
 }
 /** 关闭按钮 */

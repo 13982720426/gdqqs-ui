@@ -190,7 +190,6 @@
           </el-form-item>
         </el-col>
       </template>
-      <template v-else-if="form.partType == 5"></template>
     </el-row>
     <el-row v-else>
       <el-col :span="8">
