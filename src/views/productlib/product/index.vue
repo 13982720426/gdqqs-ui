@@ -458,11 +458,17 @@
     </div>
   </SaveTitle>
   <el-dialog :title="title" v-model="open" width="400px">
+    <el-link :href="`${baseUrl}`" :underline="false" target="_blank">
+      <span class="el-icon-document">模板下载</span>
+    </el-link>
     <el-upload
       class="upload-demo"
       drag
-      action="https://jsonplaceholder.typicode.com/posts/"
+      :action="productUrl"
+      :before-upload="handleBeforeUpload"
       multiple
+      :headers="headers"
+      :fileType="['.xls', '.xlsx']"
     >
       <el-icon class="el-icon--upload"><upload-filled /></el-icon>
       <div class="el-upload__text">
@@ -483,6 +489,7 @@
 </template>
 
 <script setup name="Product">
+import { getToken } from '@/utils/auth'
 import {
   listProduct,
   getProduct,
@@ -494,9 +501,10 @@ import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
 const upUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel')
+const productUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData')
 const { proxy } = getCurrentInstance()
 const router = useRouter()
-
+const headers = ref({ Authorization: 'Bearer ' + getToken(), 'Access-Control-Allow-Origin': '*' })
 const excelList = ref([])
 const productList = ref([])
 const loading = ref(true)
@@ -682,9 +690,7 @@ function getList() {
 }
 
 //文件上传
-function submitfile(){
-
-}
+function submitfile() {}
 
 // 取消按钮
 function cancel() {
@@ -787,6 +793,45 @@ function handleDelete(row) {
       proxy.$modal.msgSuccess('删除成功')
     })
     .catch(() => {})
+}
+
+//上传格式检验
+// 上传前校检格式和大小
+function handleBeforeUpload(file) {
+  console.log(file, fileType, '9999999999999999999999999999999999999999')
+  console.log(fileType)
+  // 校检文件类型
+  if (fileType.length) {
+    let fileExtension = ''
+    if (file.name?.lastIndexOf('.') > -1) {
+      fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
+    }
+    const isTypeOk = fileType.some(type => {
+      if (type === '.xls' || type === '.xlsx') {
+        if (fileExtension === 'xls' || fileExtension === 'xlsx') {
+          return true
+        }
+      }
+      if (file.type.indexOf(type) > -1) return true
+      if (fileExtension && fileExtension.indexOf(type) > -1) return true
+      return false
+    })
+    if (!isTypeOk) {
+      proxy.$modal.msgError(`文件格式不正确, 请上传${fileType.join('/')}格式文件!`)
+      return false
+    }
+  }
+  // 校检文件大小
+  if (fileSize) {
+    const isLt = file.size / 1024 / 1024 < fileSize
+    if (!isLt) {
+      proxy.$modal.msgError(`上传文件大小不能超过 ${fileSize} MB!`)
+      return false
+    }
+  }
+  proxy.$modal.loading('正在上传文件，请稍候...')
+  number.value++
+  return true
 }
 /** 导出按钮操作 */
 function handleExport() {
