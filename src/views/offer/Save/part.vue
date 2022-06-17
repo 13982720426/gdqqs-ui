@@ -1,3 +1,4 @@
+<!-- 项目报价 -->
 <template>
   <div class="offer-save-part">
     <OfferSaveTitle title="轨道数据">
@@ -430,7 +431,7 @@ const default_track_data = {
   cost: 0, // 轨道费用：轨道长度*轨道重量*单价
   platensConst: 0, // 压板费用：轨道压板数量*压板单价(18)
   tiePlatesConst: 0, // 联结板费用：轨道联结板数量*联结板单价（145）
-  installationFee: 0,
+  installationFee: 0, // 安装费
   liftingFee: 0,
   taxPayment: 0,
   cartStopsConst: 0,
@@ -444,7 +445,7 @@ const tax = ref(0)
 const craneDataSource = ref([]) // 起重机运输
 const installDataSource = ref([]) // 起重机安装及吊装费
 const marketDataSource = ref([]) // 起重机市场监管局特检费
-const workshopData = ref([])
+const workshopData = ref([]) // 车间信息
 
 // 轨道费用统计
 const trackData = ref({
@@ -501,8 +502,8 @@ const marketTotalData = ref({
 const countDataSource = ref([]) // 总合计
 
 const QuoteData = reactive({
-  track: {},
-  slipLine: {}
+  track: {}, // 轨道table数据
+  slipLine: {} // 滑触线table数据
 })
 
 const getKey = () => {
@@ -563,29 +564,6 @@ const onTrackDelete = (workshopId, key) => {
   const index = QuoteData.track[workshopId].findIndex(item => item.key === key)
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
-  }
-}
-
-/**
- * 滑触线新增
- * @param {string} workshop 车间key
- */
-const onSlipLineAdd = (workshopKey) => {
-  const key = `slipLine${getKey()}`
-  if (QuoteData.slipLine[workshopKey]) {
-    QuoteData.slipLine[workshopKey].push({
-      key,
-      fixed: undefined,
-      model: undefined,
-    })
-  } else {
-    QuoteData.slipLine[workshopKey] = [
-      {
-        key,
-        fixed: undefined,
-        model: undefined,
-      }
-    ]
   }
 }
 
@@ -770,55 +748,6 @@ const queryListSplpart = async () => {
   }
 }
 
-const initCraneTable = () => {
-  const _craneDataSource = [] // 起重机运输
-  const _installDataSource = [] // 起重机运输
-  const _marketDataSource = [] // 起重机运输
-  const _data = cloneDeep(offerStore.getProductData())
-  let marketTotal = 0
-  let amountCount = 0
-
-  offerStore.getCustomerData().workshopInfo.forEach(workshopItem => {
-    workshopData.value.push({
-      ...workshopItem,
-      total: 0, // 总成本合计
-      profitMargin: 1.1, // 预计利润率
-      totalPrice: 0, // 销售总价
-      profitAmount: 0 // 利润额
-    })
-  })
-  console.log(_data)
-  _data.forEach(pItem => {
-    console.log(pItem)
-    const workshopName = pItem.name
-    amountCount += pItem.amount.length
-    pItem.amount.forEach(amountItem => {
-      const newObject = {
-        workshopName,
-        model: amountItem.productData.name,
-        weight: amountItem.weight,
-      }
-      let AcceptanceFee = 0
-      if (amountItem.weight > 3) {
-        AcceptanceFee = 1000
-      }
-      marketTotal += numberToFixed(AcceptanceFee * tax.value)
-      _craneDataSource.push({...cloneDeep(newObject), freight: 2500, taxPayment: 0, total: 0})
-      _installDataSource.push({...cloneDeep(newObject), install: 1000, hoisting: 1500, taxPayment: 0, total: 0})
-      _marketDataSource.push({...cloneDeep(newObject), acceptance: AcceptanceFee, taxPayment: 0})
-    })
-  })
-
-  marketTotalData.value.total = marketTotal
-  craneDataSource.value = _craneDataSource
-  installDataSource.value = _installDataSource
-  marketDataSource.value = _marketDataSource
-
-  transportTotalData.value.count = amountCount
-  installTotalData.value.count = amountCount
-  marketTotalData.value.count = amountCount
-}
-
 const getSummaries = (param) => {
   const {columns, data} = param
   const sums = []
@@ -942,7 +871,8 @@ offerStore.$subscribe((_, state) => {
         total: 0, // 总成本合计
         profitMargin: 1.1, // 预计利润率
         totalPrice: 0, // 销售总价
-        profitAmount: 0 // 利润额
+        profitAmount: 0, // 利润额
+        splpartOptions: [] // 滑线下拉数据
       })
     })
 
@@ -958,8 +888,8 @@ offerStore.$subscribe((_, state) => {
       installTotalData.value = partData.installTotalData // 安装统计
       marketTotalData.value = partData.marketTotalData // 市场统计
     } else {
-      let marketTotal = 0
-      let amountCount = 0
+      let marketTotal = 0 // 市场成本合计
+      let amountCount = 0 // 起重机数量
 
       const _craneDataSource = [] // 起重机运输
       const _installDataSource = [] // 起重机运输
@@ -1001,7 +931,7 @@ offerStore.$subscribe((_, state) => {
 
 onMounted(() => {
   getTax()
-// TODO 获取当前车间是否选择了轨道型号
+// TODO 根据车间起重机的总电流判断，大于120A选择单级，小于选择多级，如超出400A直接报错提醒, 后期放置在offerStore.$subscribe处worshop遍历时处理并给splpartOptions赋值
   queryListSplpart()
 })
 

@@ -224,9 +224,9 @@ const savePartData = () => {
   formModel.product.forEach(item => {
     if (productItem && productItem.workshopItemKey === item.key) {
       const amountItem = item.amount[productItem.index]
-      amountItem.partData = cloneDeep(partDataSource.value)
-      amountItem.partQuote = cloneDeep(partDialogData)
-      amountItem.productData = {
+      amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
+      amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
+      amountItem.productData = { // 部件对应产品信息
         name: productItem.name,
         ratedPower: productItem.ratedPower,
         liftSpeed: productItem.liftSpeed,
@@ -239,6 +239,13 @@ const savePartData = () => {
   cancel()
 }
 
+/**
+ * 选择产品后，请求对应部件信息
+ * @param data
+ * @param workshopItemKey
+ * @param index
+ * @returns {Promise<void>}
+ */
 const queryPart = async (data, workshopItemKey, index) => {
   // TODO 判断当前是否选择过部件
   productId.value = undefined
@@ -250,7 +257,7 @@ const queryPart = async (data, workshopItemKey, index) => {
     work_level: data.level
   })
   if (resp.code === 200) {
-  // 遍历BOM清单
+  // 遍历产品下的BOM清单
     resp.rows.forEach(item => {
       if (item.bomParams) {
         const bomData = JSON.parse(item.bomParams)

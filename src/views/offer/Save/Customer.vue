@@ -99,8 +99,9 @@ const offerStore = useOfferStore()
 
 const formData = reactive({
   customer: '',
-  customerId: '',
-  workshopInfo: []
+  customerId: '', // 客户ID
+  customerItem: '', // 客户信息
+  workshopInfo: [] // 车间信息
 })
 
 const rules = reactive({
