@@ -369,6 +369,13 @@
               />
             </el-select>
           </template>
+          <template v-else>
+            <el-select
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+            ></el-select>
+          </template>
         </el-form-item>
       </el-col>
       <el-col :span="8">
@@ -417,6 +424,13 @@
                 :value="dict.value"
               />
             </el-select>
+          </template>
+          <template v-else>
+            <el-select
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+            ></el-select>
           </template>
         </el-form-item>
       </el-col>
@@ -467,6 +481,13 @@
               />
             </el-select>
           </template>
+          <template v-else>
+            <el-select
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+            ></el-select>
+          </template>
         </el-form-item>
       </el-col>
       <el-col :span="8">
@@ -515,6 +536,13 @@
                 :value="dict.value"
               />
             </el-select>
+          </template>
+          <template v-else>
+            <el-select
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+            ></el-select>
           </template>
         </el-form-item>
       </el-col>
