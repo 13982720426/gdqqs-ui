@@ -23,21 +23,33 @@
         label-width="68px"
       >
         <el-form-item prop="trackModel" v-show="orbitModel">
-          <el-input
+          <el-select
             v-model="queryParams.trackModel"
-            placeholder="轨道型号模糊搜索"
+            placeholder="请选择轨道型号"
             clearable
-            @keyup.enter="handleQuery"
-          />
+          >
+            <el-option
+              v-for="dict in q_track_model"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
 
-        <el-form-item prop="splPartName" v-show="slipLine">
-          <el-input
-            v-model="queryParams.splPartName"
-            placeholder="滑线名称模糊搜索"
+        <el-form-item prop="splLevel" v-show="slipLine">
+          <el-select
+            v-model="queryParams.splLevel"
+            placeholder="请选择滑线数级"
             clearable
-            @keyup.enter="handleQuery"
-          />
+          >
+            <el-option
+              v-for="dict in q_spl_level"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
 
         <el-form-item prop="unprice" v-show="orbit">
@@ -52,22 +64,34 @@
         <el-form-item prop="model" v-show="paint">
           <el-input
             v-model="queryParams.model"
-            placeholder="油漆型号模糊搜索"
+            placeholder="请输入油漆型号"
             clearable
             @keyup.enter="handleQuery"
           />
         </el-form-item>
 
         <el-form-item prop="craneModel" v-show="crane">
-          <el-input
+          <el-select
             v-model="queryParams.craneModel"
-            placeholder="起重机型号模糊搜索"
+            placeholder="请选择起重机型号"
             clearable
-            @keyup.enter="handleQuery"
-          />
+          >
+            <el-option
+              v-for="dict in q_single_crane_model"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button color="#ffdac6" class="sel" type="primary" icon="Search" @click="handleQuery">
+          <el-button
+            color="#ffdac6"
+            class="sel"
+            type="primary"
+            icon="Search"
+            @click="handleQuery"
+          >
             搜索
           </el-button>
           <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -214,9 +238,17 @@
     </el-tabs>
   </div>
   <SaveTitle :title="saveTitle" v-show="showList">
-    <Save :form="form" :rules="rules" :type="saveType" ref="saveFormRef" :disabled="disabled" />
+    <Save
+      :form="form"
+      :rules="rules"
+      :type="saveType"
+      ref="saveFormRef"
+      :disabled="disabled"
+    />
     <div class="save-footer">
-      <el-button color="#ffdac6" class="sel" type="primary" @click="submitForm">确 定</el-button>
+      <el-button color="#ffdac6" class="sel" type="primary" @click="submitForm">
+        确 定
+      </el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
   </SaveTitle>
@@ -294,21 +326,21 @@ const trackPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: row => installPartsFormat(row),
+    format: (row) => installPartsFormat(row),
   },
   {
     id: 2,
     prop: 'fixedMode',
     label: '固定方式',
     align: 'center',
-    format: row => fixedWayFormat(row),
+    format: (row) => fixedWayFormat(row),
   },
   {
     id: 3,
     prop: 'trackModel',
     label: '轨道型号',
     align: 'center',
-    format: row => orbitModelFormat(row),
+    format: (row) => orbitModelFormat(row),
   },
   {
     id: 4,
@@ -360,7 +392,7 @@ const splPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: row => installPartsFormat(row),
+    format: (row) => installPartsFormat(row),
   },
   {
     id: 2,
@@ -418,7 +450,7 @@ const crastopmodelPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: row => installPartsFormat(row),
+    format: (row) => installPartsFormat(row),
   },
   {
     id: 2,
@@ -434,7 +466,7 @@ const crastopmodelPartColumns = ref([
   },
   {
     id: 4,
-    prop: 'unprice',
+    prop: 'track',
     label: '轨道',
     align: 'center',
   },
@@ -446,7 +478,7 @@ const paintPartColumns = ref([
     prop: 'partType',
     label: '部件类型',
     align: 'center',
-    format: row => installPartsFormat(row),
+    format: (row) => installPartsFormat(row),
   },
   {
     id: 2,
@@ -468,21 +500,21 @@ const productPartColumns = ref([
     prop: 'partType',
     label: '全部部件类型',
     align: 'center',
-    format: row => productFormat(row),
+    format: (row) => productFormat(row),
   },
   {
     id: 2,
     prop: 'qProduct.craneType',
     label: '起重机类型',
     align: 'center',
-    format: row => craneTypeFormat(row),
+    format: (row) => craneTypeFormat(row),
   },
   {
     id: 3,
     prop: 'qProduct.craneModel',
     label: '起重机型号',
     align: 'center',
-    format: row => craneModelFormat(row),
+    format: (row) => craneModelFormat(row),
   },
   {
     id: 4,
@@ -495,21 +527,21 @@ const productPartColumns = ref([
     prop: 'qProduct.span',
     label: '跨度',
     align: 'center',
-    format: row => spanFormat(row),
+    format: (row) => spanFormat(row),
   },
   {
     id: 6,
     prop: 'qProduct.liftHeight',
     label: '起升高度',
     align: 'center',
-    format: row => liftHeightFormat(row),
+    format: (row) => liftHeightFormat(row),
   },
   {
     id: 7,
     prop: 'qProduct.workLevel',
     label: '工作级别',
     align: 'center',
-    format: row => workLevelFormat(row),
+    format: (row) => workLevelFormat(row),
   },
   {
     id: 8,
@@ -534,7 +566,7 @@ const productPartColumns = ref([
     prop: 'unit',
     label: '单位',
     align: 'center',
-    format: row => unitFormat(row),
+    format: (row) => unitFormat(row),
   },
   {
     id: 12,
@@ -548,7 +580,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     trackModel: undefined,
-    splPartName: undefined,
+    splLevel: undefined,
     unprice: undefined,
     model: undefined,
     craneModel: undefined,
@@ -557,6 +589,8 @@ const data = reactive({
   rules: {},
   productsub: {},
 })
+
+const trackModelOptions = ref([])
 
 const { queryParams, form, rules, productsub } = toRefs(data)
 
@@ -586,6 +620,7 @@ const {
   q_track_model,
   q_part_type,
   q_unit,
+  q_spl_level,
 } = proxy.useDict(
   'q_crane_type',
   'q_oper_mode',
@@ -611,7 +646,8 @@ const {
   'q_fixed_mode',
   'q_track_model',
   'q_part_type',
-  'q_unit'
+  'q_unit',
+  'q_spl_level',
 )
 
 // 超重机类型翻译
@@ -624,7 +660,10 @@ function craneOperationFormat(row, column) {
 }
 // 起重机型号翻译
 function craneModelFormat(row, column) {
-  return proxy.selectDictLabel(q_double_crane_model.value, row?.qProduct?.craneModel)
+  return proxy.selectDictLabel(
+    q_double_crane_model.value,
+    row?.qProduct?.craneModel,
+  )
 }
 // 跨度翻译
 function spanFormat(row, column) {
@@ -632,11 +671,17 @@ function spanFormat(row, column) {
 }
 //起升高度翻译
 function liftHeightFormat(row, column) {
-  return proxy.selectDictLabel(q_double_crane_lift_height.value, row?.qProduct?.liftHeight)
+  return proxy.selectDictLabel(
+    q_double_crane_lift_height.value,
+    row?.qProduct?.liftHeight,
+  )
 }
 // 工作级别翻译
 function workLevelFormat(row, column) {
-  return proxy.selectDictLabel(q_double_crane_work_level.value, row?.qProduct?.workLevel)
+  return proxy.selectDictLabel(
+    q_double_crane_work_level.value,
+    row?.qProduct?.workLevel,
+  )
 }
 
 //起重机单位
@@ -664,31 +709,31 @@ function productFormat(row, column) {
 function getList() {
   loading.value = true
   if (activeTab.value == 'first') {
-    listTrackpart(queryParams.value).then(response => {
+    listTrackpart(queryParams.value).then((response) => {
       trackPartList.value = response.rows
       total.value = response.total
       loading.value = false
     })
   } else if (activeTab.value == 'second') {
-    listSplpart(queryParams.value).then(response => {
+    listSplpart(queryParams.value).then((response) => {
       splPartList.value = response.rows
       total.value = response.total
       loading.value = false
     })
   } else if (activeTab.value == 'third') {
-    listCrastopmodelpart(queryParams.value).then(response => {
+    listCrastopmodelpart(queryParams.value).then((response) => {
       crastopmodelPartList.value = response.rows
       total.value = response.total
       loading.value = false
     })
   } else if (activeTab.value == 'fourth') {
-    listPaintpart(queryParams.value).then(response => {
+    listPaintpart(queryParams.value).then((response) => {
       paintPartList.value = response.rows
       total.value = response.total
       loading.value = false
     })
   } else if (activeTab.value == 'six') {
-    listProductpart(queryParams.value).then(response => {
+    listProductpart(queryParams.value).then((response) => {
       productPartList.value = response.rows
       total.value = response.total
       loading.value = false
@@ -747,13 +792,22 @@ function submitForm() {
   if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
     console.log('111')
-  } else if (form.value.partType === '2' && form.value.craneType === undefined) {
+  } else if (
+    form.value.partType === '2' &&
+    form.value.craneType === undefined
+  ) {
     activeTab.value = 'second'
     console.log('222')
-  } else if (form.value.partType === '3' && form.value.craneType === undefined) {
+  } else if (
+    form.value.partType === '3' &&
+    form.value.craneType === undefined
+  ) {
     activeTab.value = 'third'
     console.log('333')
-  } else if (form.value.partType === '4' && form.value.craneType === undefined) {
+  } else if (
+    form.value.partType === '4' &&
+    form.value.craneType === undefined
+  ) {
     activeTab.value = 'fourth'
     console.log('444')
   } else if (form.value.partType === '3' && form.value.craneType === '1') {
@@ -761,19 +815,19 @@ function submitForm() {
     console.log('555')
   }
   console.log(activeTab.value, form.value.partType)
-  proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate(valid => {
+  proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate((valid) => {
     if (valid) {
       //轨道
       if (activeTab.value === 'first') {
         if (form.value.trackPartId != null) {
-          updateTrackpart(form.value).then(response => {
+          updateTrackpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
             opentable.value = true
             getList()
           })
         } else {
-          addTrackpart(form.value).then(response => {
+          addTrackpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('新增成功')
             showList.value = false
             opentable.value = true
@@ -784,14 +838,14 @@ function submitForm() {
       //滑线
       if (activeTab.value === 'second') {
         if (form.value.splPartId != null) {
-          updateSplpart(form.value).then(response => {
+          updateSplpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
             opentable.value = true
             getList()
           })
         } else {
-          addSplpart(form.value).then(response => {
+          addSplpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('新增成功')
             showList.value = false
             opentable.value = true
@@ -802,14 +856,14 @@ function submitForm() {
       //大车
       if (activeTab.value === 'third') {
         if (form.value.cartPartId != null) {
-          updateCrastopmodelpart(form.value).then(response => {
+          updateCrastopmodelpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
             opentable.value = true
             getList()
           })
         } else {
-          addCrastopmodelpart(form.value).then(response => {
+          addCrastopmodelpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('新增成功')
             showList.value = false
             opentable.value = true
@@ -820,14 +874,14 @@ function submitForm() {
       //油漆
       if (activeTab.value === 'fourth') {
         if (form.value.paintPartId != null) {
-          updatePaintpart(form.value).then(response => {
+          updatePaintpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
             opentable.value = true
             getList()
           })
         } else {
-          addPaintpart(form.value).then(response => {
+          addPaintpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('新增成功')
             showList.value = false
             opentable.value = true
@@ -838,26 +892,26 @@ function submitForm() {
       //产品部件
       if (activeTab.value === 'six') {
         if (form.value.productPartId != null) {
-          updateProductpart(form.value).then(response => {
+          updateProductpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('修改成功')
             showList.value = false
             opentable.value = true
             getList()
           })
         } else {
-          listProduct().then(res => {
+          listProduct().then((res) => {
             productsub.value = res.rows
             const item = res.rows.find(
-              e =>
+              (e) =>
                 e.craneModel == form.value.craneModel &&
                 e.craneType == form.value.craneType &&
                 e.workLevel == form.value.workLevel &&
                 e.craneOperation == form.value.craneOperation &&
-                e.liftHeight == form.value.liftHeight
+                e.liftHeight == form.value.liftHeight,
             )
             if (item) {
               form.value.productId = item.productId
-              addProductpart(form.value).then(response => {
+              addProductpart(form.value).then((response) => {
                 proxy.$modal.msgSuccess('新增成功')
                 showList.value = false
                 opentable.value = true
@@ -885,7 +939,7 @@ function resetQuery() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.productId)
+  ids.value = selection.map((item) => item.productId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
 }
@@ -919,13 +973,22 @@ function handleAdd() {
   if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
     console.log(activeTab.value)
-  } else if (form.value.partType === '2' && form.value.craneType === undefined) {
+  } else if (
+    form.value.partType === '2' &&
+    form.value.craneType === undefined
+  ) {
     activeTab.value = 'second'
     console.log(activeTab.value)
-  } else if (form.value.partType === '3' && form.value.craneType === undefined) {
+  } else if (
+    form.value.partType === '3' &&
+    form.value.craneType === undefined
+  ) {
     activeTab.value = 'third'
     console.log(activeTab.value)
-  } else if (form.value.partType === '4' && form.value.craneType === undefined) {
+  } else if (
+    form.value.partType === '4' &&
+    form.value.craneType === undefined
+  ) {
     activeTab.value = 'fourth'
     console.log(activeTab.value)
   } else if (form.value.partType === '3' && form.value.craneType === '1') {
@@ -940,13 +1003,13 @@ function handleUpdate(row) {
   disabled.value = true
   if (activeTab.value == 'first') {
     const trackPartId = row.trackPartId || ids.value
-    getTrackpart(trackPartId).then(response => {
+    getTrackpart(trackPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改轨道'
     })
   } else if (activeTab.value == 'second') {
     const splPartId = row.splPartId || ids.value
-    getSplpart(splPartId).then(response => {
+    getSplpart(splPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改滑道'
     })
@@ -955,7 +1018,7 @@ function handleUpdate(row) {
     form.value = { partType: '2' }
   } else if (activeTab.value == 'third') {
     const cartPartId = row.cartPartId || ids.value
-    getCrastopmodelpart(cartPartId).then(response => {
+    getCrastopmodelpart(cartPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改大车止档型号'
     })
@@ -964,7 +1027,7 @@ function handleUpdate(row) {
     form.value = { partType: '3' }
   } else if (activeTab.value == 'fourth') {
     const paintPartId = row.paintPartId || ids.value
-    getPaintpart(paintPartId).then(response => {
+    getPaintpart(paintPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改油漆'
     })
@@ -973,7 +1036,7 @@ function handleUpdate(row) {
     form.value = { partType: '4' }
   } else if (activeTab.value == 'six') {
     const productPartId = row.productPartId || ids.value
-    getProductpart(productPartId).then(response => {
+    getProductpart(productPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改产品部件'
     })
@@ -1068,7 +1131,7 @@ function handleExport() {
     {
       ...queryParams.vallue,
     },
-    `product_${new Date().getTime()}.xlsx`
+    `product_${new Date().getTime()}.xlsx`,
   )
 }
 
