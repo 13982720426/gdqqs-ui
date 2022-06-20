@@ -100,7 +100,7 @@
     </div>
 
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
-      <el-tab-pane label="轨道" name="first">
+      <el-tab-pane label="轨道型号" name="first">
         <QTable
           :loading="loading"
           :data="trackPartList"
@@ -570,7 +570,7 @@ const productPartColumns = ref([
   },
   {
     id: 12,
-    prop: 'create_time',
+    prop: 'createTime',
     label: '创建时间',
     align: 'center',
   },
@@ -586,7 +586,33 @@ const data = reactive({
     craneModel: undefined,
   },
   form: {},
-  rules: {},
+  rules: {
+    partType: [{ required: true, message: '请选择部件类型', trigger: 'blur' }],
+    craneType: [
+      { required: true, message: '请选择起重机类型', trigger: 'blur' },
+    ],
+    craneOperation: [
+      { required: true, message: '请选择操作方式', trigger: 'blur' },
+    ],
+    control: [{ required: true, message: '请选择控制器', trigger: 'blur' }],
+    craneModel: [
+      { required: true, message: '请选择起重机型号', trigger: 'blur' },
+    ],
+    span: [{ required: true, message: '请选择跨度', trigger: 'blur' }],
+    liftHeight: [
+      { required: true, message: '请选择起升高度', trigger: 'blur' },
+    ],
+    workLevel: [{ required: true, message: '请选择工作级别', trigger: 'blur' }],
+    liftWeight: [
+      { required: true, message: '请选择起升重量', trigger: 'blur' },
+    ],
+    quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }],
+    partCode: [{ required: true, message: '请输入部件编码', trigger: 'blur' }],
+    brand: [{ required: true, message: '请输入品牌', trigger: 'blur' }],
+    unit: [{ required: true, message: '请选择单位', trigger: 'blur' }],
+    unitPrice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
+  },
+
   productsub: {},
 })
 
@@ -1044,11 +1070,12 @@ function handleUpdate(row) {
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
+  // console.log(111, row)
   // getProduct(productId).then((response) => {
-  //     form.value = response.data;
-  //     showList.value = false;
-  //     saveTitle.value = "修改产品";
-  // });
+  //   form.value = response.data
+  //   showList.value = false
+  //   saveTitle.value = '修改产品'
+  // })
 }
 
 /** 删除按钮操作 */

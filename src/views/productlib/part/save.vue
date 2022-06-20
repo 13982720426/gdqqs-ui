@@ -221,10 +221,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="轨道" prop="track">
+          <el-form-item label="轨道型号" prop="trackModel">
             <el-input
               v-model="form.unprice"
-              placeholder="请输入轨道"
+              placeholder="请输入轨道型号"
               style="width: 60%"
             />
           </el-form-item>
@@ -271,7 +271,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="起重机类型" prop="craneOperation">
+        <el-form-item label="起重机类型" prop="craneType">
           <el-select
             v-model="form.craneType"
             placeholder="请选择"
@@ -547,10 +547,36 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="型号" prop="model">
+        <el-form-item label="起升重量" prop="liftWeight">
+          <el-select
+            v-model="form.liftWeight"
+            placeholder="请选择"
+            clearable
+            style="width: 60%"
+          >
+            <el-option
+              v-for="item in liftWeight"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="数量" prop="quantity">
           <el-input
-            v-model="form.model"
-            placeholder="请输入型号"
+            v-model="form.quantity"
+            placeholder="请输入"
+            style="width: 60%"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="部件编码" prop="partCode">
+          <el-input
+            v-model="form.partCode"
+            placeholder="请输入"
             style="width: 60%"
           />
         </el-form-item>
@@ -559,7 +585,7 @@
         <el-form-item label="品牌" prop="brand">
           <el-input
             v-model="form.brand"
-            placeholder="请输入品牌"
+            placeholder="请输入"
             style="width: 60%"
           />
         </el-form-item>
@@ -585,7 +611,7 @@
         <el-form-item label="单价" prop="unitPrice">
           <el-input
             v-model="form.unitPrice"
-            placeholder="请输入单价"
+            placeholder="请输入"
             style="width: 60%"
           />
         </el-form-item>
@@ -596,6 +622,13 @@
 
 <script setup name="PartSave">
 const { proxy } = getCurrentInstance()
+
+const liftWeight = [
+  {
+    value: '1',
+    label: '1',
+  },
+]
 
 const props = defineProps({
   // 表格数据
