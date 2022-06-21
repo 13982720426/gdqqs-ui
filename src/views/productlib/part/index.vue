@@ -100,7 +100,7 @@
     </div>
 
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
-      <el-tab-pane label="轨道型号" name="first">
+      <el-tab-pane label="轨道" name="first">
         <QTable
           :loading="loading"
           :data="trackPartList"
@@ -363,25 +363,25 @@ const trackPartColumns = ref([
   {
     id: 7,
     prop: 'tppUnprice',
-    label: '压板单价',
+    label: '压板单价(元)',
     align: 'center',
   },
   {
     id: 8,
     prop: 'cpUnprice',
-    label: '联结板单价',
+    label: '联结板单价(元)',
     align: 'center',
   },
   {
     id: 9,
     prop: 'thsUnprice',
-    label: '吊装台班单价',
+    label: '吊装台班单价(元)',
     align: 'center',
   },
   {
     id: 10,
     prop: 'trackInstallPrice',
-    label: '轨道安装单价',
+    label: '轨道安装单价(元)',
     align: 'center',
   },
 ])
@@ -399,6 +399,7 @@ const splPartColumns = ref([
     prop: 'splLevel',
     label: '滑线级数',
     align: 'center',
+    format: (row) => splLevelFormat(row),
   },
   {
     id: 3,
@@ -411,6 +412,7 @@ const splPartColumns = ref([
     prop: 'electricMax',
     label: '最大电流',
     align: 'center',
+    format: (row) => electricMaxFormat(row),
   },
   {
     id: 5,
@@ -588,6 +590,51 @@ const data = reactive({
   form: {},
   rules: {
     partType: [{ required: true, message: '请选择部件类型', trigger: 'blur' }],
+    //轨道
+    fixedMode: [{ required: true, message: '请选择固定方式', trigger: 'blur' }],
+    sgltrackLength: [
+      { required: true, message: '请输入单根轨道长度', trigger: 'blur' },
+    ],
+    sgltrackWeight: [
+      { required: true, message: '请输入单根轨道重量', trigger: 'blur' },
+    ],
+    trackUnprice: [
+      { required: true, message: '请输入单根轨道单价', trigger: 'blur' },
+    ],
+    tppUnprice: [
+      { required: true, message: '请输入轨道压板单价', trigger: 'blur' },
+    ],
+    cpUnprice: [
+      { required: true, message: '请输入联结板单价', trigger: 'blur' },
+    ],
+    thsUnprice: [
+      { required: true, message: '请输入轨道吊装台班单价', trigger: 'blur' },
+    ],
+    trackInstallPrice: [
+      { required: true, message: '请输入轨道安装单价', trigger: 'blur' },
+    ],
+    //滑线
+    splLevel: [{ required: true, message: '请选择滑线级数', trigger: 'blur' }],
+    splPartName: [
+      { required: true, message: '请输入滑线名称', trigger: 'blur' },
+    ],
+    electricMax: [
+      { required: true, message: '请选择最大电流', trigger: 'blur' },
+    ],
+    trolleyUnprice: [
+      { required: true, message: '请输入滑触线单价', trigger: 'blur' },
+    ],
+    collector: [{ required: true, message: '请输入集电器', trigger: 'blur' }],
+    installUnprice: [
+      { required: true, message: '请输入安装费单价', trigger: 'blur' },
+    ],
+    idlightUnprice: [
+      { required: true, message: '请输入指示灯单价', trigger: 'blur' },
+    ],
+    rcableUnprice: [
+      { required: true, message: '请输入上升电缆单价', trigger: 'blur' },
+    ],
+
     craneType: [
       { required: true, message: '请选择起重机类型', trigger: 'blur' },
     ],
@@ -647,6 +694,8 @@ const {
   q_part_type,
   q_unit,
   q_spl_level,
+  q_electric_max,
+  qq_electric_max,
 } = proxy.useDict(
   'q_crane_type',
   'q_oper_mode',
@@ -674,6 +723,8 @@ const {
   'q_part_type',
   'q_unit',
   'q_spl_level',
+  'q_electric_max',
+  'qq_electric_max',
 )
 
 // 超重机类型翻译
@@ -729,6 +780,18 @@ function orbitModelFormat(row, column) {
 //产品部件类型翻译
 function productFormat(row, column) {
   return proxy.selectDictLabel(q_part_type.value, row.partType)
+}
+//滑线级数翻译
+function splLevelFormat(row, column) {
+  return proxy.selectDictLabel(q_spl_level.value, row.splLevel)
+}
+//最大电流翻译
+function electricMaxFormat(row, column) {
+  if (row.splLevel == 1) {
+    return proxy.selectDictLabel(q_electric_max.value, row.electricMax)
+  } else {
+    return proxy.selectDictLabel(qq_electric_max.value, row.electricMax)
+  }
 }
 
 /** 查询列表 */
@@ -973,7 +1036,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   opentable.value = false
   showList.value = true
-  disabled.value = true
+  disabled.value = false
   if (activeTab.value == 'first') {
     saveTitle.value = '新增轨道'
     saveType.value = 'install'
@@ -995,7 +1058,6 @@ function handleAdd() {
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
-  console.log(form.value, 'form.value')
   if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
     console.log(activeTab.value)
@@ -1070,12 +1132,6 @@ function handleUpdate(row) {
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
-  // console.log(111, row)
-  // getProduct(productId).then((response) => {
-  //   form.value = response.data
-  //   showList.value = false
-  //   saveTitle.value = '修改产品'
-  // })
 }
 
 /** 删除按钮操作 */

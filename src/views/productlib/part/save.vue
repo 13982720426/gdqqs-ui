@@ -1,5 +1,5 @@
 <template>
-  <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="160px">
+  <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="180px">
     <el-row v-if="type === 'install'">
       <el-col :span="8">
         <el-form-item label="部件类型" prop="partType">
@@ -9,7 +9,7 @@
             clearable
             style="width: 60%"
             @change="handlePartType"
-            :disabled="disabled"
+            :disabled="true"
           >
             <el-option
               v-for="dict in q_install_parttype"
@@ -56,11 +56,14 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="单根轨道长度(米)" prop="fixedMode">
+          <el-form-item label="单根轨道长度(米)" prop="sgltrackLength">
             <el-input
               v-model="form.sgltrackLength"
               placeholder="请输入单根轨道长度（米）"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
@@ -70,6 +73,9 @@
               v-model="form.sgltrackWeight"
               placeholder="请输入单根轨道重量（公斤/米）"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
@@ -77,44 +83,59 @@
           <el-form-item label="轨道单价(元/公斤)" prop="trackUnprice">
             <el-input
               v-model="form.trackUnprice"
-              placeholder="请输入轨道单价"
+              placeholder="请输入轨道单价(元/公斤)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="轨道压板单价" prop="tppUnprice">
+          <el-form-item label="轨道压板单价(元)" prop="tppUnprice">
             <el-input
               v-model="form.tppUnprice"
-              placeholder="请输入轨道压板单价"
+              placeholder="请输入轨道压板单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="联结板单价" prop="cpUnprice">
+          <el-form-item label="联结板单价(元)" prop="cpUnprice">
             <el-input
               v-model="form.cpUnprice"
-              placeholder="请输入联结板单价"
+              placeholder="请输入联结板单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="轨道吊装台班单价" prop="thsUnprice">
+          <el-form-item label="轨道吊装台班单价(元)" prop="thsUnprice">
             <el-input
               v-model="form.thsUnprice"
-              placeholder="请输入轨道吊装台班单价"
+              placeholder="请输入轨道吊装台班单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="轨道安装单价" prop="trackInstallPrice">
+          <el-form-item label="轨道安装单价(元)" prop="trackInstallPrice">
             <el-input
               v-model="form.trackInstallPrice"
-              placeholder="请输入轨道安装单价"
+              placeholder="请输入轨道安装单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
@@ -138,29 +159,65 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
+          <el-form-item label="最大电流" prop="electricMax">
+            <template v-if="form.splLevel == 1">
+              <el-select
+                v-model="form.electricMax"
+                placeholder="请选择"
+                clearable
+                style="width: 60%"
+              >
+                <el-option
+                  v-for="dict in q_electric_max"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </template>
+            <template v-else-if="form.splLevel == 2">
+              <el-select
+                v-model="form.electricMax"
+                placeholder="请选择"
+                clearable
+                style="width: 60%"
+              >
+                <el-option
+                  v-for="dict in qq_electric_max"
+                  :key="dict.value"
+                  :label="dict.label"
+                  :value="dict.value"
+                />
+              </el-select>
+            </template>
+            <template v-else>
+              <el-select
+                placeholder="请选择"
+                clearable
+                style="width: 60%"
+              ></el-select>
+            </template>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
           <el-form-item label="滑线名称" prop="splPartName">
             <el-input
               v-model="form.splPartName"
-              placeholder="请输入最大电流"
+              placeholder="请输入滑线名称"
               style="width: 60%"
             />
           </el-form-item>
         </el-col>
+
         <el-col :span="8">
-          <el-form-item label="最大电流" prop="electricMax">
-            <el-input
-              v-model="form.electricMax"
-              placeholder="请输入最大电流"
-              style="width: 60%"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="滑触线单价" prop="trolleyUnprice">
+          <el-form-item label="滑触线单价(元)" prop="trolleyUnprice">
             <el-input
               v-model="form.trolleyUnprice"
-              placeholder="请输入滑触线单价"
+              placeholder="请输入滑触线单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
@@ -170,24 +227,33 @@
               v-model="form.collector"
               placeholder="请输入集电器"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="安装费单价" prop="installUnprice">
+          <el-form-item label="安装费单价(元)" prop="installUnprice">
             <el-input
               v-model="form.installUnprice"
-              placeholder="请输入安装费单价"
+              placeholder="请输入安装费单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="指示灯单价" prop="idlightUnprice">
+          <el-form-item label="指示灯单价(元)" prop="idlightUnprice">
             <el-input
               v-model="form.idlightUnprice"
-              placeholder="请输入指示灯单价"
+              placeholder="请输入指示灯单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
@@ -197,6 +263,9 @@
               v-model="form.rcableUnprice"
               placeholder="请输入上升电缆单价"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
@@ -260,6 +329,7 @@
             clearable
             style="width: 60%"
             @change="handlePartType"
+            :disabled="disabled"
           >
             <el-option
               v-for="dict in q_part_type"
@@ -278,6 +348,7 @@
             clearable
             style="width: 60%"
             @change="handleCraneType"
+            :disabled="disabled"
           >
             <el-option
               v-for="dict in q_crane_type"
@@ -289,12 +360,31 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
+        <el-form-item label="起升重量" prop="liftWeight">
+          <el-select
+            v-model="form.liftWeight"
+            placeholder="请选择"
+            clearable
+            style="width: 60%"
+            :disabled="disabled"
+          >
+            <el-option
+              v-for="item in liftWeight"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
         <el-form-item label="操作方式" prop="craneOperation">
           <el-select
             v-model="form.craneOperation"
             placeholder="请选择"
             clearable
             style="width: 60%"
+            :disabled="disabled"
           >
             <el-option
               v-for="dict in q_oper_mode"
@@ -312,6 +402,7 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
+            :disabled="disabled"
           >
             <el-option
               v-for="dict in sys_yes_no"
@@ -330,6 +421,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_single_crane_model"
@@ -345,6 +437,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_double_crane_model"
@@ -360,6 +453,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_susp_crane_model"
@@ -374,6 +468,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             ></el-select>
           </template>
         </el-form-item>
@@ -386,6 +481,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_single_crane_span"
@@ -401,6 +497,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_double_crane_span"
@@ -416,6 +513,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_susp_crane_span"
@@ -430,6 +528,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             ></el-select>
           </template>
         </el-form-item>
@@ -442,6 +541,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_single_crane_lift_height"
@@ -457,6 +557,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_double_crane_lift_height"
@@ -472,6 +573,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_susp_crane_lift_height"
@@ -486,6 +588,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             ></el-select>
           </template>
         </el-form-item>
@@ -498,6 +601,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_single_crane_work_level"
@@ -513,6 +617,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_double_crane_work_level"
@@ -528,6 +633,7 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             >
               <el-option
                 v-for="dict in q_susp_crane_work_level"
@@ -542,33 +648,19 @@
               placeholder="请选择"
               clearable
               style="width: 60%"
+              :disabled="disabled"
             ></el-select>
           </template>
         </el-form-item>
       </el-col>
-      <el-col :span="8">
-        <el-form-item label="起升重量" prop="liftWeight">
-          <el-select
-            v-model="form.liftWeight"
-            placeholder="请选择"
-            clearable
-            style="width: 60%"
-          >
-            <el-option
-              v-for="item in liftWeight"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-col>
+
       <el-col :span="8">
         <el-form-item label="数量" prop="quantity">
           <el-input
             v-model="form.quantity"
             placeholder="请输入"
             style="width: 60%"
+            :disabled="disabled"
           />
         </el-form-item>
       </el-col>
@@ -578,6 +670,8 @@
             v-model="form.partCode"
             placeholder="请输入"
             style="width: 60%"
+            maxlength="32"
+            show-word-limit
           />
         </el-form-item>
       </el-col>
@@ -587,6 +681,8 @@
             v-model="form.brand"
             placeholder="请输入"
             style="width: 60%"
+            maxlength="32"
+            show-word-limit
           />
         </el-form-item>
       </el-col>
@@ -674,6 +770,8 @@ const {
   q_double_crane_work_level,
   q_susp_crane_work_level,
   q_unit,
+  q_electric_max,
+  qq_electric_max,
 } = proxy.useDict(
   'q_part_type',
   'q_fixed_mode',
@@ -696,6 +794,8 @@ const {
   'q_double_crane_work_level',
   'q_susp_crane_work_level',
   'q_unit',
+  'q_electric_max',
+  'qq_electric_max',
 )
 
 function handlePartType() {
