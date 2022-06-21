@@ -46,7 +46,11 @@
         label-width="68px"
       >
         <el-form-item prop="craneOperation">
-          <el-select v-model="queryParams.craneOperation" placeholder="操作方式模糊搜索" clearable>
+          <el-select
+            v-model="queryParams.craneOperation"
+            placeholder="操作方式模糊搜索"
+            clearable
+          >
             <el-option
               v-for="dict in q_oper_mode"
               :key="dict.value"
@@ -56,15 +60,27 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button color="#ffdac6" class="sel" type="primary" icon="Search" @click="handleQuery">
+          <el-button
+            color="#ffdac6"
+            class="sel"
+            type="primary"
+            icon="Search"
+            @click="handleQuery"
+          >
             搜索
           </el-button>
-          <el-button icon="Refresh" size="mini" @click="resetQuery">重置</el-button>
+          <el-button icon="Refresh" size="mini" @click="resetQuery">
+            重置
+          </el-button>
         </el-form-item>
       </el-form>
     </div>
 
-    <el-table v-loading="loading" :data="productList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="productList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="起重机类型" align="center" prop="craneType">
         <template #default="{ row }">
@@ -154,7 +170,11 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="操作方式" prop="craneOperation">
-            <el-select v-model="form.craneOperation" placeholder="请选择" clearable>
+            <el-select
+              v-model="form.craneOperation"
+              placeholder="请选择"
+              clearable
+            >
               <el-option
                 v-for="dict in q_oper_mode"
                 :key="dict.value"
@@ -228,7 +248,12 @@
         <el-col :span="8">
           <el-form-item label="跨度" prop="span">
             <template v-if="form.craneType == 1">
-              <el-select v-model="form.span" placeholder="请选择" clearable style="width: 53%">
+              <el-select
+                v-model="form.span"
+                placeholder="请选择"
+                clearable
+                style="width: 53%"
+              >
                 <el-option
                   v-for="dict in q_single_crane_span"
                   :key="dict.value"
@@ -238,7 +263,12 @@
               </el-select>
             </template>
             <template v-else-if="form.craneType == 2">
-              <el-select v-model="form.span" placeholder="请选择" clearable style="width: 53%">
+              <el-select
+                v-model="form.span"
+                placeholder="请选择"
+                clearable
+                style="width: 53%"
+              >
                 <el-option
                   v-for="dict in q_double_crane_span"
                   :key="dict.value"
@@ -248,7 +278,12 @@
               </el-select>
             </template>
             <template v-else-if="form.craneType == 3">
-              <el-select v-model="form.span" placeholder="请选择" clearable style="width: 53%">
+              <el-select
+                v-model="form.span"
+                placeholder="请选择"
+                clearable
+                style="width: 53%"
+              >
                 <el-option
                   v-for="dict in q_susp_crane_span"
                   :key="dict.value"
@@ -311,7 +346,12 @@
         <el-col :span="8">
           <el-form-item label="工作级别" prop="workLevel">
             <template v-if="form.craneType == 1">
-              <el-select v-model="form.workLevel" placeholder="请选择" clearable style="width: 53%">
+              <el-select
+                v-model="form.workLevel"
+                placeholder="请选择"
+                clearable
+                style="width: 53%"
+              >
                 <el-option
                   v-for="dict in q_single_crane_work_level"
                   :key="dict.value"
@@ -321,7 +361,12 @@
               </el-select>
             </template>
             <template v-else-if="form.craneType == 2">
-              <el-select v-model="form.workLevel" placeholder="请选择" clearable style="width: 53%">
+              <el-select
+                v-model="form.workLevel"
+                placeholder="请选择"
+                clearable
+                style="width: 53%"
+              >
                 <el-option
                   v-for="dict in q_double_crane_work_level"
                   :key="dict.value"
@@ -331,7 +376,12 @@
               </el-select>
             </template>
             <template v-else-if="form.craneType == 3">
-              <el-select v-model="form.workLevel" placeholder="请选择" clearable style="width: 53%">
+              <el-select
+                v-model="form.workLevel"
+                placeholder="请选择"
+                clearable
+                style="width: 53%"
+              >
                 <el-option
                   v-for="dict in q_susp_crane_work_level"
                   :key="dict.value"
@@ -344,7 +394,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="额定功率KW" prop="ratedPower">
-            <el-select v-model="form.ratedPower" placeholder="请选择" clearable style="width: 53%">
+            <el-select
+              v-model="form.ratedPower"
+              placeholder="请选择"
+              clearable
+              style="width: 53%"
+            >
               <el-option
                 v-for="dict in q_rated_power"
                 :key="dict.value"
@@ -356,7 +411,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="起升速度" prop="liftSpeed">
-            <el-select v-model="form.liftSpeed" placeholder="请选择" clearable style="width: 53%">
+            <el-select
+              v-model="form.liftSpeed"
+              placeholder="请选择"
+              clearable
+              style="width: 53%"
+            >
               <el-option
                 v-for="dict in q_lift_speed"
                 :key="dict.value"
@@ -368,7 +428,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="小车运行速度" prop="crabSpeed">
-            <el-select v-model="form.crabSpeed" placeholder="请选择" clearable style="width: 53%">
+            <el-select
+              v-model="form.crabSpeed"
+              placeholder="请选择"
+              clearable
+              style="width: 53%"
+            >
               <el-option
                 v-for="dict in q_crab_speed"
                 :key="dict.value"
@@ -380,7 +445,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="大车运行速度" prop="cartSpeed">
-            <el-select v-model="form.cartSpeed" placeholder="请选择" clearable style="width: 53%">
+            <el-select
+              v-model="form.cartSpeed"
+              placeholder="请选择"
+              clearable
+              style="width: 53%"
+            >
               <el-option
                 v-for="dict in q_cart_speed"
                 :key="dict.value"
@@ -392,7 +462,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="最大轮压" prop="pressureMax">
-            <el-select v-model="form.pressureMax" placeholder="请选择" clearable style="width: 53%">
+            <el-select
+              v-model="form.pressureMax"
+              placeholder="请选择"
+              clearable
+              style="width: 53%"
+            >
               <el-option
                 v-for="dict in q_pressure_max"
                 :key="dict.value"
@@ -454,16 +529,29 @@
         </el-col>
       </el-row>
       <span style="font-size: 12px; padding-bottom: 50px">型号：</span>
-      <QTable :loading="loading" :data="excelList" :columns="excelListColumns" :showOper="false" class="tab"></QTable>
+      <QTable
+        :loading="loading"
+        :data="excelList"
+        :columns="excelListColumns"
+        :showOper="false"
+        class="tab"
+      ></QTable>
     </el-form>
     <div class="save-footer">
-      <el-button type="primary" @click="submitForm" color="#ffdac6" class="sel">确 定</el-button>
+      <el-button type="primary" @click="submitForm" color="#ffdac6" class="sel">
+        确 定
+      </el-button>
       <el-button @click="cancel">取 消</el-button>
     </div>
   </SaveTitle>
 
   <!-- 导入对话框 -->
-  <el-dialog :title="upload.title" v-model="upload.open" width="400px" append-to-body>
+  <el-dialog
+    :title="upload.title"
+    v-model="upload.open"
+    width="400px"
+    append-to-body
+  >
     <el-upload
       ref="uploadRef"
       :limit="1"
@@ -483,10 +571,6 @@
       </div>
       <template #tip>
         <div class="el-upload__tip text-center">
-          <div class="el-upload__tip">
-            <el-checkbox v-model="upload.updateSupport" />
-            是否更新已经存在的数据
-          </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
         </div>
       </template>
@@ -512,12 +596,19 @@ import {
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
-const upUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel')
-const productUrl = ref(import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData')
+const upUrl = ref(
+  import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel',
+)
+const productUrl = ref(
+  import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData',
+)
 const mb = ref('') //模板下载地址
 const { proxy } = getCurrentInstance()
 const router = useRouter()
-const headers = ref({ Authorization: 'Bearer ' + getToken(), 'Access-Control-Allow-Origin': '*' })
+const headers = ref({
+  Authorization: 'Bearer ' + getToken(),
+  'Access-Control-Allow-Origin': '*',
+})
 const productList = ref([])
 const loading = ref(true)
 const showSearch = ref(true)
@@ -591,6 +682,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     craneOperation: null,
+    productId: null,
   },
   form: {},
   rules: {},
@@ -639,7 +731,7 @@ const {
   'q_lift_speed',
   'q_crab_speed',
   'q_cart_speed',
-  'q_pressure_max'
+  'q_pressure_max',
 )
 
 // 超重机类型翻译
@@ -673,9 +765,15 @@ function spanFormat(row, column) {
 //起升高度翻译
 function liftHeightFormat(row, column) {
   if (row.craneType == 1) {
-    return proxy.selectDictLabel(q_single_crane_lift_height.value, row.liftHeight)
+    return proxy.selectDictLabel(
+      q_single_crane_lift_height.value,
+      row.liftHeight,
+    )
   } else if (row.craneType == 2) {
-    return proxy.selectDictLabel(q_double_crane_lift_height.value, row.liftHeight)
+    return proxy.selectDictLabel(
+      q_double_crane_lift_height.value,
+      row.liftHeight,
+    )
   } else if (row.craneType == 3) {
     return proxy.selectDictLabel(q_susp_crane_lift_height.value, row.liftHeight)
   }
@@ -694,16 +792,15 @@ function workLevelFormat(row, column) {
 /** 查询产品列表 */
 function getList() {
   loading.value = true
-  listProduct(queryParams.value).then(response => {
+  listProduct(queryParams.value).then((response) => {
     productList.value = response.rows
-    console.log(response, 'response.rows')
     total.value = response.total
     loading.value = false
   })
 }
 
-//文件上传
-function submitfile() {}
+// //文件上传
+// function submitfile() {}
 
 /*** 导入参数 */
 const upload = reactive({
@@ -774,7 +871,7 @@ function reset() {
 
 function getvalues(data) {
   // form.value.bomParams = JSON.parse(data.bomParams)
-  data.forEach(e => {
+  data.forEach((e) => {
     // excelList.value.push(e.bomParams)
     excelList.value = e.bomParams
   })
@@ -783,16 +880,16 @@ function getvalues(data) {
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs['saveFormRef'].validate(valid => {
+  proxy.$refs['saveFormRef'].validate((valid) => {
     if (valid) {
       if (form.value.productId != null) {
-        updateProduct(form.value).then(response => {
+        updateProduct(form.value).then((response) => {
           proxy.$modal.msgSuccess('修改成功')
           showList.value = true
           getList()
         })
       } else {
-        addProduct(form.value).then(response => {
+        addProduct(form.value).then((response) => {
           proxy.$modal.msgSuccess('新增成功')
           showList.value = true
           getList()
@@ -814,9 +911,10 @@ function resetQuery() {
 }
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.productId)
+  ids.value = selection.map((item) => item.productId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
+  console.log(ids.value, single.value, multiple.value)
 }
 /** 新增按钮操作 */
 function handleAdd() {
@@ -826,7 +924,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   const productId = row.productId || ids.value
-  getProduct(productId).then(response => {
+  getProduct(productId).then((response) => {
     form.value = response.data
     showList.value = false
     saveTitle.value = '修改产品'
@@ -851,16 +949,15 @@ function handleDelete(row) {
 //上传格式检验
 // 上传前校检格式和大小
 function handleBeforeUpload(file) {
-  console.log(file, '9999999999999999999999999999999999999999')
   // 校检文件类型
   let fileExtension = ''
   if (file.name?.lastIndexOf('.') > -1) {
     fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
   }
-  console.log(fileExtension, 'fileExtension')
-
   if (fileExtension !== 'xls' || fileExtension !== 'xlsx') {
-    proxy.$modal.msgError(`文件格式不正确, 请上传${fileType.join('/')}格式文件!`)
+    proxy.$modal.msgError(
+      `文件格式不正确, 请上传${fileType.join('/')}格式文件!`,
+    )
   }
   // 校检文件大小
   if (fileSize) {
@@ -879,15 +976,13 @@ function handleExport() {
   proxy.download(
     'business/product/export',
     {
+      productId: ids,
       ...queryParams.vallue,
     },
-    `product_${new Date().getTime()}.xlsx`
+    `product_${new Date().getTime()}.xlsx`,
   )
+  console.log('----queryParams:', queryParams.value, '----ids:', ids)
 }
-/**导入 */
-// function handleIxport() {
-//   open.value = true
-// }
 
 getList()
 </script>
