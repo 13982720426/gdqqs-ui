@@ -832,7 +832,7 @@ const handleFileSuccess = (response, file, fileList) => {
   upload.open = false
   upload.isUploading = false
   proxy.$refs['uploadRef'].handleRemove(file)
-  proxy.$msgSuccess('导入成功')
+  proxy.$modal.msgSuccess('导入成功')
   getList()
 }
 /** 提交上传文件 */
