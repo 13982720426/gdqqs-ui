@@ -973,7 +973,7 @@ function handleSelectionChange(selection) {
 function handleAdd() {
   opentable.value = false
   showList.value = true
-  disabled.value = false
+  disabled.value = true
   if (activeTab.value == 'first') {
     saveTitle.value = '新增轨道'
     saveType.value = 'install'
