@@ -258,10 +258,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="上升电缆单价" prop="rcableUnprice">
+          <el-form-item label="上升电缆单价(元)" prop="rcableUnprice">
             <el-input
               v-model="form.rcableUnprice"
-              placeholder="请输入上升电缆单价"
+              placeholder="请输入上升电缆单价(元)"
               style="width: 60%"
               type="number"
               maxlength="16"
@@ -272,30 +272,44 @@
       </template>
       <template v-else-if="form.partType == 3">
         <el-col :span="8">
-          <el-form-item label="重量" prop="weight">
+          <el-form-item label="重量(t)" prop="weight">
             <el-input
               v-model="form.weight"
-              placeholder="请输入重量"
+              placeholder="请输入重量(t)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="单价" prop="unprice">
+          <el-form-item label="单价(元)" prop="unprice">
             <el-input
               v-model="form.unprice"
-              placeholder="请输入单价"
+              placeholder="请输入单价(元)"
               style="width: 60%"
+              type="number"
+              maxlength="16"
+              min="0"
             />
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="轨道型号" prop="trackModel">
-            <el-input
-              v-model="form.unprice"
-              placeholder="请输入轨道型号"
+            <el-select
+              v-model="form.trackModel"
+              placeholder="请选择"
+              clearable
               style="width: 60%"
-            />
+            >
+              <el-option
+                v-for="dict in q_track_model"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </template>
@@ -306,6 +320,8 @@
               v-model="form.model"
               placeholder="请输入型号"
               style="width: 60%"
+              maxlength="16"
+              show-word-limit
             />
           </el-form-item>
         </el-col>
@@ -315,6 +331,8 @@
               v-model="form.brand"
               placeholder="请输入品牌"
               style="width: 60%"
+              maxlength="16"
+              show-word-limit
             />
           </el-form-item>
         </el-col>
@@ -360,7 +378,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="起升重量" prop="liftWeight">
+        <el-form-item label="起升重量(t)" prop="liftWeight">
           <el-select
             v-model="form.liftWeight"
             placeholder="请选择"
@@ -661,6 +679,9 @@
             placeholder="请输入"
             style="width: 60%"
             :disabled="disabled"
+            type="number"
+            maxlength="16"
+            min="0"
           />
         </el-form-item>
       </el-col>
@@ -704,11 +725,14 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="单价" prop="unitPrice">
+        <el-form-item label="单价(元)" prop="unitPrice">
           <el-input
             v-model="form.unitPrice"
             placeholder="请输入"
             style="width: 60%"
+            type="number"
+            maxlength="16"
+            min="0"
           />
         </el-form-item>
       </el-col>

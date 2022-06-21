@@ -52,13 +52,19 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item prop="unprice" v-show="orbit">
-          <el-input
-            v-model="queryParams.unprice"
-            placeholder="轨道模糊搜索"
+        <el-form-item prop="trackModel" v-show="orbit">
+          <el-select
+            v-model="queryParams.trackModel"
+            placeholder="请选择轨道型号"
             clearable
-            @keyup.enter="handleQuery"
-          />
+          >
+            <el-option
+              v-for="dict in q_track_model"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
 
         <el-form-item prop="model" v-show="paint">
@@ -363,25 +369,25 @@ const trackPartColumns = ref([
   {
     id: 7,
     prop: 'tppUnprice',
-    label: '压板单价(元)',
+    label: '压板单价',
     align: 'center',
   },
   {
     id: 8,
     prop: 'cpUnprice',
-    label: '联结板单价(元)',
+    label: '联结板单价',
     align: 'center',
   },
   {
     id: 9,
     prop: 'thsUnprice',
-    label: '吊装台班单价(元)',
+    label: '吊装台班单价',
     align: 'center',
   },
   {
     id: 10,
     prop: 'trackInstallPrice',
-    label: '轨道安装单价(元)',
+    label: '轨道安装单价',
     align: 'center',
   },
 ])
@@ -468,8 +474,8 @@ const crastopmodelPartColumns = ref([
   },
   {
     id: 4,
-    prop: 'track',
-    label: '轨道',
+    prop: 'trackModel',
+    label: '轨道型号',
     align: 'center',
   },
 ])
@@ -591,6 +597,7 @@ const data = reactive({
   rules: {
     partType: [{ required: true, message: '请选择部件类型', trigger: 'blur' }],
     //轨道
+
     fixedMode: [{ required: true, message: '请选择固定方式', trigger: 'blur' }],
     sgltrackLength: [
       { required: true, message: '请输入单根轨道长度', trigger: 'blur' },
@@ -613,6 +620,7 @@ const data = reactive({
     trackInstallPrice: [
       { required: true, message: '请输入轨道安装单价', trigger: 'blur' },
     ],
+
     //滑线
     splLevel: [{ required: true, message: '请选择滑线级数', trigger: 'blur' }],
     splPartName: [
@@ -635,6 +643,18 @@ const data = reactive({
       { required: true, message: '请输入上升电缆单价', trigger: 'blur' },
     ],
 
+    //大车止档型号
+    weight: [{ required: true, message: '请输入重量', trigger: 'blur' }],
+    unprice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
+    trackModel: [
+      { required: true, message: '请选择轨道型号', trigger: 'blur' },
+    ],
+
+    //油漆
+    model: [{ required: true, message: '请输入型号', trigger: 'blur' }],
+    brand: [{ required: true, message: '请输入品牌', trigger: 'blur' }],
+
+    //产品部件
     craneType: [
       { required: true, message: '请选择起重机类型', trigger: 'blur' },
     ],
