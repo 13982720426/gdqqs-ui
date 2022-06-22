@@ -48,7 +48,7 @@
         <el-form-item prop="craneOperation">
           <el-select
             v-model="queryParams.craneOperation"
-            placeholder="操作方式模糊搜索"
+            placeholder="请选择操作方式"
             clearable
           >
             <el-option
