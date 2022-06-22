@@ -62,8 +62,7 @@
               placeholder="请输入单根轨道长度（米）"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -74,8 +73,7 @@
               placeholder="请输入单根轨道重量（公斤/米）"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -86,8 +84,7 @@
               placeholder="请输入轨道单价(元/公斤)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -98,8 +95,7 @@
               placeholder="请输入轨道压板单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -110,8 +106,7 @@
               placeholder="请输入联结板单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -122,8 +117,7 @@
               placeholder="请输入轨道吊装台班单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -134,8 +128,7 @@
               placeholder="请输入轨道安装单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -216,8 +209,7 @@
               placeholder="请输入滑触线单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -228,8 +220,7 @@
               placeholder="请输入集电器"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -240,8 +231,7 @@
               placeholder="请输入安装费单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -252,8 +242,7 @@
               placeholder="请输入指示灯单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -264,8 +253,7 @@
               placeholder="请输入上升电缆单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -278,8 +266,7 @@
               placeholder="请输入重量(t)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -290,8 +277,7 @@
               placeholder="请输入单价(元)"
               style="width: 60%"
               type="number"
-              maxlength="16"
-              min="0"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
             />
           </el-form-item>
         </el-col>
@@ -680,8 +666,7 @@
             style="width: 60%"
             :disabled="disabled"
             type="number"
-            maxlength="16"
-            min="0"
+            oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
           />
         </el-form-item>
       </el-col>
@@ -731,8 +716,7 @@
             placeholder="请输入"
             style="width: 60%"
             type="number"
-            maxlength="16"
-            min="0"
+            oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
           />
         </el-form-item>
       </el-col>
