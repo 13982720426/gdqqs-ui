@@ -251,12 +251,7 @@
           </el-col>
         </el-row>
         <el-form-item>
-          <el-button
-            type="primary"
-            @click=";(dialogFormVisible = false), submit()"
-          >
-            保存
-          </el-button>
+          <el-button type="primary" @click="submit()">保存</el-button>
           <el-button @click=";(dialogFormVisible = false), close()">
             取消
           </el-button>
@@ -337,6 +332,7 @@ function submit() {
         proxy.$modal.msgSuccess('新增成功')
         formData.customer = addCustomerForm.value.customerName
         customerSearch(formData.customer)
+        dialogFormVisible.value = false
       })
     }
   })
@@ -344,7 +340,6 @@ function submit() {
 /** 关闭按钮 */
 function close() {
   reset()
-  console.log('reset', addCustomerForm)
 }
 function reset() {
   addCustomerForm.value = {
