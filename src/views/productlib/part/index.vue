@@ -1070,11 +1070,11 @@ function handleAdd() {
     saveType.value = 'install'
     form.value = { partType: '3' }
   } else if (activeTab.value == 'fourth') {
-    saveTitle.value = '油漆'
+    saveTitle.value = '新增油漆'
     saveType.value = 'install'
     form.value = { partType: '4' }
   } else if (activeTab.value == 'six') {
-    saveTitle.value = '产品部件'
+    saveTitle.value = '新增产品部件'
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
