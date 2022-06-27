@@ -132,6 +132,14 @@
             </el-button>
           </template>
         </QTable>
+        <pagination
+          class="pagination-container"
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
       </el-tab-pane>
       <el-tab-pane label="滑线" name="second">
         <QTable
@@ -159,6 +167,13 @@
             </el-button>
           </template>
         </QTable>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
       </el-tab-pane>
       <el-tab-pane label="大车止档型号" name="third">
         <QTable
@@ -186,6 +201,13 @@
             </el-button>
           </template>
         </QTable>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
       </el-tab-pane>
       <el-tab-pane label="油漆" name="fourth">
         <QTable
@@ -213,6 +235,13 @@
             </el-button>
           </template>
         </QTable>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
       </el-tab-pane>
       <el-tab-pane label="产品部件" name="six">
         <QTable
@@ -240,6 +269,13 @@
             </el-button>
           </template>
         </QTable>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -900,30 +936,24 @@ function reset() {
 function submitForm() {
   if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
-    console.log('111')
   } else if (
     form.value.partType === '2' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'second'
-    console.log('222')
   } else if (
     form.value.partType === '3' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'third'
-    console.log('333')
   } else if (
     form.value.partType === '4' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'fourth'
-    console.log('444')
   } else if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'six'
-    console.log('555')
   }
-  console.log(activeTab.value, form.value.partType)
   proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate((valid) => {
     if (valid) {
       //轨道
@@ -1080,28 +1110,23 @@ function handleAdd() {
   }
   if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'first'
-    console.log(activeTab.value)
   } else if (
     form.value.partType === '2' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'second'
-    console.log(activeTab.value)
   } else if (
     form.value.partType === '3' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'third'
-    console.log(activeTab.value)
   } else if (
     form.value.partType === '4' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'fourth'
-    console.log(activeTab.value)
   } else if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'six'
-    console.log(activeTab.value)
   }
 }
 /** 修改按钮操作 */
