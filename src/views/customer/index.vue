@@ -48,7 +48,12 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column label="客户名称" align="center" prop="customerName" width="120" />
+        <el-table-column
+          label="客户名称"
+          align="center"
+          prop="customerName"
+          width="120"
+        />
         <el-table-column
           label="部门"
           align="center"
@@ -64,12 +69,19 @@
           width="120"
         >
           <template #default="scope">
-            <span>{{ scope.row.customerNature === '1' ? '经销商' : '最终用户' }}</span>
+            <span>
+              {{ scope.row.customerNature === '1' ? '经销商' : '最终用户' }}
+            </span>
           </template>
         </el-table-column>
 
         <el-table-column label="联系人" align="center" prop="contact" />
-        <el-table-column label="电话" align="center" prop="contactTell" width="130" />
+        <el-table-column
+          label="电话"
+          align="center"
+          prop="contactTell"
+          width="130"
+        />
         <el-table-column
           label="邮箱"
           :show-overflow-tooltip="true"
@@ -164,7 +176,11 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="部门" prop="partment">
-              <el-input maxlength="30" v-model="form.partment" placeholder="请输入" />
+              <el-input
+                maxlength="30"
+                v-model="form.partment"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -188,17 +204,29 @@
         <el-row :gutter="50">
           <el-col :span="6">
             <el-form-item label="联系人" prop="contact">
-              <el-input maxlength="30" v-model="form.contact" placeholder="请输入" />
+              <el-input
+                maxlength="30"
+                v-model="form.contact"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="联系电话" prop="contactTell">
-              <el-input maxlength="30" v-model="form.contactTell" placeholder="请输入" />
+              <el-input
+                maxlength="30"
+                v-model="form.contactTell"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="邮箱" prop="contactEmail">
-              <el-input maxlength="30" v-model="form.contactEmail" placeholder="请输入" />
+              <el-input
+                maxlength="30"
+                v-model="form.contactEmail"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -206,12 +234,20 @@
         <el-row :gutter="50">
           <el-col :span="6">
             <el-form-item label="地址" prop="contactAddress">
-              <el-input maxlength="30" v-model="form.contactAddress" placeholder="请输入" />
+              <el-input
+                maxlength="30"
+                v-model="form.contactAddress"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="6">
             <el-form-item label="邮政编码" prop="postCode">
-              <el-input maxlength="30" v-model="form.postCode" placeholder="请输入" />
+              <el-input
+                maxlength="30"
+                v-model="form.postCode"
+                placeholder="请输入"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -231,7 +267,9 @@
         </el-row>
 
         <el-form-item>
-          <el-button type="primary" @click="submit" color="#ffdac6" class="sel">保存</el-button>
+          <el-button type="primary" @click="submit" color="#ffdac6" class="sel">
+            保存
+          </el-button>
           <el-button type="danger" @click="close">取消</el-button>
         </el-form-item>
       </el-form>
@@ -240,7 +278,12 @@
 </template>
 
 <script setup name="Customer">
-import { addCustomer, updateCustomer, getCustomer, delCustomer } from '@/api/business/customer'
+import {
+  addCustomer,
+  updateCustomer,
+  getCustomer,
+  delCustomer,
+} from '@/api/business/customer'
 import { listCustomer } from '@/api/business/customer'
 import { ref } from 'vue-demi'
 
@@ -272,7 +315,7 @@ const { queryParams, form } = toRefs(data)
 /** 查询客户列表 */
 function getList() {
   loading.value = true
-  listCustomer(queryParams.value).then(response => {
+  listCustomer(queryParams.value).then((response) => {
     customerList.value = response.rows
     total.value = response.total
     loading.value = false
@@ -306,7 +349,7 @@ function handleDelete(row) {
 
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.roleId)
+  ids.value = selection.map((item) => item.roleId)
   single.value = selection.length != 1
   multiple.value = !selection.length
 }
@@ -336,12 +379,12 @@ function handleAdd() {
 
 /** 操作编辑 */
 function handleUpdate(row) {
-  reset()
+  proxy.$refs['upcustomer'].clearValidate()
   custable.value = false
   open.value = true
   disabled.value = true
   const cusId = row.customerId || ids.value
-  getCustomer(cusId).then(response => {
+  getCustomer(cusId).then((response) => {
     form.value = response.data
   })
 }
@@ -364,7 +407,9 @@ const rules = ref({
     { required: true, message: '部门不能为空', trigger: 'blur' },
     { max: 32, message: '部门长度不超过32个字符', trigger: 'blur' },
   ],
-  customerNature: [{ required: true, message: '客户性质不能为空', trigger: 'blur' }],
+  customerNature: [
+    { required: true, message: '客户性质不能为空', trigger: 'blur' },
+  ],
   contact: [
     { required: true, message: '联系人不能为空', trigger: 'blur' },
     { max: 32, message: '联系人长度不超过32个字符', trigger: 'blur' },
@@ -375,28 +420,36 @@ const rules = ref({
   ],
   contactEmail: [
     { required: true, message: '邮箱不能为空', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] },
+    {
+      type: 'email',
+      message: '请输入正确的邮箱地址',
+      trigger: ['blur', 'change'],
+    },
   ],
   contactTell: [
     { required: true, message: '联系电话不能为空', trigger: 'blur' },
-    { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
+    {
+      pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+      message: '请输入正确的手机号码',
+      trigger: 'blur',
+    },
   ],
   postCode: [{ max: 6, message: '请输入正确的邮政编码', trigger: 'blur' }],
 })
 
 /** 提交按钮 */
 function submit() {
-  proxy.$refs['upcustomer'].validate(valid => {
+  proxy.$refs['upcustomer'].validate((valid) => {
     if (valid) {
       if (form.value.customerId != undefined) {
-        updateCustomer(form.value).then(response => {
+        updateCustomer(form.value).then((response) => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           custable.value = true
           getList()
         })
       } else {
-        addCustomer(form.value).then(response => {
+        addCustomer(form.value).then((response) => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           custable.value = true
@@ -409,6 +462,7 @@ function submit() {
 /** 关闭按钮 */
 function close() {
   reset()
+  proxy.$refs['upcustomer'].clearValidate()
   open.value = false
   custable.value = true
 }
