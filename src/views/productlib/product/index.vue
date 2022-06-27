@@ -154,11 +154,16 @@
   </div>
 
   <SaveTitle :title="saveTitle" v-show="!showList">
-    <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="150px">
+    <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="180px">
       <el-row>
         <el-col :span="8">
           <el-form-item label="起重机类型" prop="craneType">
-            <el-select v-model="form.craneType" placeholder="请选择" clearable>
+            <el-select
+              v-model="form.craneType"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+            >
               <el-option
                 v-for="dict in q_crane_type"
                 :key="dict.value"
@@ -174,6 +179,7 @@
               v-model="form.craneOperation"
               placeholder="请选择"
               clearable
+              style="width: 60%"
             >
               <el-option
                 v-for="dict in q_oper_mode"
@@ -186,7 +192,12 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="遥控器" prop="control">
-            <el-select v-model="form.control" placeholder="请选择" clearable>
+            <el-select
+              v-model="form.control"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+            >
               <el-option
                 v-for="dict in sys_yes_no"
                 :key="dict.value"
@@ -203,7 +214,7 @@
                 v-model="form.craneModel"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_single_crane_model"
@@ -218,7 +229,7 @@
                 v-model="form.craneModel"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_double_crane_model"
@@ -233,7 +244,7 @@
                 v-model="form.craneModel"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_susp_crane_model"
@@ -252,7 +263,7 @@
                 v-model="form.span"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_single_crane_span"
@@ -267,7 +278,7 @@
                 v-model="form.span"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_double_crane_span"
@@ -282,7 +293,7 @@
                 v-model="form.span"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_susp_crane_span"
@@ -301,7 +312,7 @@
                 v-model="form.liftHeight"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_single_crane_lift_height"
@@ -316,7 +327,7 @@
                 v-model="form.liftHeight"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_double_crane_lift_height"
@@ -331,7 +342,7 @@
                 v-model="form.liftHeight"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_susp_crane_lift_height"
@@ -350,7 +361,7 @@
                 v-model="form.workLevel"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_single_crane_work_level"
@@ -365,7 +376,7 @@
                 v-model="form.workLevel"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_double_crane_work_level"
@@ -380,7 +391,7 @@
                 v-model="form.workLevel"
                 placeholder="请选择"
                 clearable
-                style="width: 53%"
+                style="width: 60%"
               >
                 <el-option
                   v-for="dict in q_susp_crane_work_level"
@@ -393,12 +404,12 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="额定功率KW" prop="ratedPower">
+          <el-form-item label="额定功率(KW)" prop="ratedPower">
             <el-select
               v-model="form.ratedPower"
               placeholder="请选择"
               clearable
-              style="width: 53%"
+              style="width: 60%"
             >
               <el-option
                 v-for="dict in q_rated_power"
@@ -415,7 +426,7 @@
               v-model="form.liftSpeed"
               placeholder="请选择"
               clearable
-              style="width: 53%"
+              style="width: 60%"
             >
               <el-option
                 v-for="dict in q_lift_speed"
@@ -432,7 +443,7 @@
               v-model="form.crabSpeed"
               placeholder="请选择"
               clearable
-              style="width: 53%"
+              style="width: 60%"
             >
               <el-option
                 v-for="dict in q_crab_speed"
@@ -449,7 +460,7 @@
               v-model="form.cartSpeed"
               placeholder="请选择"
               clearable
-              style="width: 53%"
+              style="width: 60%"
             >
               <el-option
                 v-for="dict in q_cart_speed"
@@ -466,7 +477,7 @@
               v-model="form.pressureMax"
               placeholder="请选择"
               clearable
-              style="width: 53%"
+              style="width: 60%"
             >
               <el-option
                 v-for="dict in q_pressure_max"
@@ -685,7 +696,48 @@ const data = reactive({
     productId: null,
   },
   form: {},
-  rules: {},
+  rules: {
+    craneType: [
+      { required: true, message: '请选择起重机类型', trigger: 'blur' },
+    ],
+    craneOperation: [
+      { required: true, message: '请选择操作方式', trigger: 'blur' },
+    ],
+    control: [{ required: true, message: '请选择遥控器', trigger: 'blur' }],
+    craneModel: [
+      { required: true, message: '请选择起重机型号', trigger: 'blur' },
+    ],
+    span: [{ required: true, message: '请选择跨度', trigger: 'blur' }],
+    liftHeight: [
+      { required: true, message: '请选择起升高度', trigger: 'blur' },
+    ],
+    workLevel: [{ required: true, message: '请选择工作级别', trigger: 'blur' }],
+    ratedPower: [
+      { required: true, message: '请选择额定功率', trigger: 'blur' },
+    ],
+    liftSpeed: [{ required: true, message: '请选择起升速度', trigger: 'blur' }],
+    crabSpeed: [
+      { required: true, message: '请选择小车运行速度', trigger: 'blur' },
+    ],
+    cartSpeed: [
+      { required: true, message: '请选择大车运行速度', trigger: 'blur' },
+    ],
+    pressureMax: [
+      { required: true, message: '请选择最大轮压', trigger: 'blur' },
+    ],
+    uploadChart: [
+      { required: true, message: '请上传设计总图', trigger: 'blur' },
+    ],
+    uploadCrane: [
+      { required: true, message: '请上传起重机数据', trigger: 'blur' },
+    ],
+    uploadPressure: [
+      { required: true, message: '请上传起重机轮压数据', trigger: 'blur' },
+    ],
+    uploadPrice: [
+      { required: true, message: '请上传工厂价BOM清单', trigger: 'blur' },
+    ],
+  },
 })
 
 const { queryParams, form, rules } = toRefs(data)
