@@ -7,8 +7,13 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item prop="roleDepartment">
-        <el-select v-model="queryParams.deptId" class="m-2" placeholder="请选择部门" clearable>
+      <el-form-item prop="deptId">
+        <el-select
+          v-model="queryParams.deptId"
+          class="m-2"
+          placeholder="请选择部门"
+          clearable
+        >
           <el-option
             v-for="item in deptOption"
             :key="item.value"
@@ -32,7 +37,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item prop="status">
+      <el-form-item prop="userName">
         <el-input
           v-model="queryParams.userName"
           placeholder="姓名模糊搜索"
@@ -42,7 +47,13 @@
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" color="#ffdac6" class="sel" icon="Search" @click="handleQuery">
+        <el-button
+          type="primary"
+          color="#ffdac6"
+          class="sel"
+          icon="Search"
+          @click="handleQuery"
+        >
           搜索
         </el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -77,7 +88,11 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="userList"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column type="selection" width="80" align="center" />
       <el-table-column
         label="序号"
@@ -132,9 +147,16 @@
         width="200"
         align="center"
       />
-      <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
+      <el-table-column
+        label="状态"
+        align="center"
+        key="status"
+        v-if="columns[5].visible"
+      >
         <template #default="scope">
-          <el-tag v-if="scope.row.status === '0'" class="ml-2" type="success">启用</el-tag>
+          <el-tag v-if="scope.row.status === '0'" class="ml-2" type="success">
+            启用
+          </el-tag>
           <el-tag v-else class="ml-2" type="warning">禁用</el-tag>
         </template>
       </el-table-column>
@@ -194,23 +216,43 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="手机号码" prop="phonenumber">
-              <el-input v-model="form.phonenumber" placeholder="请输入手机号码" maxlength="11" />
+              <el-input
+                v-model="form.phonenumber"
+                placeholder="请输入手机号码"
+                maxlength="11"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="邮箱" prop="email">
-              <el-input v-model="form.email" placeholder="请输入邮箱" maxlength="50" />
+              <el-input
+                v-model="form.email"
+                placeholder="请输入邮箱"
+                maxlength="50"
+              />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
+            <el-form-item
+              v-if="form.userId == undefined"
+              label="用户名称"
+              prop="userName"
+            >
+              <el-input
+                v-model="form.userName"
+                placeholder="请输入用户名称"
+                maxlength="30"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
+            <el-form-item
+              v-if="form.userId == undefined"
+              label="用户密码"
+              prop="password"
+            >
               <el-input
                 v-model="form.password"
                 placeholder="请输入用户密码"
@@ -225,7 +267,11 @@
           <el-col :span="12">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in sys_normal_disable" :key="dict.value" :label="dict.value">
+                <el-radio
+                  v-for="dict in sys_normal_disable"
+                  :key="dict.value"
+                  :label="dict.value"
+                >
                   <span v-if="dict.label === '正常'">启用</span>
                   <span v-else>禁用</span>
                   <!-- {{ dict.label }} -->
@@ -265,14 +311,23 @@
         <el-row>
           <el-col :span="24">
             <el-form-item label="备注">
-              <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
+              <el-input
+                v-model="form.remark"
+                type="textarea"
+                placeholder="请输入内容"
+              ></el-input>
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button color="#ffdac6" type="primary" class="sel" @click="submitForm">
+          <el-button
+            color="#ffdac6"
+            type="primary"
+            class="sel"
+            @click="submitForm"
+          >
             确 定
           </el-button>
           <el-button @click="cancel">取 消</el-button>
@@ -298,7 +353,10 @@ import { listDept, listDeptExcludeChild } from '@/api/system/dept'
 
 const router = useRouter()
 const { proxy } = getCurrentInstance()
-const { sys_normal_disable, sys_user_sex } = proxy.useDict('sys_normal_disable', 'sys_user_sex')
+const { sys_normal_disable, sys_user_sex } = proxy.useDict(
+  'sys_normal_disable',
+  'sys_user_sex',
+)
 
 const userList = ref([])
 const open = ref(false)
@@ -355,17 +413,39 @@ const data = reactive({
   rules: {
     userName: [
       { required: true, message: '用户名称不能为空', trigger: 'blur' },
-      { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' },
+      {
+        min: 2,
+        max: 20,
+        message: '用户名称长度必须介于 2 和 20 之间',
+        trigger: 'blur',
+      },
     ],
-    nickName: [{ required: true, message: '用户昵称不能为空', trigger: 'blur' }],
+    nickName: [
+      { required: true, message: '用户昵称不能为空', trigger: 'blur' },
+    ],
     password: [
       { required: true, message: '用户密码不能为空', trigger: 'blur' },
-      { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' },
+      {
+        min: 5,
+        max: 20,
+        message: '用户密码长度必须介于 5 和 20 之间',
+        trigger: 'blur',
+      },
     ],
-    email: [{ type: 'email', message: '请输入正确的邮箱地址', trigger: ['blur', 'change'] }],
+    email: [
+      {
+        type: 'email',
+        message: '请输入正确的邮箱地址',
+        trigger: ['blur', 'change'],
+      },
+    ],
     phonenumber: [
       { required: true, message: '联系电话不能为空', trigger: 'blur' },
-      { pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/, message: '请输入正确的手机号码', trigger: 'blur' },
+      {
+        pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+        message: '请输入正确的手机号码',
+        trigger: 'blur',
+      },
     ],
   },
 })
@@ -378,28 +458,30 @@ const filterNode = (value, data) => {
   return data.label.indexOf(value) !== -1
 }
 /** 根据名称筛选部门树 */
-watch(deptName, val => {
+watch(deptName, (val) => {
   proxy.$refs['deptTreeRef'].filter(val)
 })
 /** 查询部门下拉树结构 */
 function getTreeselect() {
-  treeselect().then(response => {
+  treeselect().then((response) => {
     deptOptions.value = response.data
   })
 }
 /** 查询用户列表 */
 function getList() {
   loading.value = true
-  listDept().then(res => {
-    deptOption.value = res.data.map(i => {
+  listDept().then((res) => {
+    deptOption.value = res.data.map((i) => {
       return { label: i.deptName, value: i.deptId }
     })
   })
-  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
-    loading.value = false
-    userList.value = res.rows
-    total.value = res.total
-  })
+  listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(
+    (res) => {
+      loading.value = false
+      userList.value = res.rows
+      total.value = res.total
+    },
+  )
 }
 /** 节点单击事件 */
 function handleNodeClick(data) {
@@ -438,7 +520,7 @@ function handleExport() {
     {
       ...queryParams.value,
     },
-    `user_${new Date().getTime()}.xlsx`
+    `user_${new Date().getTime()}.xlsx`,
   )
 }
 /** 用户状态修改  */
@@ -485,7 +567,7 @@ function handleResetPwd(row) {
       inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
     })
     .then(({ value }) => {
-      resetUserPwd(row.userId, value).then(response => {
+      resetUserPwd(row.userId, value).then((response) => {
         proxy.$modal.msgSuccess('修改成功，新密码是：' + value)
       })
     })
@@ -493,7 +575,7 @@ function handleResetPwd(row) {
 }
 /** 选择条数  */
 function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.userId)
+  ids.value = selection.map((item) => item.userId)
   single.value = selection.length != 1
   multiple.value = !selection.length
 }
@@ -504,7 +586,11 @@ function handleImport() {
 }
 /** 下载模板操作 */
 function importTemplate() {
-  proxy.download('system/user/importTemplate', {}, `user_template_${new Date().getTime()}.xlsx`)
+  proxy.download(
+    'system/user/importTemplate',
+    {},
+    `user_template_${new Date().getTime()}.xlsx`,
+  )
 }
 /**文件上传中处理 */
 const handleFileUploadProgress = (event, file, fileList) => {
@@ -520,7 +606,7 @@ const handleFileSuccess = (response, file, fileList) => {
       response.msg +
       '</div>',
     '导入结果',
-    { dangerouslyUseHTMLString: true }
+    { dangerouslyUseHTMLString: true },
   )
   getList()
 }
@@ -532,7 +618,7 @@ function submitFileForm() {
 function initTreeData() {
   // 判断部门的数据是否存在，存在不获取，不存在则获取
   if (deptOptions.value === undefined) {
-    treeselect().then(response => {
+    treeselect().then((response) => {
       deptOptions.value = response.data
     })
   }
@@ -564,7 +650,7 @@ function cancel() {
 function handleAdd() {
   reset()
   initTreeData()
-  getUser().then(response => {
+  getUser().then((response) => {
     postOptions.value = response.posts
     roleOptions.value = response.roles
     open.value = true
@@ -577,7 +663,7 @@ function handleUpdate(row) {
   reset()
   initTreeData()
   const userId = row.userId || ids.value
-  getUser(userId).then(response => {
+  getUser(userId).then((response) => {
     form.value = response.data
     postOptions.value = response.posts
     roleOptions.value = response.roles
@@ -590,17 +676,16 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm(formEL) {
-  // console.log(formEL,'formEL')
-  proxy.$refs['userRef'].validate(valid => {
+  proxy.$refs['userRef'].validate((valid) => {
     if (valid) {
       if (form.value.userId != undefined) {
-        updateUser(form.value).then(response => {
+        updateUser(form.value).then((response) => {
           proxy.$modal.msgSuccess('修改成功')
           open.value = false
           getList()
         })
       } else {
-        addUser(form.value).then(response => {
+        addUser(form.value).then((response) => {
           proxy.$modal.msgSuccess('新增成功')
           open.value = false
           getList()
