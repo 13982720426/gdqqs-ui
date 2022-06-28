@@ -1,7 +1,7 @@
 <!-- 客户信息 -->
 <template>
   <div class="offer-save-customer">
-    <el-form ref="form" :model="formData" label-position="left">
+    <el-form ref="form" :rules="rules" :model="formData" label-position="left">
       <OfferSaveTitle title="客户信息">
         <el-form-item label="客户名称" prop="customer">
           <el-space>
@@ -20,7 +20,7 @@
             </el-button>
           </el-space>
         </el-form-item>
-        <el-form-item v-if="!!dataSource.length">
+        <el-form-item prop="customerId" v-if="!!dataSource.length">
           <List
             :dataSource="dataSource"
             :checked="formData.customerId"
@@ -37,6 +37,7 @@
           <el-form-item
             label="车间名称"
             :prop="['formData', 'workshopInfo', index, 'name']"
+            :rules="rules.name"
           >
             <el-space>
               <el-input
@@ -67,6 +68,7 @@
                   :prop="['formData', 'workshopInfo', index, 'railModel']"
                   :labelWidth="100"
                   label="轨道型号"
+                  :rules="rules.railModel"
                 >
                   <DictSelect
                     v-model="formData.workshopInfo[index].railModel"
@@ -80,6 +82,7 @@
                   :prop="['formData', 'workshopInfo', index, 'workshopLength']"
                   :labelWidth="100"
                   label="车间长度(m)"
+                  :rules="rules.workshopLength"
                 >
                   <el-input-number
                     :disabled="offerStore.type === 'view'"
@@ -96,6 +99,7 @@
                   :prop="['formData', 'workshopInfo', index, 'workshopSpan']"
                   :labelWidth="100"
                   label="车间跨度(m)"
+                  :rules="rules.workshopSpan"
                 >
                   <DictSelect
                     v-model="formData.workshopInfo[index].workshopSpan"
@@ -111,6 +115,7 @@
                   :prop="['formData', 'workshopInfo', index, 'liftingHeight']"
                   :labelWidth="100"
                   label="起升高度(m)"
+                  :rules="rules.liftingHeight"
                 >
                   <DictSelect
                     v-model="formData.workshopInfo[index].liftingHeight"
@@ -124,6 +129,7 @@
                   :prop="['formData', 'workshopInfo', index, 'amount']"
                   :labelWidth="100"
                   label="起重机数量"
+                  :rules="rules.amount"
                 >
                   <el-input-number
                     :disabled="offerStore.type === 'view'"
@@ -363,15 +369,62 @@ const formData = reactive({
   workshopInfo: [], // 车间信息
 })
 
-const rules = reactive({
-  customer: [{ required: true, message: '请选择客户', trigger: 'blur' }],
+const validType = (rule, value, callback) => {
+  console.log(rule, value)
+  let newArr = rule.field.split('.')
+  let currentIndex = newArr[2]
+  let currentProp = newArr[3]
+  let currentPropBro = ''
+  if (currentProp === 'name') {
+    currentPropBro = formData.workshopInfo[currentIndex].name
+    if (currentPropBro === undefined) {
+      callback(new Error('请输入车间名称'))
+    } else return true
+  } else if (currentProp === 'railModel') {
+    currentPropBro = formData.workshopInfo[currentIndex].railModel
+    if (currentPropBro === undefined) {
+      callback(new Error('请选择轨道型号'))
+    } else return true
+  } else if (currentProp === 'workshopLength') {
+    currentPropBro = formData.workshopInfo[currentIndex].workshopLength
+    if (currentPropBro === undefined) {
+      callback(new Error('请输入轨道长度'))
+    } else return true
+  } else if (currentProp === 'workshopSpan') {
+    currentPropBro = formData.workshopInfo[currentIndex].workshopSpan
+    if (currentPropBro === undefined) {
+      callback(new Error('请输入车间跨度'))
+    } else return true
+  } else if (currentProp === 'liftingHeight') {
+    currentPropBro = formData.workshopInfo[currentIndex].liftingHeight
+    if (currentPropBro === undefined) {
+      callback(new Error('请输入起升高度'))
+    } else return true
+  } else if (currentProp === 'amount') {
+    currentPropBro = formData.workshopInfo[currentIndex].amount
+    if (currentPropBro === undefined) {
+      callback(new Error('请输起重机数量'))
+    } else return true
+  }
+}
+
+const rules = ref({
+  customer: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
+  customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }],
+  name: [{ required: true, message: '请输入车间名称', trigger: 'blur' }],
+  name: [{ required: true, validator: validType, trigger: 'blur' }],
+  railModel: [{ required: true, validator: validType, trigger: 'blur' }],
+  workshopLength: [{ required: true, validator: validType, trigger: 'blur' }],
+  workshopSpan: [{ required: true, validator: validType, trigger: 'blur' }],
+  liftingHeight: [{ required: true, validator: validType, trigger: 'blur' }],
+  amount: [{ required: true, validator: validType, trigger: 'blur' }],
 })
 
 const DEFAULT_WORK_ITEM = {
   key: '1',
   name: undefined,
   railModel: undefined,
-  workshopLength: undefined,
+  workshopLength: 1,
   workshopSpan: undefined,
   liftingHeight: undefined,
   amount: 1,
@@ -417,7 +470,11 @@ const removeWork = (key) => {
 }
 
 const getValues = async () => {
+  console.log(1, 'getValues')
+
   const data = await form.value.validate()
+  console.log(2, data)
+
   if (data) {
     const newData = cloneDeep(formData)
     newData.workshopInfo = JSON.stringify(newData.workshopInfo)
