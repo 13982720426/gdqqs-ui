@@ -370,7 +370,6 @@ const formData = reactive({
 })
 
 const validType = (rule, value, callback) => {
-  console.log(rule, value)
   let newArr = rule.field.split('.')
   let currentIndex = newArr[2]
   let currentProp = newArr[3]
@@ -411,7 +410,6 @@ const validType = (rule, value, callback) => {
 const rules = ref({
   customer: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
   customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }],
-  name: [{ required: true, message: '请输入车间名称', trigger: 'blur' }],
   name: [{ required: true, validator: validType, trigger: 'blur' }],
   railModel: [{ required: true, validator: validType, trigger: 'blur' }],
   workshopLength: [{ required: true, validator: validType, trigger: 'blur' }],
@@ -470,11 +468,7 @@ const removeWork = (key) => {
 }
 
 const getValues = async () => {
-  console.log(1, 'getValues')
-
   const data = await form.value.validate()
-  console.log(2, data)
-
   if (data) {
     const newData = cloneDeep(formData)
     newData.workshopInfo = JSON.stringify(newData.workshopInfo)
