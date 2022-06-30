@@ -412,9 +412,19 @@ const validType = (rule, value, callback) => {
     } else return true
   }
 }
+const validCustomer = (rule, value, callback) => {
+  if (!value) {
+    return callback(new Error('请输入客户名称'))
+  }
+  if (!formData.customerId) {
+    return callback(new Error('请选择或新增客户'))
+  } else return true
+}
 
 const rules = ref({
-  customer: [{ required: true, message: '请输入客户名称', trigger: 'blur' }],
+  customer: [
+    { required: true, validator: validCustomer, trigger: ['blur', 'change'] },
+  ],
   customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }],
   name: [{ required: true, validator: validType, trigger: 'blur' }],
   railModel: [{ required: true, validator: validType, trigger: 'blur' }],
