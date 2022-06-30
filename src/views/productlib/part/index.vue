@@ -327,6 +327,7 @@ import {
 } from '@/api/business/paintpart'
 import {
   listProductpart,
+  searchProductpart,
   getProductpart,
   addProductpart,
   updateProductpart,
@@ -878,11 +879,19 @@ function getList() {
       loading.value = false
     })
   } else if (activeTab.value == 'six') {
-    listProductpart(queryParams.value).then((response) => {
-      productPartList.value = response.rows
-      total.value = response.total
-      loading.value = false
-    })
+    if (!queryParams.value.craneModel) {
+      listProductpart(queryParams.value).then((response) => {
+        productPartList.value = response.rows
+        total.value = response.total
+        loading.value = false
+      })
+    } else {
+      searchProductpart(queryParams.value).then((response) => {
+        productPartList.value = response.rows
+        total.value = response.total
+        loading.value = false
+      })
+    }
   }
 }
 function handleClick(tab) {
