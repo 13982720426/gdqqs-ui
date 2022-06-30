@@ -922,9 +922,7 @@ function reset() {
 }
 
 function getvalues(data) {
-  // form.value.bomParams = JSON.parse(data.bomParams)
   data.forEach((e) => {
-    // excelList.value.push(e.bomParams)
     excelList.value = e.bomParams
   })
   form.value.bomParams = JSON.stringify(excelList.value)
@@ -966,7 +964,6 @@ function handleSelectionChange(selection) {
   ids.value = selection.map((item) => item.productId)
   single.value = selection.length !== 1
   multiple.value = !selection.length
-  console.log(ids.value, single.value, multiple.value)
 }
 /** 新增按钮操作 */
 function handleAdd() {
@@ -978,6 +975,7 @@ function handleUpdate(row) {
   const productId = row.productId || ids.value
   getProduct(productId).then((response) => {
     form.value = response.data
+    excelList.value = JSON.parse(response.data.bomParams)
     showList.value = false
     saveTitle.value = '修改产品'
   })
@@ -1028,7 +1026,7 @@ function handleExport() {
   proxy.download(
     'business/product/export',
     {
-      productId: ids,
+      productIds: ids.value,
       ...queryParams.vallue,
     },
     `product_${new Date().getTime()}.xlsx`,
