@@ -87,7 +87,7 @@
                   <el-input-number
                     :disabled="offerStore.type === 'view'"
                     :min="1"
-                    :max="999"
+                    :max="9999"
                     controls-position="right"
                     style="width: 210px"
                     v-model="formData.workshopInfo[index].workshopLength"
@@ -101,11 +101,14 @@
                   label="车间跨度(m)"
                   :rules="rules.workshopSpan"
                 >
-                  <DictSelect
-                    v-model="formData.workshopInfo[index].workshopSpan"
+                  <el-input-number
                     :disabled="offerStore.type === 'view'"
-                    dictType="q_single_crane_model"
-                  />
+                    :min="1"
+                    :max="9999"
+                    controls-position="right"
+                    style="width: 210px"
+                    v-model="formData.workshopInfo[index].workshopSpan"
+                  ></el-input-number>
                 </el-form-item>
               </el-col>
             </el-row>
@@ -117,11 +120,14 @@
                   label="起升高度(m)"
                   :rules="rules.liftingHeight"
                 >
-                  <DictSelect
-                    v-model="formData.workshopInfo[index].liftingHeight"
+                  <el-input-number
                     :disabled="offerStore.type === 'view'"
-                    dictType="q_single_crane_model"
-                  />
+                    :min="1"
+                    :max="9999"
+                    controls-position="right"
+                    style="width: 210px"
+                    v-model="formData.workshopInfo[index].liftingHeight"
+                  ></el-input-number>
                 </el-form-item>
               </el-col>
               <el-col :span="6">
@@ -134,7 +140,7 @@
                   <el-input-number
                     :disabled="offerStore.type === 'view'"
                     :min="1"
-                    :max="999"
+                    :max="9999"
                     controls-position="right"
                     style="width: 210px"
                     v-model="formData.workshopInfo[index].amount"
@@ -423,8 +429,8 @@ const DEFAULT_WORK_ITEM = {
   name: undefined,
   railModel: undefined,
   workshopLength: 1,
-  workshopSpan: undefined,
-  liftingHeight: undefined,
+  workshopSpan: 1,
+  liftingHeight: 1,
   amount: 1,
 }
 
