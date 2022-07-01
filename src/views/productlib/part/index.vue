@@ -555,7 +555,7 @@ const productPartColumns = ref([
   },
   {
     id: 2,
-    prop: 'qProduct.craneType',
+    prop: 'craneType',
     label: '起重机类型',
     align: 'center',
     format: (row) => craneTypeFormat(row),
@@ -576,21 +576,21 @@ const productPartColumns = ref([
   },
   {
     id: 5,
-    prop: 'qProduct.span',
+    prop: 'span',
     label: '跨度',
     align: 'center',
     format: (row) => spanFormat(row),
   },
   {
     id: 6,
-    prop: 'qProduct.liftHeight',
+    prop: 'liftHeight',
     label: '起升高度',
     align: 'center',
     format: (row) => liftHeightFormat(row),
   },
   {
     id: 7,
-    prop: 'qProduct.workLevel',
+    prop: 'workLevel',
     label: '工作级别',
     align: 'center',
     format: (row) => workLevelFormat(row),
@@ -793,36 +793,30 @@ const {
 
 // 超重机类型翻译
 function craneTypeFormat(row, column) {
-  return proxy.selectDictLabel(q_crane_type.value, row?.qProduct?.craneType)
+  return proxy.selectDictLabel(q_crane_type.value, row.craneType)
 }
 // 操作方式翻译
 function craneOperationFormat(row, column) {
-  return proxy.selectDictLabel(q_oper_mode.value, row?.qProduct?.craneOperation)
+  return proxy.selectDictLabel(q_oper_mode.value, row.craneOperation)
 }
 // 起重机型号翻译
 // function craneModelFormat(row, column) {
 //   return proxy.selectDictLabel(
 //     q_double_crane_model.value,
-//     row?.qProduct?.craneModel,
+//     router.forward().craneModel,
 //   )
 // }
 // 跨度翻译
 function spanFormat(row, column) {
-  return proxy.selectDictLabel(q_double_crane_span.value, row?.qProduct?.span)
+  return proxy.selectDictLabel(q_double_crane_span.value, row.span)
 }
 //起升高度翻译
 function liftHeightFormat(row, column) {
-  return proxy.selectDictLabel(
-    q_double_crane_lift_height.value,
-    row?.qProduct?.liftHeight,
-  )
+  return proxy.selectDictLabel(q_double_crane_lift_height.value, row.liftHeight)
 }
 // 工作级别翻译
 function workLevelFormat(row, column) {
-  return proxy.selectDictLabel(
-    q_double_crane_work_level.value,
-    row?.qProduct?.workLevel,
-  )
+  return proxy.selectDictLabel(q_double_crane_work_level.value, row.workLevel)
 }
 
 //起重机单位
