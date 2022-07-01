@@ -1023,15 +1023,16 @@ function handleBeforeUpload(file) {
 }
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download(
-    'business/product/export',
-    {
-      productIds: ids.value,
-      ...queryParams.vallue,
-    },
-    `product_${new Date().getTime()}.xlsx`,
-  )
-  console.log('----queryParams:', queryParams.value, '----ids:', ids)
+  if (ids.value.length !== 0) {
+    proxy.download(
+      'business/product/export',
+      {
+        productIds: ids.value,
+        ...queryParams.vallue,
+      },
+      `product_${new Date().getTime()}.xlsx`,
+    )
+  }
 }
 
 getList()
