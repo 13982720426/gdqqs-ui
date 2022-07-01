@@ -76,14 +76,20 @@
           />
         </el-form-item>
 
-        <el-form-item prop="craneModel" v-show="crane">
+        <el-form-item prop="craneType" v-show="crane">
           <el-select
-            v-model="queryParams.craneModel"
-            placeholder="请选择起重机型号"
+            v-model="queryParams.craneType"
+            placeholder="请选择起重机类型"
             clearable
           >
+            <!-- <el-option
+              v-for="dict in craneModel"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            /> -->
             <el-option
-              v-for="dict in q_single_crane_model"
+              v-for="dict in q_crane_type"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -556,10 +562,11 @@ const productPartColumns = ref([
   },
   {
     id: 3,
-    prop: 'qProduct.craneModel',
+    // prop: 'qProduct.craneModel',
+    prop: 'craneModel',
     label: '起重机型号',
     align: 'center',
-    format: (row) => craneModelFormat(row),
+    // format: (row) => craneModelFormat(row),
   },
   {
     id: 4,
@@ -793,12 +800,12 @@ function craneOperationFormat(row, column) {
   return proxy.selectDictLabel(q_oper_mode.value, row?.qProduct?.craneOperation)
 }
 // 起重机型号翻译
-function craneModelFormat(row, column) {
-  return proxy.selectDictLabel(
-    q_double_crane_model.value,
-    row?.qProduct?.craneModel,
-  )
-}
+// function craneModelFormat(row, column) {
+//   return proxy.selectDictLabel(
+//     q_double_crane_model.value,
+//     row?.qProduct?.craneModel,
+//   )
+// }
 // 跨度翻译
 function spanFormat(row, column) {
   return proxy.selectDictLabel(q_double_crane_span.value, row?.qProduct?.span)
@@ -879,7 +886,7 @@ function getList() {
       loading.value = false
     })
   } else if (activeTab.value == 'six') {
-    if (!queryParams.value.craneModel) {
+    if (!queryParams.value.craneType) {
       listProductpart(queryParams.value).then((response) => {
         productPartList.value = response.rows
         total.value = response.total
