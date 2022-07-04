@@ -253,7 +253,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_model"
@@ -269,7 +268,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_model"
@@ -285,7 +283,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_model"
@@ -305,7 +302,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_span"
@@ -321,7 +317,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_span"
@@ -337,7 +332,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_span"
@@ -357,7 +351,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_lift_height"
@@ -373,7 +366,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_lift_height"
@@ -389,7 +381,6 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_lift_height"
@@ -1110,8 +1101,9 @@ async function getProductMSG() {
       workLevel,
       liftHeight,
     }
-    console.log(params)
-    // const data = await getAddProductMSG(params)
+    const res = await getAddProductMSG(params)
+    const data = JSON.parse(res.data.bomParams)
+    excelList.value = data
   }
 }
 
