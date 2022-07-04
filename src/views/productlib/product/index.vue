@@ -82,6 +82,11 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="55" align="center" />
+      <el-table-column
+        label="产品名称"
+        align="center"
+        prop="productName"
+      ></el-table-column>
       <el-table-column label="起重机类型" align="center" prop="craneType">
         <template #default="{ row }">
           <span>{{ craneTypeFormat(row) }}</span>
@@ -92,11 +97,17 @@
           <span>{{ craneOperationFormat(row) }}</span>
         </template>
       </el-table-column>
+      <el-table-column
+        label="起升重量(t)"
+        align="center"
+        prop="liftWeight"
+      ></el-table-column>
       <el-table-column label="起重机型号" align="center" prop="craneModel">
         <template #default="{ row }">
           <span>{{ craneModelFormat(row) }}</span>
         </template>
       </el-table-column>
+
       <el-table-column label="跨度" align="center" prop="span">
         <template #default="{ row }">
           <span>{{ spanFormat(row) }}</span>
@@ -157,6 +168,15 @@
     <el-form ref="saveFormRef" :model="form" :rules="rules" label-width="180px">
       <el-row>
         <el-col :span="8">
+          <el-form-item label="产品名称" prop="productName">
+            <el-input
+              v-model="form.productName"
+              placeholder="请输入产品名称"
+              style="width: 60%"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
           <el-form-item label="起重机类型" prop="craneType">
             <el-select
               v-model="form.craneType"
@@ -208,6 +228,24 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
+          <el-form-item label="起升重量(t)" prop="liftWeight">
+            <el-select
+              v-model="form.liftWeight"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+              :disabled="disabled"
+            >
+              <el-option
+                v-for="item in liftWeight"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
           <el-form-item label="起重机型号" prop="craneModel">
             <template v-if="form.craneType == 1">
               <el-select
@@ -215,6 +253,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_model"
@@ -230,6 +269,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_model"
@@ -245,6 +285,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_model"
@@ -264,6 +305,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_span"
@@ -279,6 +321,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_span"
@@ -294,6 +337,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_span"
@@ -313,6 +357,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_lift_height"
@@ -328,6 +373,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_lift_height"
@@ -343,6 +389,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_lift_height"
@@ -362,6 +409,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_work_level"
@@ -377,6 +425,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_work_level"
@@ -392,6 +441,7 @@
                 placeholder="请选择"
                 clearable
                 style="width: 60%"
+                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_work_level"
@@ -488,6 +538,7 @@
             </el-select>
           </el-form-item>
         </el-col>
+        <el-col :span="8"></el-col>
         <el-col :span="8">
           <el-form-item label="上传设计总图" prop="uploadChart">
             <file-upload
@@ -603,10 +654,12 @@ import {
   delProduct,
   addProduct,
   updateProduct,
+  getAddProductMSG,
 } from '@/api/business/product'
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
+
 const upUrl = ref(
   import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel',
 )
@@ -634,43 +687,43 @@ const excelList = ref([])
 const excelListColumns = ref([
   {
     id: 1,
-    prop: '0',
+    prop: 'offerCode',
     label: '部件',
     align: 'center',
   },
   {
     id: 2,
-    prop: '1',
+    prop: 'model',
     label: '型号',
     align: 'center',
   },
   {
     id: 3,
-    prop: '2',
+    prop: 'brand',
     label: '品牌',
     align: 'center',
   },
   {
     id: 4,
-    prop: '3',
+    prop: 'num',
     label: '数量',
     align: 'center',
   },
   {
     id: 5,
-    prop: '4',
+    prop: 'unit',
     label: '单位',
     align: 'center',
   },
   {
     id: 6,
-    prop: '5',
+    prop: 'price',
     label: '进地球成本价(不含税)',
     align: 'center',
   },
   {
     id: 7,
-    prop: '6',
+    prop: 'taxrate',
     label: '税率',
     align: 'center',
   },
@@ -682,7 +735,7 @@ const excelListColumns = ref([
   },
   {
     id: 9,
-    prop: '7',
+    prop: 'factoryPrice',
     label: '金地球工厂价',
     align: 'center',
   },
@@ -697,6 +750,9 @@ const data = reactive({
   },
   form: {},
   rules: {
+    productName: [
+      { required: true, message: '请输入产品名称', trigger: 'blur' },
+    ],
     craneType: [
       { required: true, message: '请选择起重机类型', trigger: 'blur' },
     ],
@@ -704,6 +760,9 @@ const data = reactive({
       { required: true, message: '请选择操作方式', trigger: 'blur' },
     ],
     control: [{ required: true, message: '请选择遥控器', trigger: 'blur' }],
+    liftWeight: [
+      { required: true, message: '请选择起升重量', trigger: 'blur' },
+    ],
     craneModel: [
       { required: true, message: '请选择起重机型号', trigger: 'blur' },
     ],
@@ -785,6 +844,12 @@ const {
   'q_cart_speed',
   'q_pressure_max',
 )
+const liftWeight = [
+  {
+    value: '2',
+    label: '2',
+  },
+]
 
 // 超重机类型翻译
 function craneTypeFormat(row, column) {
@@ -900,6 +965,7 @@ function cancel() {
 // 表单重置
 function reset() {
   form.value = {
+    productName: null,
     craneType: '1',
     craneOperation: null,
     control: null,
@@ -1032,6 +1098,20 @@ function handleExport() {
       },
       `product_${new Date().getTime()}.xlsx`,
     )
+  }
+}
+
+async function getProductMSG() {
+  const { craneModel, span, workLevel, liftHeight } = form.value
+  if (craneModel && span && workLevel && liftHeight) {
+    const params = {
+      craneModel,
+      span,
+      workLevel,
+      liftHeight,
+    }
+    console.log(params)
+    // const data = await getAddProductMSG(params)
   }
 }
 
