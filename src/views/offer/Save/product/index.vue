@@ -247,7 +247,7 @@
           label="部件编码"
           width="180"
         ></el-table-column>
-        <el-table-column prop="unm" label="数量" width="80" />
+        <el-table-column prop="num" label="数量" width="80" />
         <el-table-column prop="unit" label="单位" width="100" />
         <el-table-column
           prop="price"
@@ -267,11 +267,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="brand" label="品牌" width="100" />
-        <el-table-column prop="factory_price" label="金地球工厂价" width="140">
+        <el-table-column prop="factoryPrice" label="金地球工厂价" width="140">
           <template #default="scope">
             {{
               (
-                Number(scope.row.unm) *
+                Number(scope.row.num) *
                 Number(scope.row.price) *
                 Number(scope.row.taxrate || 0)
               ).toFixed(2)
@@ -344,7 +344,6 @@ const validType = (rule, value, callback) => {
       callback(new Error('请选择起重机类型'))
     } else return true
   } else if (currentProp === 'operation') {
-    console.log(11, currentProp)
     currentPropBro =
       formModel.product[currentIndex1].amount[currentIndex2].operation
     if (currentPropBro === undefined) {
@@ -380,6 +379,7 @@ const rules = ref({
  */
 const selectPart = (data, workshopItemKey, index) => {
   queryPart(data, workshopItemKey, index)
+
   if ('partData' in data) {
     productId.value = data.productData?.id
     partDataSource.value = data.partData
@@ -428,32 +428,34 @@ const queryPart = async (data, workshopItemKey, index) => {
   productList.value = []
 
   const resp = await listProduct({
-    crane_type: data.type,
-    crane_operation: data.operation,
-    work_level: data.level,
+    craneType: data.type,
+    craneOperation: data.operation,
+    workLevel: data.level,
   })
   if (resp.code === 200) {
     // 遍历产品下的BOM清单
     resp.rows.forEach((item) => {
       if (item.bomParams) {
         const bomData = JSON.parse(item.bomParams)
-        bomData.data = bomData.data.map((item) => {
-          item.brand = item.brand.includes(',')
-            ? item.brand.split(',')
-            : [item.brand]
-          item.part_code_value =
-            item.brand.length === 1 ? item.brand[0] : undefined
-          return item
-        })
-        productList.value.push({
-          ...bomData,
-          ratedPower: item.ratedPower,
-          liftSpeed: item.liftSpeed,
-          crabSpeed: item.crabSpeed,
-          cartSpeed: item.cartSpeed,
-          workshopItemKey,
-          index,
-        })
+        partDataSource.value = bomData
+
+        // bomData.data = bomData.data.map((item) => {
+        //   item.brand = item.brand.includes(',')
+        //     ? item.brand.split(',')
+        //     : [item.brand]
+        //   item.part_code_value =
+        //     item.brand.length === 1 ? item.brand[0] : undefined
+        //   return item
+        // })
+        // productList.value.push({
+        //   ...bomData,
+        //   ratedPower: item.ratedPower,
+        //   liftSpeed: item.liftSpeed,
+        //   crabSpeed: item.crabSpeed,
+        //   cartSpeed: item.cartSpeed,
+        //   workshopItemKey,
+        //   index,
+        // })
       }
     })
   }
@@ -467,10 +469,12 @@ const onProductChange = (value) => {
 const partDialogData = computed(() => {
   const factory_price_count = partDataSource.value.reduce((prev, next) => {
     const price = (
-      Number(next.unm) *
+      Number(next.num) *
       Number(next.price) *
       Number(next.taxrate || 0)
     ).toFixed(2)
+    console.log('price', typeof Number(price), price)
+
     return prev + Number(price)
   }, 0)
 
@@ -494,14 +498,37 @@ const createAmount = (length) => {
   }))
 }
 
-offerStore.$subscribe((_, state) => {
+offerStore.$subscribe((mutation, state) => {
   const { customer, product } = state
+  const NewCustomer = offerStore.getCustomerData()
   formModel.product = []
-
   if (product.length) {
-    product.forEach((item) => {
-      formModel.product.push(item)
-    })
+    console.log(
+      'new',
+      typeof JSON.stringify(NewCustomer.workshopInfo),
+      JSON.stringify(NewCustomer.workshopInfo),
+      'old',
+      typeof customer.workshopInfo,
+      customer.workshopInfo,
+      '00',
+      product,
+    )
+    if (JSON.stringify(NewCustomer.workshopInfo) === customer.workshopInfo) {
+      console.log(11, product)
+      product.forEach((item) => {
+        formModel.product.push(item)
+      })
+    } else {
+      console.log(22)
+      const workshopInfo = JSON.parse(customer.workshopInfo)
+      workshopInfo.forEach((item) => {
+        formModel.product.push({
+          name: item.name,
+          key: item.key,
+          amount: createAmount(item.amount),
+        })
+      })
+    }
   } else if (customer.workshopInfo) {
     const workshopInfo = JSON.parse(customer.workshopInfo)
     workshopInfo.forEach((item) => {
@@ -512,6 +539,38 @@ offerStore.$subscribe((_, state) => {
       })
     })
   }
+
+  // if (product.length) {
+  //   let productItem, workshopInfoItem
+  //   product.forEach((item) => {
+  //     console.log('111', item)
+  //     productItem = item
+  //   })
+
+  //   // const workshopInfo = JSON.parse(customer.workshopInfo)
+  //   // workshopInfo.forEach((item) => {
+  //   //   console.log('222', item)
+  //   //   workshopInfoItem = item
+  //   // })
+  //   // console.log(
+  //   //   'productItem',
+  //   //   productItem,
+  //   //   'workshopInfoItem',
+  //   //   workshopInfoItem,
+  //   // )
+  // }
+  // if (customer.workshopInfo) {
+  //   const workshopInfo = JSON.parse(customer.workshopInfo)
+  //   workshopInfo.forEach((item) => {
+  //     console.log('1', item)
+
+  //     formModel.product.push({
+  //       name: item.name,
+  //       key: item.key,
+  //       amount: createAmount(item.amount),
+  //     })
+  //   })
+  // }
 })
 
 const getValues = async () => {
