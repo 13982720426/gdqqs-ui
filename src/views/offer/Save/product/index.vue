@@ -195,12 +195,22 @@
               "
               style="margin-top: 12px"
             >
-              <el-button
-                type="primary"
-                @click="selectPart(amountItem, workshopItem.key, index)"
-              >
-                选择部件
-              </el-button>
+              <div v-if="!!amountItem.productData">
+                <el-button
+                  type="success"
+                  @click="selectPart(amountItem, workshopItem.key, index)"
+                >
+                  编辑
+                </el-button>
+              </div>
+              <div v-else>
+                <el-button
+                  type="primary"
+                  @click="selectPart(amountItem, workshopItem.key, index)"
+                >
+                  选择部件
+                </el-button>
+              </div>
             </div>
           </div>
         </div>
@@ -389,8 +399,15 @@ const rules = ref({
  */
 const selectPart = (data, workshopItemKey, index) => {
   queryPart(data, workshopItemKey, index)
-  partDataSource.value = []
+
+  if ('partData' in data) {
+    productId.value = data.productData?.id
+    partDataSource.value = data.partData
+  }
   dialogVisible.value = true
+
+  // partDataSource.value = []
+  // dialogVisible.value = true
 }
 
 const cancel = () => {
@@ -421,10 +438,12 @@ const savePartData = () => {
         liftSpeed: productItem.liftSpeed,
         crabSpeed: productItem.crabSpeed,
         cartSpeed: productItem.cartSpeed,
-        id: productItem.productId,
+        id: productItem.productName,
       }
     }
   })
+  // offerStore.setProductData(formModel.product)
+
   console.log('formModel.product', formModel.product)
 
   cancel()
@@ -438,6 +457,17 @@ const savePartData = () => {
  * @returns {Promise<void>}
  */
 const queryPart = async (data, workshopItemKey, index) => {
+  console.log('offerStore.getProductData()', offerStore.getProductData())
+  const productInfo = offerStore.getProductData()
+
+  productInfo.forEach((item) => {
+    console.log('item', item)
+    if (item.key === workshopItemKey) {
+      console.log(true)
+      partDataSource.value = item.amount
+    }
+  })
+
   const { productMsg } = formModel
   productMsg.workshopItemKey = workshopItemKey
   productMsg.index = index
