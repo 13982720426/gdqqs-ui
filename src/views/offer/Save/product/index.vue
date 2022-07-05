@@ -200,7 +200,7 @@
                   type="success"
                   @click="selectPart(amountItem, workshopItem.key, index)"
                 >
-                  编辑
+                  编辑部件
                 </el-button>
               </div>
               <div v-else>
@@ -616,12 +616,10 @@ offerStore.$subscribe((mutation, state) => {
     //   product,
     // )
     if (JSON.stringify(NewCustomer.workshopInfo) === customer.workshopInfo) {
-      console.log(11, product)
       product.forEach((item) => {
         formModel.product.push(item)
       })
     } else {
-      console.log(22)
       const workshopInfo = JSON.parse(customer.workshopInfo)
       workshopInfo.forEach((item) => {
         formModel.product.push({
