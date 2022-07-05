@@ -238,6 +238,7 @@
                 :key="item.key"
                 v-for="item in row.brand"
                 :label="item"
+                @click.prevent="checkRadio(row)"
               />
             </el-radio-group>
           </template>
@@ -379,40 +380,38 @@ const rules = ref({
  */
 const selectPart = (data, workshopItemKey, index) => {
   queryPart(data, workshopItemKey, index)
-
-  // if ('partData' in data) {
-  //   productId.value = data.productData?.id
-  //   partDataSource.value = data.partData
-  // }
-  dialogVisible.value = true
   partDataSource.value = []
+  dialogVisible.value = true
 }
 
 const cancel = () => {
-  dialogVisible.value = false
   partDataSource.value = []
+  dialogVisible.value = false
 }
 
 const savePartData = () => {
-  const productItem = productList.value.find(
-    (item) => item.name === productId.value,
-  )
-  formModel.product.forEach((item) => {
-    if (productItem && productItem.workshopItemKey === item.key) {
-      const amountItem = item.amount[productItem.index]
-      amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
-      amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
-      amountItem.productData = {
-        // 部件对应产品信息
-        name: productItem.name,
-        ratedPower: productItem.ratedPower,
-        liftSpeed: productItem.liftSpeed,
-        crabSpeed: productItem.crabSpeed,
-        cartSpeed: productItem.cartSpeed,
-        id: productId.value,
-      }
-    }
-  })
+  console.log('确认', partDataSource)
+  // const productItem = productList.value.find(
+  //   (item) => item.name === productId.value,
+  // )
+  // console.log('11productItem', productItem)
+  // formModel.product.forEach((item) => {
+  //   if (productItem && productItem.workshopItemKey === item.key) {
+  //     const amountItem = item.amount[productItem.index]
+  //     amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
+  //     amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
+  //     amountItem.productData = {
+  //       // 部件对应产品信息
+  //       name: productItem.name,
+  //       ratedPower: productItem.ratedPower,
+  //       liftSpeed: productItem.liftSpeed,
+  //       crabSpeed: productItem.crabSpeed,
+  //       cartSpeed: productItem.cartSpeed,
+  //       id: productId.value,
+  //     }
+  //   }
+  // })
+
   cancel()
 }
 
@@ -472,13 +471,16 @@ const onProductChange = (value) => {
   if (item.bomParams) {
     let bomData = JSON.parse(item.bomParams)
     bomData = bomData.map((item) => {
-      console.log('item.brand', item.brand)
       item.brand = item.brand.includes(',')
         ? item.brand.split(',')
         : [item.brand]
-      item.part_code_value = item.brand.length === 1 ? item.brand[0] : undefined
-      console.log('item1', item, item.part_code_value)
 
+      item.part_code_value = item.brand.length === 1 ? item.brand[0] : null
+      if (item.brand === '') {
+        item.part_code_value = null
+      } else if (item.offerCode === '') {
+        item.part_code_value = null
+      }
       return item
     })
     partDataSource.value = bomData
@@ -600,6 +602,15 @@ const getValues = async () => {
       arr.push(newData.product[index])
     })
     return arr
+  }
+}
+function checkRadio(row) {
+  if (row.brand[0] !== '') {
+    if (row.part_code_value) {
+      row.part_code_value = null
+    } else {
+      row.part_code_value = row.brand[0]
+    }
   }
 }
 
