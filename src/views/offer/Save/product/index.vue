@@ -380,13 +380,12 @@ const rules = ref({
 const selectPart = (data, workshopItemKey, index) => {
   queryPart(data, workshopItemKey, index)
 
-  console.log('1data', data)
-  if ('partData' in data) {
-    console.log('data', data)
-    productId.value = data.productData?.id
-    partDataSource.value = data.partData
-  }
+  // if ('partData' in data) {
+  //   productId.value = data.productData?.id
+  //   partDataSource.value = data.partData
+  // }
   dialogVisible.value = true
+  partDataSource.value = []
 }
 
 const cancel = () => {
@@ -435,33 +434,7 @@ const queryPart = async (data, workshopItemKey, index) => {
     liftWeight: parseInt(data.weight),
   })
   if (resp.code === 200) {
-    console.log('1', resp.rows)
-    resp.rows.forEach((item) => {
-      let bomData = JSON.parse(item.bomParams)
-      console.log(2, bomData)
-
-      bomData = bomData.map((item) => {
-        item.brand = item.brand.includes(',')
-          ? item.brand.split(',')
-          : [item.brand]
-        item.part_code_value =
-          item.brand.length === 1 ? item.brand[0] : undefined
-        return item
-      })
-      console.log(3, bomData)
-      // productList.value = bomData
-    })
-
     productList.value = resp.rows
-
-    // if (resp.total === 1) {
-    //   resp.rows.forEach((item) => {
-    //     if (item.bomParams) {
-    //       const bomData = JSON.parse(item.bomParams)
-    //       partDataSource.value = bomData
-    //     }
-    //   })
-    // }
   }
 
   // if (resp.code === 200) {
@@ -496,7 +469,20 @@ const queryPart = async (data, workshopItemKey, index) => {
 
 const onProductChange = (value) => {
   const item = productList.value.find((item) => item.productName === value)
-  partDataSource.value = JSON.parse(item.bomParams)
+  if (item.bomParams) {
+    let bomData = JSON.parse(item.bomParams)
+    bomData = bomData.map((item) => {
+      console.log('item.brand', item.brand)
+      item.brand = item.brand.includes(',')
+        ? item.brand.split(',')
+        : [item.brand]
+      item.part_code_value = item.brand.length === 1 ? item.brand[0] : undefined
+      console.log('item1', item, item.part_code_value)
+
+      return item
+    })
+    partDataSource.value = bomData
+  } else partDataSource.value = []
 }
 
 const partDialogData = computed(() => {
