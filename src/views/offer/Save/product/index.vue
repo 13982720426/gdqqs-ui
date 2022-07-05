@@ -215,10 +215,10 @@
         @change="onProductChange"
       >
         <el-option
-          :key="item.key"
+          :key="item.productName"
           v-for="item in productList"
-          :label="item.name"
-          :value="item.name"
+          :label="item.productName"
+          :value="item.productName"
         />
       </el-select>
       <el-table
@@ -380,7 +380,9 @@ const rules = ref({
 const selectPart = (data, workshopItemKey, index) => {
   queryPart(data, workshopItemKey, index)
 
+  console.log('1data', data)
   if ('partData' in data) {
+    console.log('data', data)
     productId.value = data.productData?.id
     partDataSource.value = data.partData
   }
@@ -426,44 +428,75 @@ const queryPart = async (data, workshopItemKey, index) => {
   // TODO 判断当前是否选择过部件
   productId.value = undefined
   productList.value = []
-
   const resp = await listProduct({
     craneType: data.type,
     craneOperation: data.operation,
     workLevel: data.level,
+    liftWeight: parseInt(data.weight),
   })
   if (resp.code === 200) {
-    // 遍历产品下的BOM清单
+    console.log('1', resp.rows)
     resp.rows.forEach((item) => {
-      if (item.bomParams) {
-        const bomData = JSON.parse(item.bomParams)
-        partDataSource.value = bomData
+      let bomData = JSON.parse(item.bomParams)
+      console.log(2, bomData)
 
-        // bomData.data = bomData.data.map((item) => {
-        //   item.brand = item.brand.includes(',')
-        //     ? item.brand.split(',')
-        //     : [item.brand]
-        //   item.part_code_value =
-        //     item.brand.length === 1 ? item.brand[0] : undefined
-        //   return item
-        // })
-        // productList.value.push({
-        //   ...bomData,
-        //   ratedPower: item.ratedPower,
-        //   liftSpeed: item.liftSpeed,
-        //   crabSpeed: item.crabSpeed,
-        //   cartSpeed: item.cartSpeed,
-        //   workshopItemKey,
-        //   index,
-        // })
-      }
+      bomData = bomData.map((item) => {
+        item.brand = item.brand.includes(',')
+          ? item.brand.split(',')
+          : [item.brand]
+        item.part_code_value =
+          item.brand.length === 1 ? item.brand[0] : undefined
+        return item
+      })
+      console.log(3, bomData)
+      // productList.value = bomData
     })
+
+    productList.value = resp.rows
+
+    // if (resp.total === 1) {
+    //   resp.rows.forEach((item) => {
+    //     if (item.bomParams) {
+    //       const bomData = JSON.parse(item.bomParams)
+    //       partDataSource.value = bomData
+    //     }
+    //   })
+    // }
   }
+
+  // if (resp.code === 200) {
+  //   // 遍历产品下的BOM清单
+
+  //   resp.rows.forEach((item) => {
+  //     if (item.bomParams) {
+  //       const bomData = JSON.parse(item.bomParams)
+  //       // partDataSource.value = bomData
+  //       console.log('bomData', bomData)
+  //       // bomData.data = bomData.data.map((item) => {
+  //       //   item.brand = item.brand.includes(',')
+  //       //     ? item.brand.split(',')
+  //       //     : [item.brand]
+  //       //   item.part_code_value =
+  //       //     item.brand.length === 1 ? item.brand[0] : undefined
+  //       //   return item
+  //       // })
+  //       // productList.value.push({
+  //       //   ...bomData,
+  //       //   ratedPower: item.ratedPower,
+  //       //   liftSpeed: item.liftSpeed,
+  //       //   crabSpeed: item.crabSpeed,
+  //       //   cartSpeed: item.cartSpeed,
+  //       //   workshopItemKey,
+  //       //   index,
+  //       // })
+  //     }
+  //   })
+  // }
 }
 
 const onProductChange = (value) => {
-  const item = productList.value.find((item) => item.name === value)
-  partDataSource.value = item.data
+  const item = productList.value.find((item) => item.productName === value)
+  partDataSource.value = JSON.parse(item.bomParams)
 }
 
 const partDialogData = computed(() => {
@@ -473,8 +506,6 @@ const partDialogData = computed(() => {
       Number(next.price) *
       Number(next.taxrate || 0)
     ).toFixed(2)
-    console.log('price', typeof Number(price), price)
-
     return prev + Number(price)
   }, 0)
 
@@ -503,16 +534,16 @@ offerStore.$subscribe((mutation, state) => {
   const NewCustomer = offerStore.getCustomerData()
   formModel.product = []
   if (product.length) {
-    console.log(
-      'new',
-      typeof JSON.stringify(NewCustomer.workshopInfo),
-      JSON.stringify(NewCustomer.workshopInfo),
-      'old',
-      typeof customer.workshopInfo,
-      customer.workshopInfo,
-      '00',
-      product,
-    )
+    // console.log(
+    //   'new',
+    //   typeof JSON.stringify(NewCustomer.workshopInfo),
+    //   JSON.stringify(NewCustomer.workshopInfo),
+    //   'old',
+    //   typeof customer.workshopInfo,
+    //   customer.workshopInfo,
+    //   '00',
+    //   product,
+    // )
     if (JSON.stringify(NewCustomer.workshopInfo) === customer.workshopInfo) {
       console.log(11, product)
       product.forEach((item) => {
