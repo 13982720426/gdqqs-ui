@@ -331,6 +331,15 @@ const form = ref()
 const productId = ref()
 const formModel = reactive({
   product: [],
+
+  productMsg: {
+    workshopItemKey: null,
+    index: null,
+    ratedPower: null,
+    liftSpeed: null,
+    crabSpeed: null,
+    cartSpeed: null,
+  },
 })
 
 const validType = (rule, value, callback) => {
@@ -390,27 +399,33 @@ const cancel = () => {
 }
 
 const savePartData = () => {
-  console.log('确认', partDataSource)
-  // const productItem = productList.value.find(
-  //   (item) => item.name === productId.value,
-  // )
-  // console.log('11productItem', productItem)
-  // formModel.product.forEach((item) => {
-  //   if (productItem && productItem.workshopItemKey === item.key) {
-  //     const amountItem = item.amount[productItem.index]
-  //     amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
-  //     amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
-  //     amountItem.productData = {
-  //       // 部件对应产品信息
-  //       name: productItem.name,
-  //       ratedPower: productItem.ratedPower,
-  //       liftSpeed: productItem.liftSpeed,
-  //       crabSpeed: productItem.crabSpeed,
-  //       cartSpeed: productItem.cartSpeed,
-  //       id: productId.value,
-  //     }
-  //   }
-  // })
+  const { productMsg } = formModel
+
+  const productItem = productList.value.find(
+    (item) => item.productName === productId.value,
+  )
+  console.log('productItem', productItem)
+
+  productItem.bomParams = JSON.stringify(partDataSource.value)
+  productItem.index = productMsg.index
+  productItem.workshopItemKey = productMsg.workshopItemKey
+  formModel.product.forEach((item) => {
+    if (productItem && productItem.workshopItemKey === item.key) {
+      const amountItem = item.amount[productItem.index]
+      amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
+      amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
+      amountItem.productData = {
+        // 部件对应产品信息
+        name: productItem.craneModel,
+        ratedPower: productItem.ratedPower,
+        liftSpeed: productItem.liftSpeed,
+        crabSpeed: productItem.crabSpeed,
+        cartSpeed: productItem.cartSpeed,
+        id: productItem.productId,
+      }
+    }
+  })
+  console.log('formModel.product', formModel.product)
 
   cancel()
 }
@@ -423,6 +438,9 @@ const savePartData = () => {
  * @returns {Promise<void>}
  */
 const queryPart = async (data, workshopItemKey, index) => {
+  const { productMsg } = formModel
+  productMsg.workshopItemKey = workshopItemKey
+  productMsg.index = index
   // TODO 判断当前是否选择过部件
   productId.value = undefined
   productList.value = []
@@ -467,9 +485,14 @@ const queryPart = async (data, workshopItemKey, index) => {
 }
 
 const onProductChange = (value) => {
-  const item = productList.value.find((item) => item.productName === value)
-  if (item.bomParams) {
-    let bomData = JSON.parse(item.bomParams)
+  const { productMsg } = formModel
+
+  const itemData = productList.value.find((item) => item.productName === value)
+
+  console.log('itemData', itemData)
+
+  if (itemData.bomParams) {
+    let bomData = JSON.parse(itemData.bomParams)
     bomData = bomData.map((item) => {
       item.brand = item.brand.includes(',')
         ? item.brand.split(',')
@@ -483,8 +506,38 @@ const onProductChange = (value) => {
       }
       return item
     })
+
     partDataSource.value = bomData
-  } else partDataSource.value = []
+    productMsg.ratedPower = itemData.ratedPower
+    productMsg.liftSpeed = itemData.liftSpeed
+    productMsg.crabSpeed = itemData.crabSpeed
+    productMsg.cartSpeed = itemData.cartSpeed
+  }
+
+  // const item = productList.value.find(
+  //   (item) => item.productName === value && item.push,
+  // )
+  // productId.value = item.productName
+  // console.log('11item', item)
+  // partDataSource.value = item
+
+  // if (item.bomParams) {
+  //   let bomData = JSON.parse(item.bomParams)
+  //   bomData = bomData.map((item) => {
+  //     item.brand = item.brand.includes(',')
+  //       ? item.brand.split(',')
+  //       : [item.brand]
+
+  //     item.part_code_value = item.brand.length === 1 ? item.brand[0] : null
+  //     if (item.brand === '') {
+  //       item.part_code_value = null
+  //     } else if (item.offerCode === '') {
+  //       item.part_code_value = null
+  //     }
+  //     return item
+  //   })
+  //   partDataSource.value = bomData
+  // } else partDataSource.value = []
 }
 
 const partDialogData = computed(() => {
