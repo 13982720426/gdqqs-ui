@@ -187,7 +187,7 @@
         </div>
       </div>
     </OfferSaveTitle>
-    <OfferSaveTitle title="滑触线数据">
+    <OfferSaveTitle title="滑线数据">
       <div>
         <div :key="item.key" v-for="(item, index) in workshopData">
           <div
@@ -197,30 +197,32 @@
             }"
           >
             <span style="padding-right: 24px">车间名称：{{ item.name }}</span>
-            <span>
-              滑触线:
-              <el-select
-                :disabled="offerStore.type === 'view'"
-                v-model="slipLineData.id"
-                @change="
-                  (value) => {
-                    slipLineChange(value, item)
-                  }
-                "
-                placeholder="请选择滑触线"
-              >
-                <el-option
-                  :key="slipItem.splPartId"
-                  v-for="slipItem in slipLineOptions"
-                  :label="slipItem.splPartName"
-                  :value="slipItem.splPartId"
-                />
-              </el-select>
-            </span>
           </div>
-          <div>
+          <div :key="item.key" v-for="item in workshopData">
             <el-table :data="QuoteData.slipLine[item.key]">
               <el-table-column type="index" label="序号" width="80" />
+
+              <el-table-column prop="slipLine" label="滑线" width="140">
+                <template #default="scope">
+                  <el-select
+                    :disabled="offerStore.type === 'view'"
+                    v-model="scope.row.slipLine"
+                    @change="
+                      (value) => {
+                        slipLineChange(value, scope.row, item)
+                      }
+                    "
+                    placeholder="请选择"
+                  >
+                    <el-option
+                      :key="slipItem.splPartId"
+                      v-for="slipItem in slipLineOptions"
+                      :label="slipItem.splPartName"
+                      :value="slipItem.splPartId"
+                    />
+                  </el-select>
+                </template>
+              </el-table-column>
               <el-table-column prop="level" label="滑线级数" width="100" />
               <el-table-column
                 prop="electricMax"
@@ -239,15 +241,15 @@
                 width="120"
               />
               <el-table-column prop="idlight" label="指示灯数量" width="100">
-                <template #default="{ row }">
-                  <el-select
+                <template #default="scope">
+                  <el-input-number
                     :disabled="offerStore.type === 'view'"
-                    v-model="row.idlight"
-                  >
-                    <el-option label="1" :value="1" />
-                    <el-option label="2" :value="2" />
-                    <el-option label="3" :value="3" />
-                  </el-select>
+                    v-model="scope.row.idlight"
+                    :min="1"
+                    :max="999999"
+                    controls-position="right"
+                    style="width: 100px"
+                  />
                 </template>
               </el-table-column>
               <el-table-column
@@ -255,12 +257,20 @@
                 label="上升电缆数量(米)"
                 width="120"
               />
-              <el-table-column prop="index" label="滑线数量费用" width="100">
+              <el-table-column
+                prop="slipLineCost"
+                label="滑线数量费用"
+                width="100"
+              >
                 <template #default="{ row }">
                   {{ trolleyFee(row) }}
                 </template>
               </el-table-column>
-              <el-table-column prop="index" label="集电器费用" width="120">
+              <el-table-column
+                prop="collectorCost"
+                label="集电器费用"
+                width="120"
+              >
                 <template #default="{ row }">
                   {{ collectorFee(row) }}
                 </template>
@@ -288,7 +298,7 @@
                   {{ rcableFee(row) }}
                 </template>
               </el-table-column>
-              <el-table-column prop="index" label="补税款" width="100">
+              <el-table-column prop="slipTax" label="补税款" width="100">
                 <template #default="{ row }">
                   {{ slipTaxFee(row) }}
                 </template>
@@ -303,7 +313,15 @@
                   {{ slipCount(row) }}
                 </template>
               </el-table-column>
+              <el-table-column width="100" label="操作" fixed="right">
+                <template #default="scope">
+                  <el-button @click="onSlipLineDelete(item.key, scope.row.key)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
             </el-table>
+            <div class="add-btn" @click="onSlipLineAdd(item)">新增</div>
           </div>
         </div>
         <div style="margin-top: 16px">
@@ -578,6 +596,23 @@ const default_track_data = {
   cpUnprice: 0, // 联结板单价
   thsUnprice: 0, // 轨道吊装台班单价
 }
+const default_slipLine_data = {
+  slipLine: undefined, //滑线
+  level: 0, //滑线级数
+  electricMax: 0, //最大电流
+  length: 0, //滑线数量
+  collectorCount: 0, //集电器数量
+  installLength: 0, //滑线安装数量
+  idlight: 0, //指示灯数量
+  rcable: 0, //上升电缆数量
+  slipLineCost: 0, //滑线数量费用
+  collectorCost: 0, //集电器费用
+  installUnprice: 0, //安装费
+  idlightUnprice: 0, //指示灯费用
+  rcableUnprice: 0, //上升电缆费用
+  slipTax: 0, //补税款
+  count: 0, //费用合计
+}
 
 const slipLineOptions = ref([])
 const tax = ref(0)
@@ -600,7 +635,7 @@ const trackData = ref({
 const slipLineData = ref({
   total: 0,
   profitMargin: 1.1,
-  name: '滑触线', // 说明
+  name: '滑线', // 说明
   count: 0, // 数量
   sales: 0,
   profit: 0,
@@ -694,6 +729,32 @@ const onTrackAdd = (workshop) => {
     QuoteData.track[workshopKey] = [newTrackItem]
   }
 }
+/**
+ * 滑触线新增
+ * @param {Object} workshop 车间数据
+ */
+const onSlipLineAdd = (workshop) => {
+  const workshopKey = workshop.key
+  const key = `slipLine${getKey()}`
+  const wsLength = workshop.workshopLength
+
+  const actualLength = wsLength * 2
+  const platens = numberToFixed(((wsLength * 2) / 0.75) * 2)
+
+  const newTrackItem = {
+    ...default_slipLine_data,
+    key,
+    actualLength,
+    platens,
+    wsLength,
+  }
+
+  if (QuoteData.slipLine[workshopKey]) {
+    QuoteData.slipLine[workshopKey].push(newTrackItem)
+  } else {
+    QuoteData.slipLine[workshopKey] = [newTrackItem]
+  }
+}
 
 /**
  * 轨道数据删除
@@ -705,6 +766,18 @@ const onTrackDelete = (workshopId, key) => {
   )
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
+  }
+}
+/**
+ * 滑触线删除
+ * @param key
+ */
+const onSlipLineDelete = (workshopId, key) => {
+  const index = QuoteData.slipLine[workshopId].findIndex(
+    (item) => item.key === key,
+  )
+  if (index > -1) {
+    QuoteData.slipLine[workshopId].splice(index, 1)
   }
 }
 
@@ -861,7 +934,7 @@ const slipCount = (row) => {
  * @param {string} 当前车间的滑线tableId
  * @param {string} 当前滑线数据
  */
-const slipLineChange = (id, item) => {
+const slipLineChange = (id, row, item) => {
   // 计算当前车间总电流
   const slipItem = slipLineOptions.value.find((sItem) => sItem.splPartId === id)
   const productItem = findProduct(item.key)
@@ -869,7 +942,18 @@ const slipLineChange = (id, item) => {
     (prev, next) => prev + Number(next.productData.ratedPower),
     0,
   )
-  const newSlip = {
+  let level = 2 // 滑线级数
+
+  if (power > 120) {
+    level = 1
+  }
+
+  const index = QuoteData.slipLine[item.key].findIndex(
+    (item2) => item2.key === row.key,
+  )
+
+  QuoteData.slipLine[item.key].splice(index, 1, {
+    ...row,
     electricMax: slipItem.electricMax,
     trolleyUnprice: Number(slipItem.trolleyUnprice),
     length: item.workshopLength,
@@ -881,17 +965,9 @@ const slipLineChange = (id, item) => {
     idlight: item.workshopLength > 150 ? 2 : 1,
     rcable: item.liftingHeight + 2,
     rcableUnprice: Number(slipItem.rcableUnprice),
+    level,
     count: 0,
-  }
-  let level = 2 // 滑线级数
-
-  if (power > 120) {
-    level = 1
-  }
-
-  newSlip.level = level
-
-  QuoteData.slipLine[item.key] = [newSlip]
+  })
 }
 
 const salesItemCalculate = (item) => {
