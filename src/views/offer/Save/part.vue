@@ -158,7 +158,7 @@
             <el-descriptions-item
               :key="workshopItem.key"
               v-for="workshopItem in workshopData"
-              :label="`${workshopItem.name}成本合计`"
+              :label="`车间${workshopItem.name}成本合计`"
             >
               <span class="number">
                 {{ workshopFree(QuoteData.track[workshopItem.key]) }}
@@ -198,7 +198,7 @@
           >
             <span style="padding-right: 24px">车间名称：{{ item.name }}</span>
           </div>
-          <div :key="item.key" v-for="item in workshopData">
+          <div>
             <el-table :data="QuoteData.slipLine[item.key]">
               <el-table-column type="index" label="序号" width="80" />
 
@@ -329,7 +329,7 @@
             <el-descriptions-item
               :key="workshopItem.key"
               v-for="workshopItem in workshopData"
-              :label="`${workshopItem.name} 成本合计`"
+              :label="`车间${workshopItem.name} 成本合计`"
             >
               {{ workshopFree(QuoteData.slipLine[workshopItem.key]) }}
             </el-descriptions-item>
@@ -734,25 +734,19 @@ const onTrackAdd = (workshop) => {
  * @param {Object} workshop 车间数据
  */
 const onSlipLineAdd = (workshop) => {
+  console.log('workshop', workshop)
   const workshopKey = workshop.key
   const key = `slipLine${getKey()}`
-  const wsLength = workshop.workshopLength
 
-  const actualLength = wsLength * 2
-  const platens = numberToFixed(((wsLength * 2) / 0.75) * 2)
-
-  const newTrackItem = {
+  const newSlipLineItem = {
     ...default_slipLine_data,
     key,
-    actualLength,
-    platens,
-    wsLength,
   }
 
   if (QuoteData.slipLine[workshopKey]) {
-    QuoteData.slipLine[workshopKey].push(newTrackItem)
+    QuoteData.slipLine[workshopKey].push(newSlipLineItem)
   } else {
-    QuoteData.slipLine[workshopKey] = [newTrackItem]
+    QuoteData.slipLine[workshopKey] = [newSlipLineItem]
   }
 }
 
@@ -935,6 +929,7 @@ const slipCount = (row) => {
  * @param {string} 当前滑线数据
  */
 const slipLineChange = (id, row, item) => {
+  console.log('11', id, row, item)
   // 计算当前车间总电流
   const slipItem = slipLineOptions.value.find((sItem) => sItem.splPartId === id)
   const productItem = findProduct(item.key)
@@ -942,12 +937,11 @@ const slipLineChange = (id, row, item) => {
     (prev, next) => prev + Number(next.productData.ratedPower),
     0,
   )
-  let level = 2 // 滑线级数
 
+  let level = 2 // 滑线级数
   if (power > 120) {
     level = 1
   }
-
   const index = QuoteData.slipLine[item.key].findIndex(
     (item2) => item2.key === row.key,
   )

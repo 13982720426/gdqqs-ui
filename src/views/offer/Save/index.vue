@@ -153,9 +153,8 @@ const stepsNext = async () => {
     }
     offerStore.setProductData(data)
   } else if (stepsKey.value === 2) {
-    console.log(22)
-
     const data = await partRef.value.getValues()
+    console.log(22, data)
     if (!data) {
       return
     }

@@ -216,11 +216,11 @@
         </div>
       </el-form>
     </OfferSaveTitle>
-    <el-dialog v-model="dialogVisible" width="900px" title="选择部件">
+    <el-dialog v-model="dialogVisible" width="85%" title="选择部件">
       <el-select
         :disabled="offerStore.type === 'view'"
         v-model="productId"
-        style="width: 50%; margin-bottom: 12px"
+        style="width: 30%; margin-bottom: 12px"
         placeholder="请选择产品"
         @change="onProductChange"
       >
@@ -255,7 +255,7 @@
         </el-table-column>
         <el-table-column
           prop="model"
-          label="部件编码"
+          label="物料编码"
           width="180"
         ></el-table-column>
         <el-table-column prop="num" label="数量" width="80" />
