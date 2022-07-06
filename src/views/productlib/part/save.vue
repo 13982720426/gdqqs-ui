@@ -322,6 +322,17 @@
             />
           </el-form-item>
         </el-col>
+        <el-col :span="8">
+          <el-form-item label="单价(元)" prop="oilPrice">
+            <el-input
+              v-model="form.oilPrice"
+              placeholder="请输入"
+              style="width: 60%"
+              type="number"
+              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
+            />
+          </el-form-item>
+        </el-col>
       </template>
     </el-row>
     <el-row v-else>
@@ -671,7 +682,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="部件编码" prop="partCode">
+        <el-form-item label="物料编码" prop="partCode">
           <el-input
             v-model="form.partCode"
             placeholder="请输入"

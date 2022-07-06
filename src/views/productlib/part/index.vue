@@ -82,12 +82,6 @@
             placeholder="请选择起重机类型"
             clearable
           >
-            <!-- <el-option
-              v-for="dict in craneModel"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-            /> -->
             <el-option
               v-for="dict in q_crane_type"
               :key="dict.value"
@@ -112,6 +106,40 @@
     </div>
 
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
+      <el-tab-pane label="产品部件" name="six">
+        <QTable
+          :loading="loading"
+          :data="productPartList"
+          :columns="productPartColumns"
+          @selectionChange="handleSelectionChange"
+        >
+          <template #default="{ row }">
+            <el-button
+              class="sel"
+              type="text"
+              @click="handleUpdate(row)"
+              v-hasPermi="['business:product:edit']"
+            >
+              修改
+            </el-button>
+            <el-button
+              class="sel"
+              type="text"
+              @click="handleDelete(row)"
+              v-hasPermi="['business:product:remove']"
+            >
+              删除
+            </el-button>
+          </template>
+        </QTable>
+        <pagination
+          v-show="total > 0"
+          :total="total"
+          v-model:page="queryParams.pageNum"
+          v-model:limit="queryParams.pageSize"
+          @pagination="getList"
+        />
+      </el-tab-pane>
       <el-tab-pane label="轨道" name="first">
         <QTable
           :loading="loading"
@@ -220,40 +248,6 @@
           :loading="loading"
           :data="paintPartList"
           :columns="paintPartColumns"
-          @selectionChange="handleSelectionChange"
-        >
-          <template #default="{ row }">
-            <el-button
-              class="sel"
-              type="text"
-              @click="handleUpdate(row)"
-              v-hasPermi="['business:product:edit']"
-            >
-              修改
-            </el-button>
-            <el-button
-              class="sel"
-              type="text"
-              @click="handleDelete(row)"
-              v-hasPermi="['business:product:remove']"
-            >
-              删除
-            </el-button>
-          </template>
-        </QTable>
-        <pagination
-          v-show="total > 0"
-          :total="total"
-          v-model:page="queryParams.pageNum"
-          v-model:limit="queryParams.pageSize"
-          @pagination="getList"
-        />
-      </el-tab-pane>
-      <el-tab-pane label="产品部件" name="six">
-        <QTable
-          :loading="loading"
-          :data="productPartList"
-          :columns="productPartColumns"
           @selectionChange="handleSelectionChange"
         >
           <template #default="{ row }">
@@ -544,6 +538,12 @@ const paintPartColumns = ref([
     label: '品牌',
     align: 'center',
   },
+  {
+    id: 4,
+    prop: 'oilPrice',
+    label: '单价',
+    align: 'center',
+  },
 ])
 const productPartList = ref([])
 const productPartColumns = ref([
@@ -563,11 +563,9 @@ const productPartColumns = ref([
   },
   {
     id: 3,
-    // prop: 'qProduct.craneModel',
     prop: 'craneModel',
     label: '起重机型号',
     align: 'center',
-    // format: (row) => craneModelFormat(row),
   },
   {
     id: 4,
@@ -599,7 +597,7 @@ const productPartColumns = ref([
   {
     id: 8,
     prop: 'partCode',
-    label: '部件编码',
+    label: '物料编码',
     align: 'center',
   },
   {
@@ -698,6 +696,7 @@ const data = reactive({
     //油漆
     model: [{ required: true, message: '请输入型号', trigger: 'blur' }],
     brand: [{ required: true, message: '请输入品牌', trigger: 'blur' }],
+    oilPrice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
 
     //产品部件
     craneType: [
@@ -719,7 +718,7 @@ const data = reactive({
       { required: true, message: '请选择起升重量', trigger: 'blur' },
     ],
     quantity: [{ required: true, message: '请输入数量', trigger: 'blur' }],
-    partCode: [{ required: true, message: '请输入部件编码', trigger: 'blur' }],
+    partCode: [{ required: true, message: '请输入物料编码', trigger: 'blur' }],
     brand: [{ required: true, message: '请输入品牌', trigger: 'blur' }],
     unit: [{ required: true, message: '请选择单位', trigger: 'blur' }],
     unitPrice: [{ required: true, message: '请输入单价', trigger: 'blur' }],
