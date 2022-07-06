@@ -520,6 +520,7 @@ const crastopmodelPartColumns = ref([
     prop: 'trackModel',
     label: '轨道型号',
     align: 'center',
+    format: (row) => orbitModelFormat(row),
   },
 ])
 const paintPartList = ref([])
