@@ -254,7 +254,7 @@
           </template>
         </el-table-column>
         <el-table-column
-          prop="part_code"
+          prop="model"
           label="部件编码"
           width="180"
         ></el-table-column>
