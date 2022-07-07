@@ -333,6 +333,17 @@
             />
           </el-form-item>
         </el-col>
+        <el-col :span="8">
+          <el-form-item label="物料编码" prop="partCode">
+            <el-input
+              v-model="form.partCode"
+              placeholder="请输入"
+              style="width: 60%"
+              maxlength="32"
+              show-word-limit
+            />
+          </el-form-item>
+        </el-col>
       </template>
     </el-row>
     <el-row v-else>

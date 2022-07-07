@@ -594,6 +594,12 @@ const paintPartColumns = ref([
     label: '单价',
     align: 'center',
   },
+  {
+    id: 4,
+    prop: 'partCode',
+    label: '物料编码',
+    align: 'center',
+  },
 ])
 const productPartList = ref([])
 const productPartColumns = ref([
