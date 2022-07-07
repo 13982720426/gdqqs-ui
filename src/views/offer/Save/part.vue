@@ -64,7 +64,7 @@
               <el-table-column
                 prop="hoistingTables"
                 label="吊装台班数量"
-                width="120"
+                width="130"
               >
                 <template #default="scope">
                   <el-input-number
@@ -80,7 +80,7 @@
               <el-table-column
                 prop="cartStops"
                 label="大车止挡数量"
-                width="120"
+                width="130"
               >
                 <template #default="scope">
                   <el-input-number
@@ -158,7 +158,7 @@
             <el-descriptions-item
               :key="workshopItem.key"
               v-for="workshopItem in workshopData"
-              :label="`车间${workshopItem.name}成本合计`"
+              :label="`车间${workshopItem.name} 成本合计`"
             >
               <span class="number">
                 {{ workshopFree(QuoteData.track[workshopItem.key]) }}
@@ -197,32 +197,30 @@
             }"
           >
             <span style="padding-right: 24px">车间名称：{{ item.name }}</span>
+            <span>
+              滑线:
+              <el-select
+                :disabled="offerStore.type === 'view'"
+                v-model="slipLineData.id"
+                @change="
+                  (value) => {
+                    slipLineChange(value, item)
+                  }
+                "
+                placeholder="请选择滑线"
+              >
+                <el-option
+                  :key="slipItem.splPartId"
+                  v-for="slipItem in slipLineOptions"
+                  :label="slipItem.splPartName"
+                  :value="slipItem.splPartId"
+                />
+              </el-select>
+            </span>
           </div>
           <div>
             <el-table :data="QuoteData.slipLine[item.key]">
               <el-table-column type="index" label="序号" width="80" />
-
-              <el-table-column prop="slipLine" label="滑线" width="140">
-                <template #default="scope">
-                  <el-select
-                    :disabled="offerStore.type === 'view'"
-                    v-model="scope.row.slipLine"
-                    @change="
-                      (value) => {
-                        slipLineChange(value, scope.row, item)
-                      }
-                    "
-                    placeholder="请选择"
-                  >
-                    <el-option
-                      :key="slipItem.splPartId"
-                      v-for="slipItem in slipLineOptions"
-                      :label="slipItem.splPartName"
-                      :value="slipItem.splPartId"
-                    />
-                  </el-select>
-                </template>
-              </el-table-column>
               <el-table-column prop="level" label="滑线级数" width="100" />
               <el-table-column
                 prop="electricMax"
@@ -241,36 +239,28 @@
                 width="120"
               />
               <el-table-column prop="idlight" label="指示灯数量" width="100">
-                <template #default="scope">
-                  <el-input-number
+                <template #default="{ row }">
+                  <el-select
                     :disabled="offerStore.type === 'view'"
-                    v-model="scope.row.idlight"
-                    :min="1"
-                    :max="999999"
-                    controls-position="right"
-                    style="width: 100px"
-                  />
+                    v-model="row.idlight"
+                  >
+                    <el-option label="1" :value="1" />
+                    <el-option label="2" :value="2" />
+                    <el-option label="3" :value="3" />
+                  </el-select>
                 </template>
               </el-table-column>
               <el-table-column
                 prop="rcable"
                 label="上升电缆数量(米)"
-                width="120"
+                width="140"
               />
-              <el-table-column
-                prop="slipLineCost"
-                label="滑线数量费用"
-                width="100"
-              >
+              <el-table-column prop="index" label="滑线数量费用" width="120">
                 <template #default="{ row }">
                   {{ trolleyFee(row) }}
                 </template>
               </el-table-column>
-              <el-table-column
-                prop="collectorCost"
-                label="集电器费用"
-                width="120"
-              >
+              <el-table-column prop="index" label="集电器费用" width="120">
                 <template #default="{ row }">
                   {{ collectorFee(row) }}
                 </template>
@@ -292,13 +282,13 @@
               <el-table-column
                 prop="rcableUnprice"
                 label="上升电缆费用"
-                width="100"
+                width="120"
               >
                 <template #default="{ row }">
                   {{ rcableFee(row) }}
                 </template>
               </el-table-column>
-              <el-table-column prop="slipTax" label="补税款" width="100">
+              <el-table-column prop="index" label="补税款" width="100">
                 <template #default="{ row }">
                   {{ slipTaxFee(row) }}
                 </template>
@@ -313,15 +303,7 @@
                   {{ slipCount(row) }}
                 </template>
               </el-table-column>
-              <el-table-column width="100" label="操作" fixed="right">
-                <template #default="scope">
-                  <el-button @click="onSlipLineDelete(item.key, scope.row.key)">
-                    删除
-                  </el-button>
-                </template>
-              </el-table-column>
             </el-table>
-            <div class="add-btn" @click="onSlipLineAdd(item)">新增</div>
           </div>
         </div>
         <div style="margin-top: 16px">
@@ -360,8 +342,8 @@
       <div>
         <div>
           <el-table :data="craneDataSource">
+            <el-table-column type="index" label="序号" width="60" />
             <el-table-column prop="workshopName" label="车间名称" width="100" />
-            <el-table-column prop="index" label="序号" width="60" />
             <el-table-column prop="model" label="起重机型号" />
             <el-table-column prop="weight" label="起升重量(t)" />
             <el-table-column prop="freight" label="起重机安装">
@@ -418,8 +400,8 @@
       <div>
         <div>
           <el-table :data="installDataSource">
+            <el-table-column type="index" label="序号" width="60" />
             <el-table-column prop="workshopName" label="车间名称" width="100" />
-            <el-table-column prop="index" label="序号" width="60" />
             <el-table-column prop="model" label="起重机型号" />
             <el-table-column prop="weight" label="起升重量(t)" />
             <el-table-column prop="install" label="起重机安装">
@@ -488,8 +470,9 @@
       <div>
         <div>
           <el-table :data="marketDataSource">
+            <el-table-column type="index" label="序号" width="60" />
+
             <el-table-column prop="workshopName" label="车间名称" width="100" />
-            <el-table-column prop="index" label="序号" width="60" />
             <el-table-column prop="model" label="起重机型号" />
             <el-table-column prop="weight" label="起升重量(t)" />
             <el-table-column prop="acceptance" label="起重机验收" />
@@ -596,23 +579,6 @@ const default_track_data = {
   cpUnprice: 0, // 联结板单价
   thsUnprice: 0, // 轨道吊装台班单价
 }
-const default_slipLine_data = {
-  slipLine: undefined, //滑线
-  level: 0, //滑线级数
-  electricMax: 0, //最大电流
-  length: 0, //滑线数量
-  collectorCount: 0, //集电器数量
-  installLength: 0, //滑线安装数量
-  idlight: 0, //指示灯数量
-  rcable: 0, //上升电缆数量
-  slipLineCost: 0, //滑线数量费用
-  collectorCost: 0, //集电器费用
-  installUnprice: 0, //安装费
-  idlightUnprice: 0, //指示灯费用
-  rcableUnprice: 0, //上升电缆费用
-  slipTax: 0, //补税款
-  count: 0, //费用合计
-}
 
 const slipLineOptions = ref([])
 const tax = ref(0)
@@ -677,7 +643,7 @@ const countDataSource = ref([]) // 总合计
 
 const QuoteData = reactive({
   track: {}, // 轨道table数据
-  slipLine: {}, // 滑触线table数据
+  slipLine: {}, // 滑线table数据
 })
 
 const getKey = () => {
@@ -729,26 +695,6 @@ const onTrackAdd = (workshop) => {
     QuoteData.track[workshopKey] = [newTrackItem]
   }
 }
-/**
- * 滑触线新增
- * @param {Object} workshop 车间数据
- */
-const onSlipLineAdd = (workshop) => {
-  console.log('workshop', workshop)
-  const workshopKey = workshop.key
-  const key = `slipLine${getKey()}`
-
-  const newSlipLineItem = {
-    ...default_slipLine_data,
-    key,
-  }
-
-  if (QuoteData.slipLine[workshopKey]) {
-    QuoteData.slipLine[workshopKey].push(newSlipLineItem)
-  } else {
-    QuoteData.slipLine[workshopKey] = [newSlipLineItem]
-  }
-}
 
 /**
  * 轨道数据删除
@@ -760,18 +706,6 @@ const onTrackDelete = (workshopId, key) => {
   )
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
-  }
-}
-/**
- * 滑触线删除
- * @param key
- */
-const onSlipLineDelete = (workshopId, key) => {
-  const index = QuoteData.slipLine[workshopId].findIndex(
-    (item) => item.key === key,
-  )
-  if (index > -1) {
-    QuoteData.slipLine[workshopId].splice(index, 1)
   }
 }
 
@@ -928,8 +862,7 @@ const slipCount = (row) => {
  * @param {string} 当前车间的滑线tableId
  * @param {string} 当前滑线数据
  */
-const slipLineChange = (id, row, item) => {
-  console.log('11', id, row, item)
+const slipLineChange = (id, item) => {
   // 计算当前车间总电流
   const slipItem = slipLineOptions.value.find((sItem) => sItem.splPartId === id)
   const productItem = findProduct(item.key)
@@ -937,17 +870,7 @@ const slipLineChange = (id, row, item) => {
     (prev, next) => prev + Number(next.productData.ratedPower),
     0,
   )
-
-  let level = 2 // 滑线级数
-  if (power > 120) {
-    level = 1
-  }
-  const index = QuoteData.slipLine[item.key].findIndex(
-    (item2) => item2.key === row.key,
-  )
-
-  QuoteData.slipLine[item.key].splice(index, 1, {
-    ...row,
+  const newSlip = {
     electricMax: slipItem.electricMax,
     trolleyUnprice: Number(slipItem.trolleyUnprice),
     length: item.workshopLength,
@@ -959,9 +882,17 @@ const slipLineChange = (id, row, item) => {
     idlight: item.workshopLength > 150 ? 2 : 1,
     rcable: item.liftingHeight + 2,
     rcableUnprice: Number(slipItem.rcableUnprice),
-    level,
     count: 0,
-  })
+  }
+  let level = 2 // 滑线级数
+
+  if (power > 120) {
+    level = 1
+  }
+
+  newSlip.level = level
+
+  QuoteData.slipLine[item.key] = [newSlip]
 }
 
 const salesItemCalculate = (item) => {
