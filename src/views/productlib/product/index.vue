@@ -49,7 +49,6 @@
           <el-select
             v-model="queryParams.craneOperation"
             placeholder="请选择操作方式"
-            clearable
           >
             <el-option
               v-for="dict in q_oper_mode"
@@ -181,7 +180,6 @@
             <el-select
               v-model="form.craneType"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -198,7 +196,6 @@
             <el-select
               v-model="form.craneOperation"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -215,7 +212,6 @@
             <el-select
               v-model="form.control"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -232,9 +228,9 @@
             <el-select
               v-model="form.liftWeight"
               placeholder="请选择"
-              clearable
               style="width: 60%"
               :disabled="disabled"
+              :change="getProductMSG()"
             >
               <el-option
                 v-for="item in liftWeight"
@@ -251,7 +247,6 @@
               <el-select
                 v-model="form.craneModel"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -266,7 +261,6 @@
               <el-select
                 v-model="form.craneModel"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -281,7 +275,6 @@
               <el-select
                 v-model="form.craneModel"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -300,7 +293,6 @@
               <el-select
                 v-model="form.span"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -315,7 +307,6 @@
               <el-select
                 v-model="form.span"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -330,7 +321,6 @@
               <el-select
                 v-model="form.span"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -349,7 +339,6 @@
               <el-select
                 v-model="form.liftHeight"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -364,7 +353,6 @@
               <el-select
                 v-model="form.liftHeight"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -379,7 +367,6 @@
               <el-select
                 v-model="form.liftHeight"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
               >
                 <el-option
@@ -398,9 +385,7 @@
               <el-select
                 v-model="form.workLevel"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_single_crane_work_level"
@@ -414,9 +399,7 @@
               <el-select
                 v-model="form.workLevel"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_double_crane_work_level"
@@ -430,9 +413,7 @@
               <el-select
                 v-model="form.workLevel"
                 placeholder="请选择"
-                clearable
                 style="width: 60%"
-                :change="getProductMSG()"
               >
                 <el-option
                   v-for="dict in q_susp_crane_work_level"
@@ -449,7 +430,6 @@
             <el-select
               v-model="form.ratedPower"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -466,7 +446,6 @@
             <el-select
               v-model="form.liftSpeed"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -483,7 +462,6 @@
             <el-select
               v-model="form.crabSpeed"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -500,7 +478,6 @@
             <el-select
               v-model="form.cartSpeed"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -517,7 +494,6 @@
             <el-select
               v-model="form.pressureMax"
               placeholder="请选择"
-              clearable
               style="width: 60%"
             >
               <el-option
@@ -1098,17 +1074,22 @@ function handleExport() {
 }
 
 async function getProductMSG() {
-  const { craneModel, span, workLevel, liftHeight } = form.value
-  if (craneModel && span && workLevel && liftHeight) {
+  const { liftWeight, span, workLevel, liftHeight } = form.value
+  if (liftWeight && span && workLevel && liftHeight) {
     const params = {
-      craneModel,
+      liftWeight,
       span,
       workLevel,
       liftHeight,
     }
     const res = await getAddProductMSG(params)
-    const data = JSON.parse(res.data.bomParams)
-    excelList.value = data
+    if (res.code === 200) {
+      const data = JSON.parse(res.data.bomParams)
+      excelList.value = data
+      proxy.$modal.msgSuccess('查询成功')
+    } else {
+      proxy.$modal.msgError(`查询失败，${response.msg}`)
+    }
   }
 }
 
