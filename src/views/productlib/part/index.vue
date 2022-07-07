@@ -14,7 +14,6 @@
             新增
           </el-button>
           <el-button
-            v-show="activeTab == 'six'"
             type="primary"
             icon="Download"
             size="mini"
@@ -677,6 +676,12 @@ const productPartColumns = ref([
   },
   {
     id: 12,
+    prop: 'unitPrice',
+    label: '单价',
+    align: 'center',
+  },
+  {
+    id: 13,
     prop: 'createTime',
     label: '创建时间',
     align: 'center',
@@ -1342,11 +1347,30 @@ const upload = reactive({
   // 设置上传的请求头部
   headers: { Authorization: 'Bearer ' + getToken() },
   // 上传的地址
-  url: import.meta.env.VITE_APP_BASE_API + '/business/product/importPart',
+  url: import.meta.env.VITE_APP_BASE_API + '/business/productParts/importData',
 })
+
 /** 导入按钮操作 */
 function handleImport() {
-  upload.title = '部件导入'
+  if (activeTab.value === 'first') {
+    upload.title = '轨道导入'
+    upload.url =
+      import.meta.env.VITE_APP_BASE_API + '/business/trackpart/importData'
+  } else if (activeTab.value === 'second') {
+    upload.title = '滑线导入'
+    upload.url =
+      import.meta.env.VITE_APP_BASE_API + '/business/slipLine/importData'
+  } else if (activeTab.value === 'third') {
+    upload.title = '大车导入'
+    upload.url = import.meta.env.VITE_APP_BASE_API + '/business/cart/importData'
+  } else if (activeTab.value === 'fourth') {
+    upload.title = '油漆导入'
+    upload.url = import.meta.env.VITE_APP_BASE_API + '/business/oil/importData'
+  } else if (activeTab.value === 'six') {
+    upload.title = '产品部件'
+    upload.url =
+      import.meta.env.VITE_APP_BASE_API + '/business/productParts/importData'
+  }
   upload.open = true
 }
 
@@ -1356,15 +1380,15 @@ const handleFileUploadProgress = (event, file, fileList) => {
 }
 /** 文件上传成功处理 */
 const handleFileSuccess = (response, file, fileList) => {
-  upload.open = false
-  upload.isUploading = false
+  proxy.$refs['uploadRef'].handleRemove(file)
   if (response.code === 200) {
-    proxy.$refs['uploadRef'].handleRemove(file)
     proxy.$modal.msgSuccess('导入成功')
     getList()
   } else {
     proxy.$modal.msgError(`导入失败，${response.msg}`)
   }
+  upload.open = false
+  upload.isUploading = false
 }
 /** 提交上传文件 */
 function submitFileForm() {

@@ -937,16 +937,16 @@ const handleFileUploadProgress = (event, file, fileList) => {
 }
 /** 文件上传成功处理 */
 const handleFileSuccess = (response, file, fileList) => {
-  upload.open = false
-  upload.isUploading = false
+  proxy.$refs['uploadRef'].handleRemove(file)
+
   if (response.code === 200) {
-    proxy.$refs['uploadRef'].handleRemove(file)
     proxy.$modal.msgSuccess('导入成功')
     getList()
   } else {
     proxy.$modal.msgError(`导入失败，${response.msg}`)
   }
-  getList()
+  upload.open = false
+  upload.isUploading = false
 }
 /** 提交上传文件 */
 function submitFileForm() {
