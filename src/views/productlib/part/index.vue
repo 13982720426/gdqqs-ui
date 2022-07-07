@@ -1359,17 +1359,20 @@ function handleImport() {
   } else if (activeTab.value === 'second') {
     upload.title = '滑线导入'
     upload.url =
-      import.meta.env.VITE_APP_BASE_API + '/business/slipLine/importData'
+      import.meta.env.VITE_APP_BASE_API + '/business/splpart/importData'
   } else if (activeTab.value === 'third') {
     upload.title = '大车导入'
-    upload.url = import.meta.env.VITE_APP_BASE_API + '/business/cart/importData'
+    upload.url =
+      import.meta.env.VITE_APP_BASE_API +
+      '/business/crastopmodelpart/importData'
   } else if (activeTab.value === 'fourth') {
     upload.title = '油漆导入'
-    upload.url = import.meta.env.VITE_APP_BASE_API + '/business/oil/importData'
+    upload.url =
+      import.meta.env.VITE_APP_BASE_API + '/business/paintpart/importData'
   } else if (activeTab.value === 'six') {
     upload.title = '产品部件'
     upload.url =
-      import.meta.env.VITE_APP_BASE_API + '/business/productParts/importData'
+      import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData'
   }
   upload.open = true
 }
