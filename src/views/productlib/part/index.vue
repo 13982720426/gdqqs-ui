@@ -117,7 +117,7 @@
     </div>
 
     <el-tabs v-model="activeTab" class="demo-tabs" @tab-click="handleClick">
-      <el-tab-pane label="产品部件" name="six">
+      <el-tab-pane label="产品部件" name="first">
         <QTable
           :loading="loading"
           :data="productPartList"
@@ -151,7 +151,7 @@
           @pagination="getList"
         />
       </el-tab-pane>
-      <el-tab-pane label="轨道" name="first">
+      <el-tab-pane label="轨道" name="second">
         <QTable
           :loading="loading"
           :data="trackPartList"
@@ -186,7 +186,7 @@
           @pagination="getList"
         />
       </el-tab-pane>
-      <el-tab-pane label="滑线" name="second">
+      <el-tab-pane label="滑线" name="third">
         <QTable
           :loading="loading"
           :data="splPartList"
@@ -220,7 +220,7 @@
           @pagination="getList"
         />
       </el-tab-pane>
-      <el-tab-pane label="大车止档型号" name="third">
+      <el-tab-pane label="大车止档型号" name="fourth">
         <QTable
           :loading="loading"
           :data="crastopmodelPartList"
@@ -254,7 +254,7 @@
           @pagination="getList"
         />
       </el-tab-pane>
-      <el-tab-pane label="油漆" name="fourth">
+      <el-tab-pane label="油漆" name="five">
         <QTable
           :loading="loading"
           :data="paintPartList"
@@ -409,7 +409,7 @@ const total = ref(0)
 const showList = ref(false)
 const opentable = ref(true)
 const saveTitle = ref('新增轨道')
-const activeTab = ref('six')
+const activeTab = ref('first')
 const saveType = ref('install') // 部件分类 install-轨道 滑线 大车止档型号 油漆 product-产品部件
 const trackPartList = ref([])
 const trackPartColumns = ref([
@@ -917,30 +917,6 @@ function electricMaxFormat(row, column) {
 function getList() {
   loading.value = true
   if (activeTab.value == 'first') {
-    listTrackpart(queryParams.value).then((response) => {
-      trackPartList.value = response.rows
-      total.value = response.total
-      loading.value = false
-    })
-  } else if (activeTab.value == 'second') {
-    listSplpart(queryParams.value).then((response) => {
-      splPartList.value = response.rows
-      total.value = response.total
-      loading.value = false
-    })
-  } else if (activeTab.value == 'third') {
-    listCrastopmodelpart(queryParams.value).then((response) => {
-      crastopmodelPartList.value = response.rows
-      total.value = response.total
-      loading.value = false
-    })
-  } else if (activeTab.value == 'fourth') {
-    listPaintpart(queryParams.value).then((response) => {
-      paintPartList.value = response.rows
-      total.value = response.total
-      loading.value = false
-    })
-  } else if (activeTab.value == 'six') {
     if (!queryParams.value.craneType) {
       listProductpart(queryParams.value).then((response) => {
         productPartList.value = response.rows
@@ -954,40 +930,64 @@ function getList() {
         loading.value = false
       })
     }
+  } else if (activeTab.value == 'second') {
+    listTrackpart(queryParams.value).then((response) => {
+      trackPartList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+  } else if (activeTab.value == 'third') {
+    listSplpart(queryParams.value).then((response) => {
+      splPartList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+  } else if (activeTab.value == 'fourth') {
+    listCrastopmodelpart(queryParams.value).then((response) => {
+      crastopmodelPartList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
+  } else if (activeTab.value == 'five') {
+    listPaintpart(queryParams.value).then((response) => {
+      paintPartList.value = response.rows
+      total.value = response.total
+      loading.value = false
+    })
   }
 }
 function handleClick(tab) {
   activeTab.value = tab.props.name
   if (activeTab.value == 'first') {
-    orbitModel.value = true
-    slipLine.value = false
-    orbit.value = false
-    paint.value = false
-    crane.value = false
-  } else if (activeTab.value == 'second') {
-    orbitModel.value = false
-    slipLine.value = true
-    orbit.value = false
-    paint.value = false
-    crane.value = false
-  } else if (activeTab.value == 'third') {
-    orbitModel.value = false
-    slipLine.value = false
-    orbit.value = true
-    paint.value = false
-    crane.value = false
-  } else if (activeTab.value == 'fourth') {
-    orbitModel.value = false
-    slipLine.value = false
-    orbit.value = false
-    paint.value = true
-    crane.value = false
-  } else if (activeTab.value == 'six') {
     orbitModel.value = false
     slipLine.value = false
     orbit.value = false
     paint.value = false
     crane.value = true
+  } else if (activeTab.value == 'second') {
+    orbitModel.value = true
+    slipLine.value = false
+    orbit.value = false
+    paint.value = false
+    crane.value = false
+  } else if (activeTab.value == 'third') {
+    orbitModel.value = false
+    slipLine.value = true
+    orbit.value = false
+    paint.value = false
+    crane.value = false
+  } else if (activeTab.value == 'fourth') {
+    orbitModel.value = false
+    slipLine.value = false
+    orbit.value = true
+    paint.value = false
+    crane.value = false
+  } else if (activeTab.value == 'five') {
+    orbitModel.value = false
+    slipLine.value = false
+    orbit.value = false
+    paint.value = true
+    crane.value = false
   }
   getList()
 }
@@ -1005,102 +1005,33 @@ function reset() {
 
 /** 提交按钮 */
 function submitForm() {
-  if (form.value.partType === '1' && form.value.craneType === undefined) {
+  if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'first'
   } else if (
-    form.value.partType === '2' &&
+    form.value.partType === '1' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'second'
   } else if (
-    form.value.partType === '3' &&
+    form.value.partType === '2' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'third'
   } else if (
-    form.value.partType === '4' &&
+    form.value.partType === '3' &&
     form.value.craneType === undefined
   ) {
     activeTab.value = 'fourth'
-  } else if (form.value.partType === '3' && form.value.craneType === '1') {
-    activeTab.value = 'six'
+  } else if (
+    form.value.partType === '4' &&
+    form.value.craneType === undefined
+  ) {
+    activeTab.value = 'five'
   }
   proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate((valid) => {
     if (valid) {
-      //轨道
-      if (activeTab.value === 'first') {
-        if (form.value.trackPartId != null) {
-          updateTrackpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('修改成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        } else {
-          addTrackpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('新增成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        }
-      }
-      //滑线
-      if (activeTab.value === 'second') {
-        if (form.value.splPartId != null) {
-          updateSplpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('修改成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        } else {
-          addSplpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('新增成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        }
-      }
-      //大车
-      if (activeTab.value === 'third') {
-        if (form.value.cartPartId != null) {
-          updateCrastopmodelpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('修改成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        } else {
-          addCrastopmodelpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('新增成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        }
-      }
-      //油漆
-      if (activeTab.value === 'fourth') {
-        if (form.value.paintPartId != null) {
-          updatePaintpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('修改成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        } else {
-          addPaintpart(form.value).then((response) => {
-            proxy.$modal.msgSuccess('新增成功')
-            showList.value = false
-            opentable.value = true
-            getList()
-          })
-        }
-      }
       //产品部件
-      if (activeTab.value === 'six') {
+      if (activeTab.value === 'first') {
         if (form.value.productPartId != null) {
           updateProductpart(form.value).then((response) => {
             proxy.$modal.msgSuccess('修改成功')
@@ -1133,6 +1064,79 @@ function submitForm() {
           })
         }
       }
+
+      //轨道
+      if (activeTab.value === 'second') {
+        if (form.value.trackPartId != null) {
+          updateTrackpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('修改成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        } else {
+          addTrackpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('新增成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        }
+      }
+      //滑线
+      if (activeTab.value === 'third') {
+        if (form.value.splPartId != null) {
+          updateSplpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('修改成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        } else {
+          addSplpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('新增成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        }
+      }
+      //大车
+      if (activeTab.value === 'fourth') {
+        if (form.value.cartPartId != null) {
+          updateCrastopmodelpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('修改成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        } else {
+          addCrastopmodelpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('新增成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        }
+      }
+      //油漆
+      if (activeTab.value === 'five') {
+        if (form.value.paintPartId != null) {
+          updatePaintpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('修改成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        } else {
+          addPaintpart(form.value).then((response) => {
+            proxy.$modal.msgSuccess('新增成功')
+            showList.value = false
+            opentable.value = true
+            getList()
+          })
+        }
+      }
     }
   })
 }
@@ -1158,11 +1162,11 @@ function handleAdd() {
   opentable.value = false
   showList.value = true
   disabled.value = false
-  if (activeTab.value == 'first') {
+  if (activeTab.value == 'second') {
     saveTitle.value = '新增轨道'
     saveType.value = 'install'
     form.value = { partType: '1' }
-  } else if (activeTab.value == 'second') {
+  } else if (activeTab.value == 'third') {
     saveTitle.value = '新增滑线'
     saveType.value = 'install'
     form.value = { partType: '2' }
@@ -1170,34 +1174,34 @@ function handleAdd() {
     saveTitle.value = '新增大车止档型号'
     saveType.value = 'install'
     form.value = { partType: '3' }
-  } else if (activeTab.value == 'fourth') {
+  } else if (activeTab.value == 'five') {
     saveTitle.value = '新增油漆'
     saveType.value = 'install'
     form.value = { partType: '4' }
-  } else if (activeTab.value == 'six') {
+  } else if (activeTab.value == 'first') {
     saveTitle.value = '新增产品部件'
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
   }
   if (form.value.partType === '1' && form.value.craneType === undefined) {
-    activeTab.value = 'first'
+    activeTab.value = 'second'
   } else if (
     form.value.partType === '2' &&
     form.value.craneType === undefined
   ) {
-    activeTab.value = 'second'
+    activeTab.value = 'third'
   } else if (
     form.value.partType === '3' &&
     form.value.craneType === undefined
   ) {
-    activeTab.value = 'third'
+    activeTab.value = 'fourth'
   } else if (
     form.value.partType === '4' &&
     form.value.craneType === undefined
   ) {
-    activeTab.value = 'fourth'
+    activeTab.value = 'five'
   } else if (form.value.partType === '3' && form.value.craneType === '1') {
-    activeTab.value = 'six'
+    activeTab.value = 'first'
   }
 }
 /** 修改按钮操作 */
@@ -1206,39 +1210,6 @@ function handleUpdate(row) {
   showList.value = true
   disabled.value = true
   if (activeTab.value == 'first') {
-    const trackPartId = row.trackPartId || ids.value
-    getTrackpart(trackPartId).then((response) => {
-      form.value = response.data
-      saveTitle.value = '修改轨道'
-    })
-  } else if (activeTab.value == 'second') {
-    const splPartId = row.splPartId || ids.value
-    getSplpart(splPartId).then((response) => {
-      form.value = response.data
-      saveTitle.value = '修改滑道'
-    })
-    saveTitle.value = '新增滑线'
-    saveType.value = 'install'
-    form.value = { partType: '2' }
-  } else if (activeTab.value == 'third') {
-    const cartPartId = row.cartPartId || ids.value
-    getCrastopmodelpart(cartPartId).then((response) => {
-      form.value = response.data
-      saveTitle.value = '修改大车止档型号'
-    })
-    saveTitle.value = '新增大车止档型号'
-    saveType.value = 'install'
-    form.value = { partType: '3' }
-  } else if (activeTab.value == 'fourth') {
-    const paintPartId = row.paintPartId || ids.value
-    getPaintpart(paintPartId).then((response) => {
-      form.value = response.data
-      saveTitle.value = '修改油漆'
-    })
-    saveTitle.value = '新增油漆'
-    saveType.value = 'install'
-    form.value = { partType: '4' }
-  } else if (activeTab.value == 'six') {
     const productPartId = row.productPartId || ids.value
     getProductpart(productPartId).then((response) => {
       form.value = response.data
@@ -1247,13 +1218,60 @@ function handleUpdate(row) {
     saveTitle.value = '新增产品部件'
     saveType.value = 'product'
     form.value = { partType: '3', craneType: '1' }
+  } else if (activeTab.value == 'second') {
+    const trackPartId = row.trackPartId || ids.value
+    getTrackpart(trackPartId).then((response) => {
+      form.value = response.data
+      saveTitle.value = '修改轨道'
+    })
+  } else if (activeTab.value == 'third') {
+    const splPartId = row.splPartId || ids.value
+    getSplpart(splPartId).then((response) => {
+      form.value = response.data
+      saveTitle.value = '修改滑道'
+    })
+    saveTitle.value = '新增滑线'
+    saveType.value = 'install'
+    form.value = { partType: '2' }
+  } else if (activeTab.value == 'fourth') {
+    const cartPartId = row.cartPartId || ids.value
+    getCrastopmodelpart(cartPartId).then((response) => {
+      form.value = response.data
+      saveTitle.value = '修改大车止档型号'
+    })
+    saveTitle.value = '新增大车止档型号'
+    saveType.value = 'install'
+    form.value = { partType: '3' }
+  } else if (activeTab.value == 'five') {
+    const paintPartId = row.paintPartId || ids.value
+    getPaintpart(paintPartId).then((response) => {
+      form.value = response.data
+      saveTitle.value = '修改油漆'
+    })
+    saveTitle.value = '新增油漆'
+    saveType.value = 'install'
+    form.value = { partType: '4' }
   }
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
-  //轨道删除
+  //产品部件删除
   if (activeTab.value == 'first') {
+    const productPartId = row.productPartId || ids.value
+    proxy.$modal
+      .confirm('是否确认删除此数据项？')
+      .then(function () {
+        return delProductpart(productPartId)
+      })
+      .then(() => {
+        getList()
+        proxy.$modal.msgSuccess('删除成功')
+      })
+      .catch(() => {})
+  }
+  //轨道删除
+  if (activeTab.value == 'second') {
     const trackPartId = row.trackPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -1267,7 +1285,7 @@ function handleDelete(row) {
       .catch(() => {})
   }
   //滑线删除
-  if (activeTab.value == 'second') {
+  if (activeTab.value == 'third') {
     const splPartId = row.splPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -1281,7 +1299,7 @@ function handleDelete(row) {
       .catch(() => {})
   }
   //大车删除
-  if (activeTab.value == 'third') {
+  if (activeTab.value == 'fourth') {
     const cartPartId = row.cartPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
@@ -1295,26 +1313,12 @@ function handleDelete(row) {
       .catch(() => {})
   }
   //油漆删除
-  if (activeTab.value == 'fourth') {
+  if (activeTab.value == 'five') {
     const paintPartId = row.paintPartId || ids.value
     proxy.$modal
       .confirm('是否确认删除此数据项？')
       .then(function () {
         return delPaintpart(paintPartId)
-      })
-      .then(() => {
-        getList()
-        proxy.$modal.msgSuccess('删除成功')
-      })
-      .catch(() => {})
-  }
-  //产品部件删除
-  if (activeTab.value == 'six') {
-    const productPartId = row.productPartId || ids.value
-    proxy.$modal
-      .confirm('是否确认删除此数据项？')
-      .then(function () {
-        return delProductpart(productPartId)
       })
       .then(() => {
         getList()
@@ -1353,26 +1357,26 @@ const upload = reactive({
 /** 导入按钮操作 */
 function handleImport() {
   if (activeTab.value === 'first') {
+    upload.title = '产品部件'
+    upload.url =
+      import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData'
+  } else if (activeTab.value === 'second') {
     upload.title = '轨道导入'
     upload.url =
       import.meta.env.VITE_APP_BASE_API + '/business/trackpart/importData'
-  } else if (activeTab.value === 'second') {
+  } else if (activeTab.value === 'third') {
     upload.title = '滑线导入'
     upload.url =
       import.meta.env.VITE_APP_BASE_API + '/business/splpart/importData'
-  } else if (activeTab.value === 'third') {
+  } else if (activeTab.value === 'fourth') {
     upload.title = '大车导入'
     upload.url =
       import.meta.env.VITE_APP_BASE_API +
       '/business/crastopmodelpart/importData'
-  } else if (activeTab.value === 'fourth') {
+  } else if (activeTab.value === 'five') {
     upload.title = '油漆导入'
     upload.url =
       import.meta.env.VITE_APP_BASE_API + '/business/paintpart/importData'
-  } else if (activeTab.value === 'six') {
-    upload.title = '产品部件'
-    upload.url =
-      import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData'
   }
   upload.open = true
 }
