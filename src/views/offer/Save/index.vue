@@ -24,7 +24,8 @@
       <el-button :disabled="stepsKey === 0" @click="stepsPrev()">
         上一步
       </el-button>
-      <el-button @click="saveData">保存</el-button>
+      <el-button :disabled="stepsKey !== 3" @click="saveData">提交</el-button>
+      <el-button><router-link to="/offer">关闭</router-link></el-button>
     </div>
   </div>
 </template>
@@ -51,6 +52,7 @@ const partRef = ref(null)
 const payRef = ref(null)
 
 const dialogVisible = ref(false)
+const { proxy } = getCurrentInstance()
 
 const offerStore = useOfferStore()
 
@@ -64,7 +66,6 @@ offerState.type = router.currentRoute.value.query.type
 
 const saveData = async () => {
   const data = await payRef.value.getValues()
-  console.log('保存', data)
   if (!data) {
     return
   }
@@ -127,7 +128,10 @@ const saveData = async () => {
     ? await updateOffer({ ...obj, offerId: offerId })
     : await addOffer(obj)
   if (resp.code === 200) {
-    router.push('/offer')
+    proxy.$modal.msgSuccess('提交成功')
+    // router.push('/offer')
+  } else {
+    proxy.$modal.msgError(`提交失败`)
   }
 }
 

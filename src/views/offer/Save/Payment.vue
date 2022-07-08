@@ -7,7 +7,7 @@
       </div>
       <OfferSaveTitle title="报价名称">
         <el-row>
-          <el-col span="10">
+          <el-col span="12">
             <el-form-item label="报价名称" prop="offerName">
               <el-input
                 :disabled="offerStore.type === 'view'"
@@ -235,7 +235,7 @@ const getValues = async () => {
   if (data) {
     if (customerType === '1') {
       if (contract + formModel.play !== 100) {
-        proxy.$modal.msgError('保存失败，付款方式不等于100%')
+        proxy.$modal.msgError('提交失败，付款方式不等于100%')
       } else {
         return {
           customerType,
@@ -246,7 +246,7 @@ const getValues = async () => {
       }
     } else {
       if (contract + play + site + week !== 100) {
-        proxy.$modal.msgError('保存失败，付款方式不等于100%')
+        proxy.$modal.msgError('提交失败，付款方式不等于100%')
       } else return { ...formModel }
     }
   }
