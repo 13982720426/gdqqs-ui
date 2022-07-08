@@ -125,28 +125,23 @@
       <el-table-column
         label="操作"
         align="center"
-        class-name="small-padding fixed-width"
-        fixed="right"
         width="160"
+        class-name="small-padding fixed-width"
       >
         <template #default="scope">
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['business:product:edit']"
             class="sel"
+            type="text"
+            @click="handleUpdate(scope.row)"
+            v-hasPermi="['system:dict:edit']"
           >
             修改
           </el-button>
           <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['business:product:remove']"
             class="sel"
+            type="text"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:dict:remove']"
           >
             删除
           </el-button>

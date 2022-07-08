@@ -1,5 +1,9 @@
 <template>
-  <el-table v-loading="loading" :data="data" @selection-change="selectionChange">
+  <el-table
+    v-loading="loading"
+    :data="data"
+    @selection-change="selectionChange"
+  >
     <el-table-column
       v-for="item in columns"
       :key="item.id"
@@ -11,18 +15,17 @@
         <!-- {{ row }} -->
         <span>
           {{ item.format ? item.format(row) : deepFormat(row, item.prop) }}
-
         </span>
       </template>
     </el-table-column>
 
     <!-- <template v-if="showOperq"> -->
-      <el-table-column
+    <el-table-column
       label="操作"
       align="center"
       class-name="small-padding fixed-width"
       fixed="right"
-      width="200"
+      width="160"
       v-if="showOperq"
     >
       <template #default="{ row }">
@@ -33,7 +36,7 @@
   </el-table>
 </template>
 <script setup name="QTable">
-import { computed } from "vue-demi"
+import { computed } from 'vue-demi'
 
 const emit = defineEmits()
 const props = defineProps({
@@ -57,8 +60,8 @@ const props = defineProps({
     default: true,
   },
 })
- 
-const showOperq = computed(()=>props.showOper)
+
+const showOperq = computed(() => props.showOper)
 
 // 返回选择的每一项
 function selectionChange(selection) {
