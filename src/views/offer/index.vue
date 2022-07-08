@@ -27,10 +27,19 @@
         </el-space>
       </div>
     </div>
-    <el-table :data="dataSource" style="width: 100%">
+    <el-table
+      :data="dataSource"
+      :default-sort="{ prop: 'createTime', order: 'descending' }"
+      style="width: 100%"
+    >
       <el-table-column prop="offerName" label="报价单名称" />
       <el-table-column prop="offerCode" label="编号" width="180" />
-      <el-table-column prop="createTime" label="报价时间" width="160" />
+      <el-table-column
+        prop="createTime"
+        label="报价时间"
+        sortable
+        width="160"
+      />
       <el-table-column prop="customerName" label="客户信息" width="180" />
       <el-table-column prop="contractPrice" label="合同价格" width="180" />
       <el-table-column prop="profit" label="利润" width="180" />
