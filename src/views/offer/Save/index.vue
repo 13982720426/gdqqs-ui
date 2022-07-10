@@ -24,7 +24,13 @@
       <el-button :disabled="stepsKey === 0" @click="stepsPrev()">
         上一步
       </el-button>
-      <el-button :disabled="stepsKey !== 3" @click="saveData">提交</el-button>
+      <el-button
+        v-if="offerStore.type !== 'view'"
+        :disabled="stepsKey !== 3"
+        @click="saveData"
+      >
+        提交
+      </el-button>
       <el-button><router-link to="/offer">关闭</router-link></el-button>
     </div>
   </div>
@@ -177,9 +183,7 @@ const stepsPrev = () => {
 }
 
 const queryDetail = async () => {
-  console.log(1)
   const resp = await getOffer(offerState.id)
-  console.log(2)
   if (resp.code === 200) {
     try {
       const paymentMethodInfo = JSON.parse(resp.data.paymentMethodInfo) // 付款方式json
@@ -204,9 +208,11 @@ const queryDetail = async () => {
         marketDataSource: inspectPriceInfo.dataSource,
       }
       const customerResp = await getCustomer(resp.data.customerId)
+      console.log(111, customerResp)
       // 获取客户详情
       offerStore.setCustomerData({
         customerId: resp.data.customerId,
+        customerName: resp.data.customerName,
         customerItem: customerResp.code === 200 ? customerResp.data : {},
         workshopInfo: JSON.stringify(workshopInfo),
       })
@@ -216,6 +222,7 @@ const queryDetail = async () => {
         ...paymentMethodInfo,
         offerName: resp.data.offerName,
       })
+      console.log(22, offerStore.getCustomerData())
     } catch (e) {
       console.warn(e)
     }

@@ -3,12 +3,12 @@
   <div class="offer-save-customer">
     <el-form ref="form" :rules="rules" :model="formData" label-position="left">
       <OfferSaveTitle title="客户信息">
-        <el-form-item label="客户名称" prop="customer">
+        <el-form-item label="客户名称" prop="customerName">
           <el-space>
             <el-input
-              :disabled="offerStore.type !== 'add'"
+              :disabled="offerStore.type === 'view'"
               placeholder="请输入客户名称"
-              v-model="formData.customer"
+              v-model="formData.customerName"
               @input="customerSearchChange"
             />
             <el-button
@@ -342,8 +342,8 @@ function submit() {
     if (valid) {
       addCustomer(addCustomerForm.value).then((response) => {
         proxy.$modal.msgSuccess('新增成功')
-        formData.customer = addCustomerForm.value.customerName
-        customerSearch(formData.customer)
+        formData.customerName = addCustomerForm.value.customerName
+        customerSearch(formData.customerName)
         dialogFormVisible.value = false
       })
     }
@@ -369,7 +369,7 @@ function reset() {
 }
 
 const formData = reactive({
-  customer: '',
+  customerName: '',
   customerId: '', // 客户ID
   customerItem: '', // 客户信息
   workshopInfo: [], // 车间信息
@@ -422,7 +422,7 @@ const validCustomer = (rule, value, callback) => {
 }
 
 const rules = ref({
-  customer: [
+  customerName: [
     { required: true, validator: validCustomer, trigger: ['blur', 'change'] },
   ],
   customerId: [{ required: true, message: '请选择客户', trigger: 'blur' }],
@@ -497,10 +497,12 @@ const addCustomerListByItem = (item) => {
 }
 
 offerStore.$subscribe((mutation, state) => {
-  const { customerId, customerItem, workshopInfo } = state.customer
+  const { customerId, customerItem, workshopInfo, customerName } =
+    state.customer
   if (customerId && customerItem) {
     formData.customerId = customerId
     formData.customerItem = customerItem
+    formData.customerName = customerItem.customerName
     addCustomerListByItem(customerItem)
   }
   if (workshopInfo) {
