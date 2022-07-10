@@ -38,7 +38,7 @@
     >
       <li
         :key="file.uid"
-        class="el-upload-list__item ele-upload-list__item-content"
+        class="el-upload-list__item ele-upload-list__item-content el-icon-document"
         v-for="(file, index) in fileList"
       >
         <el-link
@@ -46,7 +46,13 @@
           :underline="false"
           target="_blank"
         >
-          <span class="el-icon-document">{{ getFileName(file.name) }}</span>
+          <!-- <span class="el-icon-document">{{ getFileName(file.name) }}</span> -->
+          <span>
+            ......
+            <span class="el-icon-document-hover">
+              {{ getFileName(file.name) }}
+            </span>
+          </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
           <el-link
@@ -286,5 +292,33 @@ function listToString(list, separator) {
 }
 .ele-upload-list__item-content-action .el-link {
   margin-right: 10px;
+}
+
+.el-icon-document {
+  // background: #0cf;
+  // height: 200px;
+  // width: 200px;
+  // margin-left: 20px;
+  // margin-top: 20px;
+  width: 100%;
+}
+.el-icon-document-hover {
+  // width: 200px;
+  // height: 200px;
+  // margin-top: 20px;
+  // background: #f09;
+  top: 30px;
+  position: absolute;
+  opacity: 0;
+  display: block;
+  // font-size: 18px;
+  color: #ffffff;
+  transition: 0.3s;
+  -webkit-transition: 0.5s;
+  -moz-transition: 0.5s;
+}
+.el-icon-document:hover .el-icon-document-hover {
+  color: #656e73;
+  opacity: 1;
 }
 </style>
