@@ -32,19 +32,19 @@
       :default-sort="{ prop: 'createTime', order: 'descending' }"
       style="width: 100%"
     >
-      <el-table-column prop="offerName" label="报价单名称" />
-      <el-table-column prop="offerCode" label="编号" width="180" />
+      <el-table-column prop="offerName" label="报价单名称" min-width="150" />
+      <el-table-column prop="offerCode" label="编号" width="200" />
       <el-table-column
         prop="createTime"
         label="报价时间"
         sortable
         width="160"
       />
-      <el-table-column prop="customerName" label="客户信息" width="180" />
-      <el-table-column prop="contractPrice" label="合同价格" width="180" />
-      <el-table-column prop="profit" label="利润" width="180" />
-      <el-table-column prop="createUserName" label="创建人" width="180" />
-      <el-table-column prop="name" label="操作" width="300" fixed="right">
+      <el-table-column prop="customerName" label="客户信息" width="150" />
+      <el-table-column prop="contractPrice" label="合同价格" width="120" />
+      <el-table-column prop="profit" label="利润" width="120" />
+      <el-table-column prop="createUserName" label="创建人" width="150" />
+      <el-table-column prop="name" label="操作" width="280" fixed="right">
         <template #default="{ row }">
           <el-button @click="view(row.offerId)">详情查看</el-button>
           <el-button @click="edit(row.offerId)">编辑</el-button>

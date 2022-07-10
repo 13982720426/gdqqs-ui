@@ -255,7 +255,7 @@
         </el-table-column>
         <el-table-column
           prop="model"
-          label="物料编码"
+          label="型号"
           width="180"
         ></el-table-column>
         <el-table-column prop="num" label="数量" width="80" />
@@ -277,7 +277,6 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="brand" label="品牌" width="100" />
         <el-table-column prop="factoryPrice" label="金地球工厂价" width="140">
           <template #default="scope">
             {{
@@ -583,7 +582,6 @@ const partDialogData = computed(() => {
   const profitMargin =
     Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
   const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
-
   return {
     factory_price_count,
     profit: profitMargin,
@@ -603,6 +601,7 @@ const createAmount = (length) => {
 offerStore.$subscribe((mutation, state) => {
   const { customer, product } = state
   const NewCustomer = offerStore.getCustomerData()
+  console.log('NewCustomer', NewCustomer)
   formModel.product = []
   if (product.length) {
     // console.log(
