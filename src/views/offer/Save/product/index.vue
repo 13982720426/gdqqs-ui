@@ -579,10 +579,11 @@ const partDialogData = computed(() => {
     ).toFixed(2)
     return prev + Number(price)
   }, 0)
-
+  console.log('offerStore.getCustomerData()', offerStore.getCustomerData())
   const profitMargin =
     Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
   const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
+
   return {
     factory_price_count,
     profit: profitMargin,

@@ -302,7 +302,9 @@ const total = ref(0)
 const disabled = ref(false)
 
 const data = reactive({
-  form: {},
+  form: {
+    profitMargin: 1.05,
+  },
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -367,6 +369,7 @@ function reset() {
     postCode: undefined,
     contactTell: undefined,
     remark: undefined,
+    profitMargin: 1.05,
   }
 }
 /** 添加 */
@@ -379,6 +382,7 @@ function handleAdd() {
 
 /** 操作编辑 */
 function handleUpdate(row) {
+  console.log(22)
   proxy.$refs['upcustomer'].clearValidate()
   custable.value = false
   open.value = true
@@ -439,23 +443,33 @@ const rules = ref({
 
 /** 提交按钮 */
 function submit() {
+  console.log(111, form.value)
   proxy.$refs['upcustomer'].validate((valid) => {
     if (valid) {
+      if (form.value.customerNature !== '1') {
+        form.value.profitMargin = 1.1
+      }
+
       if (form.value.customerId != undefined) {
         updateCustomer(form.value).then((response) => {
-          proxy.$modal.msgSuccess('修改成功')
-          open.value = false
-          custable.value = true
-          getList()
+          if (response.code === 200) {
+            proxy.$modal.msgSuccess('修改成功')
+          } else {
+            proxy.$modal.msgError('修改失败')
+          }
         })
       } else {
         addCustomer(form.value).then((response) => {
-          proxy.$modal.msgSuccess('新增成功')
-          open.value = false
-          custable.value = true
-          getList()
+          if (response.code == 200) {
+            proxy.$modal.msgSuccess('新增成功')
+          } else {
+            proxy.$modal.msgError('新增失败')
+          }
         })
       }
+      open.value = false
+      custable.value = true
+      getList()
     }
   })
 }

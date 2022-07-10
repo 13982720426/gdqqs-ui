@@ -301,6 +301,7 @@ const addCustomerForm = ref({
   postCode: '',
   contactTell: '',
   remark: '',
+  profitMargin: 1.05,
 })
 
 const dataScopeOptions = ref([
@@ -340,10 +341,17 @@ const addCustomerFormRules = ref({
 function submit() {
   proxy.$refs['upcustomer'].validate((valid) => {
     if (valid) {
+      if (addCustomerForm.value.customerNature !== '1') {
+        addCustomerForm.value.profitMargin = 1.1
+      }
       addCustomer(addCustomerForm.value).then((response) => {
-        proxy.$modal.msgSuccess('新增成功')
-        formData.customerName = addCustomerForm.value.customerName
-        customerSearch(formData.customerName)
+        if (response.code === 200) {
+          proxy.$modal.msgSuccess('新增成功')
+          formData.customerName = addCustomerForm.value.customerName
+          customerSearch(formData.customerName)
+        } else {
+          proxy.$modal.msgError('新增失败')
+        }
         dialogFormVisible.value = false
       })
     }
@@ -365,6 +373,7 @@ function reset() {
     postCode: undefined,
     contactTell: undefined,
     remark: undefined,
+    profitMargin: 1.05,
   }
 }
 
