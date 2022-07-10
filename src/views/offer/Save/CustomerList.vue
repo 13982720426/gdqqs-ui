@@ -16,8 +16,9 @@
               {{ item.partment }}
             </el-descriptions-item>
             <el-descriptions-item label="客户性质">
-              {{ item.customerNature }}
+              {{ item.customerNature === '1' ? '经销商' : '最终用户' }}
             </el-descriptions-item>
+
             <el-descriptions-item label="联系人">
               {{ item.contact }}
             </el-descriptions-item>
