@@ -33,22 +33,26 @@
       style="width: 100%"
     >
       <el-table-column prop="offerName" label="报价单名称" min-width="150" />
-      <el-table-column prop="offerCode" label="编号" width="200" />
+      <el-table-column prop="offerCode" label="编号" min-width="200" />
       <el-table-column
         prop="createTime"
         label="报价时间"
         sortable
-        width="160"
+        min-width="200"
       />
-      <el-table-column prop="customerName" label="客户信息" width="150" />
-      <el-table-column prop="contractPrice" label="合同价格" width="120" />
-      <el-table-column prop="profit" label="利润" width="120" />
-      <el-table-column prop="createUserName" label="创建人" width="150" />
+      <el-table-column prop="customerName" label="客户信息" min-width="200">
+        <template #default="{ row }">
+          {{ row.customerName }}{{ ' ' }}{{ row.contactTell }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="contractPrice" label="合同价格" min-width="130" />
+      <el-table-column prop="profit" label="利润" min-width="130" />
+      <el-table-column prop="createUserName" label="创建人" min-width="130" />
       <el-table-column prop="name" label="操作" width="280" fixed="right">
         <template #default="{ row }">
           <el-button @click="view(row.offerId)">详情查看</el-button>
           <el-button @click="edit(row.offerId)">编辑</el-button>
-          <el-button>导出</el-button>
+          <el-button @click="exportData(row.offerId)">导出</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -69,6 +73,8 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { delOffer } from '../../api/business/offer'
 import useOfferStore from '@/store/modules/offer'
+
+const { proxy } = getCurrentInstance()
 
 const offerStore = useOfferStore()
 
@@ -120,6 +126,19 @@ const view = (id) => {
       type: 'view',
     },
   })
+}
+
+//导出文件
+const exportData = (id) => {
+  const productId = id
+  proxy.$modal
+    .exportData('请选择导出类型', '导出为WORD', '导出为PDf')
+    .then(() => {
+      return console.log(productId)
+    })
+    .catch(() => {
+      console.log(productId)
+    })
 }
 
 const onReset = () => {

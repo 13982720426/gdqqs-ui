@@ -221,7 +221,7 @@
       <el-select
         :disabled="offerStore.type === 'view'"
         v-model="productId"
-        style="width: 30%; margin-bottom: 12px"
+        style="width: 20%; margin-bottom: 12px"
         placeholder="请选择产品"
         @change="onProductChange"
       >
@@ -238,8 +238,8 @@
         border
         @cancel="cancel"
       >
-        <el-table-column prop="offerCode" label="部件" width="180" />
-        <el-table-column prop="brand" label="品牌" width="180">
+        <el-table-column prop="offerCode" label="部件" min-width="180" />
+        <el-table-column prop="brand" label="品牌" min-width="180">
           <template #default="{ row }">
             <el-radio-group
               v-model="row.part_code_value"
@@ -257,16 +257,16 @@
         <el-table-column
           prop="model"
           label="型号"
-          width="180"
+          min-width="200"
         ></el-table-column>
-        <el-table-column prop="num" label="数量" width="80" />
-        <el-table-column prop="unit" label="单位" width="100" />
+        <el-table-column prop="num" label="数量" min-width="100" />
+        <el-table-column prop="unit" label="单位" min-width="80" />
         <el-table-column
           prop="price"
           label="金地球成本价(不含税)"
-          width="180"
+          min-width="160"
         />
-        <el-table-column prop="taxrate" label="税率" width="120">
+        <el-table-column prop="taxrate" label="税率" min-width="120">
           <template #default="scope">
             <el-input-number
               :disabled="offerStore.type === 'view'"
@@ -278,7 +278,11 @@
             />
           </template>
         </el-table-column>
-        <el-table-column prop="factoryPrice" label="金地球工厂价" width="140">
+        <el-table-column
+          prop="factoryPrice"
+          label="金地球工厂价"
+          min-width="140"
+        >
           <template #default="scope">
             {{
               (
@@ -332,6 +336,8 @@ import useOfferStore from '@/store/modules/offer'
 import { onMounted, defineExpose, computed } from 'vue'
 import { listProduct } from '@/api/business/product'
 import { cloneDeep, omit } from 'lodash-es'
+
+const { proxy } = getCurrentInstance()
 
 const offerStore = useOfferStore()
 const dialogVisible = ref(false)

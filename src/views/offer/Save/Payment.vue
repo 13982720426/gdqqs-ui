@@ -2,8 +2,8 @@
   <div class="offer-save-payment">
     <el-form ref="form" :rules="rules" :model="formModel">
       <div style="margin-bottom: 16px">
-        <el-button>导出为WORD</el-button>
-        <el-button>导出为PDF</el-button>
+        <el-button @click="exportData(formModel, 1)">导出为WORD</el-button>
+        <el-button @click="exportData(formModel, 2)">导出为PDF</el-button>
       </div>
       <OfferSaveTitle title="报价名称">
         <el-row>
@@ -249,6 +249,15 @@ const getValues = async () => {
         proxy.$modal.msgError('提交失败，付款方式不等于100%')
       } else return { ...formModel }
     }
+  }
+}
+
+const exportData = (data, id) => {
+  console.log(111, data, id)
+  if (id === '1') {
+    //导出为WORD
+  } else {
+    //导出为PDF
   }
 }
 

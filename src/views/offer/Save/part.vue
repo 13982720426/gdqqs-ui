@@ -144,13 +144,22 @@
               </el-table-column>
               <el-table-column width="100" label="操作" fixed="right">
                 <template #default="scope">
-                  <el-button @click="onTrackDelete(item.key, scope.row.key)">
+                  <el-button
+                    :disabled="offerStore.type === 'view'"
+                    @click="onTrackDelete(item.key, scope.row.key)"
+                  >
                     删除
                   </el-button>
                 </template>
               </el-table-column>
             </el-table>
-            <div class="add-btn" @click="onTrackAdd(item)">新增</div>
+            <div
+              v-if="offerStore.type !== 'view'"
+              class="add-btn"
+              @click="onTrackAdd(item)"
+            >
+              新增
+            </div>
           </div>
         </div>
         <div style="margin-bottom: 16px">

@@ -48,7 +48,7 @@
         >
           <!-- <span class="el-icon-document">{{ getFileName(file.name) }}</span> -->
           <span>
-            ......
+            ...
             <span class="el-icon-document-hover">
               {{ getFileName(file.name) }}
             </span>
@@ -279,7 +279,7 @@ function listToString(list, separator) {
   margin-bottom: 5px;
 }
 .upload-file-list .el-upload-list__item {
-  border: 1px solid #e4e7ed;
+  border: 2px solid #e4e7ed;
   line-height: 2;
   margin-bottom: 10px;
   position: relative;
@@ -295,23 +295,13 @@ function listToString(list, separator) {
 }
 
 .el-icon-document {
-  // background: #0cf;
-  // height: 200px;
-  // width: 200px;
-  // margin-left: 20px;
-  // margin-top: 20px;
   width: 100%;
 }
 .el-icon-document-hover {
-  // width: 200px;
-  // height: 200px;
-  // margin-top: 20px;
-  // background: #f09;
   top: 30px;
   position: absolute;
   opacity: 0;
   display: block;
-  // font-size: 18px;
   color: #ffffff;
   transition: 0.3s;
   -webkit-transition: 0.5s;
