@@ -36,7 +36,7 @@
       name="el-fade-in-linear"
       tag="ul"
     >
-      <li
+      <span
         :key="file.uid"
         class="el-upload-list__item ele-upload-list__item-content el-icon-document"
         v-for="(file, index) in fileList"
@@ -63,7 +63,7 @@
             删除
           </el-link>
         </div>
-      </li>
+      </span>
     </transition-group>
   </div>
 </template>
@@ -298,7 +298,7 @@ function listToString(list, separator) {
   width: 100%;
 }
 .el-icon-document-hover {
-  top: 30px;
+  top: 25px;
   position: absolute;
   opacity: 0;
   display: block;
