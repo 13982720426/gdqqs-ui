@@ -1181,7 +1181,6 @@ function handleAdd() {
   } else if (activeTab.value == 'first') {
     saveTitle.value = '新增产品部件'
     saveType.value = 'product'
-    form.value = { partType: '3', craneType: '1' }
   }
   if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'second'

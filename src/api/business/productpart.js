@@ -16,6 +16,14 @@ export function listProductpart(query) {
     params: query,
   })
 }
+// 获取起重机型号列表
+export function getcraneModelBycraneType(query) {
+  return request({
+    url: '/business/productpart/getcraneModelBycraneType',
+    method: 'get',
+    params: query,
+  })
+}
 
 // 查询产品部件详细
 export function getProductpart(productPartId) {

@@ -373,7 +373,7 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
-            @change="handleCraneType"
+            @change="getCraneModel"
             :disabled="disabled"
           >
             <el-option
@@ -441,7 +441,21 @@
       </el-col>
       <el-col :span="8">
         <el-form-item label="起重机型号" prop="craneModel">
-          <template v-if="form.craneType == 1">
+          <el-select
+            v-model="form.craneModel"
+            placeholder="请选择"
+            clearable
+            style="width: 60%"
+            :disabled="disabled"
+          >
+            <el-option
+              v-for="item in craneModelItem"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <!-- <template v-if="form.craneType == 1">
             <el-select
               v-model="form.craneModel"
               placeholder="请选择"
@@ -496,7 +510,7 @@
               style="width: 60%"
               :disabled="disabled"
             ></el-select>
-          </template>
+          </template> -->
         </el-form-item>
       </el-col>
       <el-col :span="8">
@@ -747,6 +761,8 @@
 </template>
 
 <script setup name="PartSave">
+import { getcraneModelBycraneType } from '@/api/business/productpart'
+
 const { proxy } = getCurrentInstance()
 
 const liftWeight = [
@@ -787,9 +803,9 @@ const {
   q_crane_type,
   q_oper_mode,
   sys_yes_no,
-  q_single_crane_model,
-  q_double_crane_model,
-  q_susp_crane_model,
+  // q_single_crane_model,
+  // q_double_crane_model,
+  // q_susp_crane_model,
   q_single_crane_span,
   q_double_crane_span,
   q_susp_crane_span,
@@ -811,9 +827,9 @@ const {
   'q_crane_type',
   'q_oper_mode',
   'sys_yes_no',
-  'q_single_crane_model',
-  'q_double_crane_model',
-  'q_susp_crane_model',
+  // 'q_single_crane_model',
+  // 'q_double_crane_model',
+  // 'q_susp_crane_model',
   'q_single_crane_span',
   'q_double_crane_span',
   'q_susp_crane_span',
@@ -830,5 +846,14 @@ const {
 
 function handlePartType() {
   props.form = {}
+}
+const craneModelItem = ref([])
+
+async function getCraneModel() {
+  const params = {
+    craneType: props.form.craneType,
+  }
+  const { data } = await getcraneModelBycraneType(params)
+  craneModelItem.value = data
 }
 </script>

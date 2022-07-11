@@ -713,7 +713,9 @@ const data = reactive({
     craneOperation: null,
     productId: null,
   },
-  form: {},
+  form: {
+    craneType: 1,
+  },
   rules: {
     productName: [
       { required: true, message: '请输入产品名称', trigger: 'blur' },
