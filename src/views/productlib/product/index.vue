@@ -541,6 +541,7 @@
           <el-form-item label="上传工厂价BOM清单" prop="uploadPrice">
             <file-upload
               :limit="1"
+              :show-file-list="false"
               v-model:modelValue="form.uploadPrice"
               :uploadUrl="upUrl"
               :fileType="['.xls', '.xlsx']"
@@ -648,55 +649,57 @@ const open = ref(false)
 const excelList = ref([])
 const excelListColumns = ref([
   {
-    id: 1,
     prop: 'offerCode',
     label: '部件',
     align: 'center',
   },
   {
-    id: 2,
     prop: 'model',
     label: '型号',
     align: 'center',
   },
   {
-    id: 3,
     prop: 'brand',
     label: '品牌',
     align: 'center',
   },
   {
-    id: 4,
+    prop: 'partCode',
+    label: '物料编码',
+    align: 'center',
+  },
+  {
     prop: 'num',
     label: '数量',
     align: 'center',
   },
   {
-    id: 5,
     prop: 'unit',
     label: '单位',
     align: 'center',
   },
+
+  // {
+  //   prop: 'price2',
+  //   label: '物料编码价格',
+  //   align: 'center',
+  // },
   {
-    id: 6,
     prop: 'price',
-    label: '进地球成本价(不含税)',
+    label: '金地球成本价(不含税)',
     align: 'center',
   },
   {
-    id: 7,
     prop: 'taxrate',
     label: '税率',
     align: 'center',
   },
   {
-    id: 8,
     prop: 'cpUnprice',
     label: '工厂价加点',
     align: 'center',
   },
   {
-    id: 9,
     prop: 'factoryPrice',
     label: '金地球工厂价',
     align: 'center',
