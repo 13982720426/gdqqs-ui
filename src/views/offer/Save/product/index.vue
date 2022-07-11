@@ -306,7 +306,7 @@
             width="150px"
             label-align="right"
           >
-            {{ partDialogData.factory_price_count }}
+            {{ partDialog.factory_price_count }}
           </el-descriptions-item>
           <el-descriptions-item
             label="预计利润率(%)"
@@ -318,7 +318,7 @@
             </el-input> -->
             <el-input-number
               :disabled="offerStore.type === 'view'"
-              v-model="partDialogData.profitMargin"
+              v-model="partDialog.profitMargin"
               :min="0"
               :max="100"
               controls-position="right"
@@ -330,7 +330,7 @@
             width="150px"
             label-align="right"
           >
-            {{ partDialogData.price }}
+            {{ partDialog.price }}
           </el-descriptions-item>
         </el-descriptions>
       </div>
@@ -450,7 +450,8 @@ const savePartData = () => {
     if (productItem && productItem.workshopItemKey === item.key) {
       const amountItem = item.amount[productItem.index]
       amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
-      amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
+      // amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
+      amountItem.partQuote = cloneDeep(partDialog) // 部件价格统计信息
       amountItem.productData = {
         // 部件对应产品信息
         name: productItem.craneModel,
@@ -590,28 +591,73 @@ const onProductChange = (value) => {
   // } else partDataSource.value = []
 }
 
-const partDialogData = computed(() => {
-  const factory_price_count = partDataSource.value.reduce((prev, next) => {
-    const price = (
-      Number(next.num) *
-      Number(next.price) *
-      Number(next.taxrate || 0)
-    ).toFixed(2)
-    return prev + Number(price)
-  }, 0)
-  console.log('offerStore.getCustomerData()', offerStore.getCustomerData())
-  const profitMargin =
-    Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
-  const profit = factory_price_count * profitMargin
-  const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
-
-  return {
-    factory_price_count,
-    profitMargin,
-    profit,
-    price,
-  }
+// 选择部件弹窗数据
+const partDialog = ref({
+  factory_price_count: 0,
+  profitMargin: 10,
+  profit: 0,
+  price: 0,
 })
+const profitMarginFee = (row) => {
+  console.log(44, row)
+}
+
+watch(
+  () => partDataSource.value,
+  (value) => {
+    const factory_price_count = value.reduce((prev, next) => {
+      const price = (
+        Number(next.num) *
+        Number(next.price) *
+        Number(next.taxrate || 0)
+      ).toFixed(2)
+      return prev + Number(price)
+    }, 0)
+    const profitMargin =
+      Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
+    const profit = factory_price_count * profitMargin
+    const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
+
+    partDialog.value.factory_price_count = factory_price_count
+    partDialog.value.profitMargin = profitMargin
+    partDialog.value.profit = profit
+    partDialog.value.price = price
+  },
+  { deep: true },
+)
+watch(
+  () => partDialog.value.profitMargin,
+  (value) => {
+    partDialog.value.price = (
+      partDialog.value.factory_price_count *
+      (1 + value / 100)
+    ).toFixed(2)
+  },
+  { deep: true },
+)
+
+// const partDialogData = computed(() => {
+//   const factory_price_count = partDataSource.value.reduce((prev, next) => {
+//     const price = (
+//       Number(next.num) *
+//       Number(next.price) *
+//       Number(next.taxrate || 0)
+//     ).toFixed(2)
+//     return prev + Number(price)
+//   }, 0)
+//   console.log('offerStore.getCustomerData()', offerStore.getCustomerData())
+//   const profitMargin =
+//     Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
+//   const profit = factory_price_count * profitMargin
+//   const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
+
+//   return {
+//     factory_price_count,
+//     profitMargin,
+//     profit,
+//     price,
+//   }
+// })
 
 const createAmount = (length) => {
   return new Array(length).fill(1).map((b) => ({
