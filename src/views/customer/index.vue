@@ -303,7 +303,7 @@ const disabled = ref(false)
 
 const data = reactive({
   form: {
-    profitMargin: 1.05,
+    profitMargin: 5,
   },
   queryParams: {
     pageNum: 1,
@@ -369,7 +369,7 @@ function reset() {
     postCode: undefined,
     contactTell: undefined,
     remark: undefined,
-    profitMargin: 1.05,
+    profitMargin: 5,
   }
 }
 /** 添加 */
@@ -447,7 +447,7 @@ function submit() {
   proxy.$refs['upcustomer'].validate((valid) => {
     if (valid) {
       if (form.value.customerNature !== '1') {
-        form.value.profitMargin = 1.1
+        form.value.profitMargin = 10
       }
 
       if (form.value.customerId != undefined) {

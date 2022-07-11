@@ -301,7 +301,7 @@ const addCustomerForm = ref({
   postCode: '',
   contactTell: '',
   remark: '',
-  profitMargin: 1.05,
+  profitMargin: 5,
 })
 
 const dataScopeOptions = ref([
@@ -342,7 +342,7 @@ function submit() {
   proxy.$refs['upcustomer'].validate((valid) => {
     if (valid) {
       if (addCustomerForm.value.customerNature !== '1') {
-        addCustomerForm.value.profitMargin = 1.1
+        addCustomerForm.value.profitMargin = 10
       }
       addCustomer(addCustomerForm.value).then((response) => {
         if (response.code === 200) {
@@ -373,7 +373,7 @@ function reset() {
     postCode: undefined,
     contactTell: undefined,
     remark: undefined,
-    profitMargin: 1.05,
+    profitMargin: 5,
   }
 }
 

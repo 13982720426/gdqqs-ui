@@ -599,7 +599,7 @@ const workshopData = ref([]) // 车间信息
 // 轨道费用统计
 const trackData = ref({
   total: 0,
-  profitMargin: 1.1,
+  profitMargin: 10,
   name: '轨道', // 说明
   count: 0, // 数量
   sales: 0,
@@ -609,7 +609,7 @@ const trackData = ref({
 // 滑线费用统计
 const slipLineData = ref({
   total: 0,
-  profitMargin: 1.1,
+  profitMargin: 10,
   name: '滑线', // 说明
   count: 0, // 数量
   sales: 0,
@@ -620,7 +620,7 @@ const slipLineData = ref({
 // 起重机运输费用统计
 const transportTotalData = ref({
   total: 0,
-  profitMargin: 1.1,
+  profitMargin: 10,
   name: '起重机运输费', // 说明
   count: 0, // 数量
   sales: 0,
@@ -630,7 +630,7 @@ const transportTotalData = ref({
 // 起重机安装费用统计
 const installTotalData = ref({
   total: 0,
-  profitMargin: 1.1,
+  profitMargin: 10,
   name: '起重机安装及吊装费', // 说明
   count: 0, // 数量
   sales: 0,
@@ -641,7 +641,7 @@ const installTotalData = ref({
 const marketTotalData = ref({
   total: 0,
   hospitality: 2500,
-  profitMargin: 1.1,
+  profitMargin: 10,
   name: '起重机市场监管局特检费', // 说明
   count: 0, // 数量
   sales: 0,
@@ -905,13 +905,15 @@ const slipLineChange = (id, item) => {
 }
 
 const salesItemCalculate = (item) => {
-  const sales = numberToFixed(item.total * item.profitMargin)
+  const sales = numberToFixed(item.total * (1 + item.profitMargin / 100))
   item.sales = sales
   return sales
 }
 
 const totalItemCalculate = (item) => {
-  const profit = numberToFixed(item.total * item.profitMargin - item.total)
+  const profit = numberToFixed(
+    item.total * (1 + item.profitMargin / 100) - item.total,
+  )
   item.profit = profit
   return profit
 }

@@ -160,9 +160,13 @@
                   {{ amountItem.productData.cartSpeed }}
                 </el-descriptions-item>
                 <el-descriptions-item
+                  label="预计利润率(%)"
                   width="150px"
                   label-align="right"
-                ></el-descriptions-item>
+                >
+                  {{ amountItem.partQuote.profitMargin }}
+                </el-descriptions-item>
+
                 <el-descriptions-item
                   label="总成本合计"
                   width="150px"
@@ -170,19 +174,20 @@
                 >
                   {{ amountItem.partQuote.factory_price_count }}
                 </el-descriptions-item>
-                <el-descriptions-item
-                  label="预计利润"
-                  width="150px"
-                  label-align="right"
-                >
-                  {{ amountItem.partQuote.profit }}
-                </el-descriptions-item>
+
                 <el-descriptions-item
                   label="销售总价"
                   width="150px"
                   label-align="right"
                 >
                   {{ amountItem.partQuote.price }}
+                </el-descriptions-item>
+                <el-descriptions-item
+                  label="预计利润"
+                  width="150px"
+                  label-align="right"
+                >
+                  {{ amountItem.partQuote.profit }}
                 </el-descriptions-item>
               </el-descriptions>
             </div>
@@ -304,11 +309,21 @@
             {{ partDialogData.factory_price_count }}
           </el-descriptions-item>
           <el-descriptions-item
-            label="预计利润率"
+            label="预计利润率(%)"
             width="150px"
             label-align="right"
           >
-            {{ partDialogData.profit }}
+            <!-- <el-input>
+              {{ partDialogData.profit }}
+            </el-input> -->
+            <el-input-number
+              :disabled="offerStore.type === 'view'"
+              v-model="partDialogData.profitMargin"
+              :min="0"
+              :max="100"
+              controls-position="right"
+              style="width: 100%"
+            />
           </el-descriptions-item>
           <el-descriptions-item
             label="销售报价(元)"
@@ -347,7 +362,6 @@ const form = ref()
 const productId = ref()
 const formModel = reactive({
   product: [],
-
   productMsg: {
     workshopItemKey: null,
     index: null,
@@ -588,11 +602,13 @@ const partDialogData = computed(() => {
   console.log('offerStore.getCustomerData()', offerStore.getCustomerData())
   const profitMargin =
     Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
+  const profit = factory_price_count * profitMargin
   const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
 
   return {
     factory_price_count,
-    profit: profitMargin,
+    profitMargin,
+    profit,
     price,
   }
 })
