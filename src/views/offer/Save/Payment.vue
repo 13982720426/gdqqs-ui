@@ -91,66 +91,66 @@
         </el-row>
       </OfferSaveTitle>
       <OfferSaveTitle title="交货期">
-        <el-form-item label=" " prop="deliveryTimeText">
+        <el-form-item label=" " prop="dateOfDelivery">
           <el-input
             :disabled="offerStore.type === 'view'"
             :autosize="{ minRows: 2, maxRows: 6 }"
             type="textarea"
             maxlength="500"
             show-word-limit
-            v-model="formModel.deliveryTimeText"
+            v-model="formModel.dateOfDelivery"
             placeholder="请输入"
           />
         </el-form-item>
       </OfferSaveTitle>
       <OfferSaveTitle title="交货方式">
-        <el-form-item label=" " prop="deliveryMethodText">
+        <el-form-item label=" " prop="deliveryMethod">
           <el-input
             :disabled="offerStore.type === 'view'"
             :autosize="{ minRows: 2, maxRows: 6 }"
             type="textarea"
             maxlength="500"
             show-word-limit
-            v-model="formModel.deliveryMethodText"
+            v-model="formModel.deliveryMethod"
             placeholder="请输入"
           />
         </el-form-item>
       </OfferSaveTitle>
       <OfferSaveTitle title="安装条款">
-        <el-form-item label=" " prop="installClauseText">
+        <el-form-item label=" " prop="installationTerms">
           <el-input
             :disabled="offerStore.type === 'view'"
             :autosize="{ minRows: 2, maxRows: 10 }"
             type="textarea"
             maxlength="1000"
             show-word-limit
-            v-model="formModel.installClauseText"
+            v-model="formModel.installationTerms"
             placeholder="请输入"
           />
         </el-form-item>
       </OfferSaveTitle>
       <OfferSaveTitle title="质保期">
-        <el-form-item label=" " prop="shelfLifeText">
+        <el-form-item label=" " prop="warrantyPeriod">
           <el-input
             :disabled="offerStore.type === 'view'"
             :autosize="{ minRows: 2, maxRows: 6 }"
             type="textarea"
             maxlength="500"
             show-word-limit
-            v-model="formModel.shelfLifeText"
+            v-model="formModel.warrantyPeriod"
             placeholder="请输入"
           />
         </el-form-item>
       </OfferSaveTitle>
       <OfferSaveTitle title="有效期">
-        <el-form-item label=" " prop="validityText">
+        <el-form-item label=" " prop="termOfValidity">
           <el-input
             :disabled="offerStore.type === 'view'"
             :autosize="{ minRows: 2, maxRows: 6 }"
             type="textarea"
             maxlength="500"
             show-word-limit
-            v-model="formModel.validityText"
+            v-model="formModel.termOfValidity"
             placeholder="请输入"
           />
         </el-form-item>
@@ -176,16 +176,16 @@ const formModel = reactive({
   play: 50,
   week: 0,
   offerName: '',
-  deliveryTimeText: `起重机交货期从收到预付款至现场安装调试 45 天。载荷试验及其它国家规定的测试的时间按当地市场监管局的安排而定。`, //交货期文本
-  deliveryMethodText: `送货到河南许昌安装现场。`, //交货方式文本
-  installClauseText: `
+  dateOfDelivery: `起重机交货期从收到预付款至现场安装调试 45 天。载荷试验及其它国家规定的测试的时间按当地市场监管局的安排而定。`, //交货期文本
+  deliveryMethod: `送货到河南许昌安装现场。`, //交货方式文本
+  installationTerms: `
     设备安装可由本地劳动力完成,并无需任何特殊的工具,在设备的设计和制造过程中始终贯穿了这一原则,报价中提及的行车安装要求安装工作在正常工作时间内不间断进行，买方应准备以下几项:
         1.所有的建筑和地面工作应完备,免费配备电源及用电
         2.确保该设备可以吊装到位
         3.提供一安全区域存放设备
   `, //安装条款文本
-  shelfLifeText: `质保期为从市场监管局局验收之日算起 12 个月。保证期内对材料或制造不良所引起的缺陷负责，对使用 不当引起的损坏不负责。由于正常损耗造成的损坏不在质保范围内。`, //保质期文本
-  validityText: `本报价从报价日起有效期为30天。`, //有效期文本
+  warrantyPeriod: `质保期为从市场监管局局验收之日算起 12 个月。保证期内对材料或制造不良所引起的缺陷负责，对使用 不当引起的损坏不负责。由于正常损耗造成的损坏不在质保范围内。`, //保质期文本
+  termOfValidity: `本报价从报价日起有效期为30天。`, //有效期文本
 })
 
 const customerChange = (value) => {
@@ -202,17 +202,21 @@ const customerChange = (value) => {
 
 const rules = ref({
   offerName: [{ required: true, message: '请输入报价名称', trigger: 'blur' }],
-  deliveryTimeText: [
+  dateOfDelivery: [
     { required: true, message: '请输入交货期', trigger: 'blur' },
   ],
-  deliveryMethodText: [
+  deliveryMethod: [
     { required: true, message: '请输入交货方式', trigger: 'blur' },
   ],
-  installClauseText: [
+  installationTerms: [
     { required: true, message: '请输入安装条款', trigger: 'blur' },
   ],
-  shelfLifeText: [{ required: true, message: '请输入保质期', trigger: 'blur' }],
-  validityText: [{ required: true, message: '请输入有效期', trigger: 'blur' }],
+  warrantyPeriod: [
+    { required: true, message: '请输入保质期', trigger: 'blur' },
+  ],
+  termOfValidity: [
+    { required: true, message: '请输入有效期', trigger: 'blur' },
+  ],
   contract: [{ required: true, message: '请输入', trigger: 'blur' }],
   site: [{ required: true, message: '请输入', trigger: 'blur' }],
   play: [{ required: true, message: '请输入', trigger: 'blur' }],
@@ -230,11 +234,23 @@ offerStore.$subscribe((_, state) => {
 })
 
 const getValues = async () => {
-  const { customerType, offerName, contract, play, site, week } = formModel
+  const {
+    customerType,
+    offerName,
+    contract,
+    play,
+    site,
+    week,
+    dateOfDelivery,
+    deliveryMethod,
+    installationTerms,
+    warrantyPeriod,
+    termOfValidity,
+  } = formModel
   const data = await form.value.validate()
   if (data) {
     if (customerType === '1') {
-      if (contract + formModel.play !== 100) {
+      if (contract + play !== 100) {
         proxy.$modal.msgError('提交失败，付款方式不等于100%')
       } else {
         return {
@@ -242,6 +258,11 @@ const getValues = async () => {
           contract,
           offerName,
           play,
+          dateOfDelivery,
+          deliveryMethod,
+          installationTerms,
+          warrantyPeriod,
+          termOfValidity,
         }
       }
     } else {
