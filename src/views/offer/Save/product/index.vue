@@ -11,7 +11,9 @@
           :key="workshopItem.key"
           v-for="(workshopItem, index1) in formModel.product"
         >
-          <div>车间名称: {{ workshopItem.name }}</div>
+          <div class="product-item-title">
+            车间名称: {{ workshopItem.name }}
+          </div>
           <div
             class="product-item"
             :key="amountItem.key"
@@ -183,7 +185,7 @@
                   {{ amountItem.partQuote.price }}
                 </el-descriptions-item>
                 <el-descriptions-item
-                  label="预计利润"
+                  label="利润额"
                   width="150px"
                   label-align="right"
                 >
@@ -204,7 +206,7 @@
                 <el-button
                   :disabled="offerStore.type === 'view'"
                   type="success"
-                  @click="selectPart(amountItem, workshopItem.key, index)"
+                  @click="selectPart(amountItem, workshopItem.key, index, true)"
                 >
                   编辑部件
                 </el-button>
@@ -212,7 +214,9 @@
               <div v-else>
                 <el-button
                   type="primary"
-                  @click="selectPart(amountItem, workshopItem.key, index)"
+                  @click="
+                    selectPart(amountItem, workshopItem.key, index, false)
+                  "
                 >
                   选择部件
                 </el-button>
@@ -222,6 +226,16 @@
         </div>
       </el-form>
     </OfferSaveTitle>
+    <div class="title">
+      <el-table :data="countDataSource">
+        <el-table-column label="" width="100" />
+        <!-- <el-table-column prop="name" label="车间名称" /> -->
+        <el-table-column prop="count" label="起重机数量(台)" />
+        <el-table-column prop="total" label="总成本合计" />
+        <el-table-column prop="sales" label="销售总价"></el-table-column>
+        <el-table-column prop="profit" label="利润额"></el-table-column>
+      </el-table>
+    </div>
     <el-dialog v-model="dialogVisible" width="85%" title="选择部件">
       <el-select
         :disabled="offerStore.type === 'view'"
@@ -313,9 +327,6 @@
             width="150px"
             label-align="right"
           >
-            <!-- <el-input>
-              {{ partDialogData.profit }}
-            </el-input> -->
             <el-input-number
               :disabled="offerStore.type === 'view'"
               v-model="partDialog.profitMargin"
@@ -351,6 +362,7 @@ import useOfferStore from '@/store/modules/offer'
 import { onMounted, defineExpose, computed } from 'vue'
 import { listProduct } from '@/api/business/product'
 import { cloneDeep, omit } from 'lodash-es'
+import { isArray } from '@vue/shared'
 
 const { proxy } = getCurrentInstance()
 
@@ -411,23 +423,26 @@ const rules = ref({
   level: [{ required: true, validator: validType, trigger: 'blur' }],
 })
 
+//总合计
+const countDataSource = ref([])
+
+//车间统计数据
+const workshopTotalData = ref([])
+
 /**
  *
  * @param data
  * @param workshopItemKey 车间名称
  * @param index 起重机下标
  */
-const selectPart = (data, workshopItemKey, index) => {
-  queryPart(data, workshopItemKey, index)
+const selectPart = (data, workshopItemKey, index, isEdit) => {
+  queryPart(data, workshopItemKey, index, isEdit)
 
   if ('partData' in data) {
     productId.value = data.productData?.id
     partDataSource.value = data.partData
   }
   dialogVisible.value = true
-
-  // partDataSource.value = []
-  // dialogVisible.value = true
 }
 
 const cancel = () => {
@@ -441,16 +456,14 @@ const savePartData = () => {
   const productItem = productList.value.find(
     (item) => item.productName === productId.value,
   )
-  console.log('productItem', productItem)
-
   productItem.bomParams = JSON.stringify(partDataSource.value)
   productItem.index = productMsg.index
   productItem.workshopItemKey = productMsg.workshopItemKey
-  formModel.product.forEach((item) => {
+  formModel.product.forEach((item, index) => {
+    console.log('item', item)
     if (productItem && productItem.workshopItemKey === item.key) {
       const amountItem = item.amount[productItem.index]
       amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
-      // amountItem.partQuote = cloneDeep(partDialogData) // 部件价格统计信息
       amountItem.partQuote = cloneDeep(partDialog) // 部件价格统计信息
       amountItem.productData = {
         // 部件对应产品信息
@@ -461,13 +474,41 @@ const savePartData = () => {
         cartSpeed: productItem.cartSpeed,
         id: productItem.productName,
       }
+
+      //获取车间统计数据
+      const obj = amountItem.partQuote
+      obj.name = item.name
+      obj.key = item.key
+      workshopTotalData.value.push(obj)
     }
   })
-  // offerStore.setProductData(formModel.product)
-
-  console.log('formModel.product', formModel.product)
-
+  totalAll()
   cancel()
+}
+
+//总合计
+function totalAll() {
+  const total = workshopTotalData.value.reduce(
+    (accumulator, currentValue) =>
+      accumulator + currentValue.factory_price_count,
+    0,
+  )
+  const sales = workshopTotalData.value.reduce(
+    (accumulator, currentValue) => accumulator + Number(currentValue.price),
+    0,
+  )
+  const profit = workshopTotalData.value.reduce(
+    (accumulator, currentValue) =>
+      accumulator +
+      Number(currentValue.price - currentValue.factory_price_count),
+    0,
+  )
+  const obj1 = {}
+  obj1.count = workshopTotalData.value.length
+  obj1.total = total.toFixed(2)
+  obj1.sales = sales.toFixed(2)
+  obj1.profit = profit.toFixed(2)
+  countDataSource.value[0] = obj1
 }
 
 /**
@@ -477,14 +518,12 @@ const savePartData = () => {
  * @param index
  * @returns {Promise<void>}
  */
-const queryPart = async (data, workshopItemKey, index) => {
-  console.log('offerStore.getProductData()', offerStore.getProductData())
+const queryPart = async (data, workshopItemKey, index, isEdit) => {
+  console.log(333, data, workshopItemKey, index, isEdit)
   const productInfo = offerStore.getProductData()
 
   productInfo.forEach((item) => {
-    console.log('item', item)
     if (item.key === workshopItemKey) {
-      console.log(true)
       partDataSource.value = item.amount
     }
   })
@@ -598,9 +637,6 @@ const partDialog = ref({
   profit: 0,
   price: 0,
 })
-const profitMarginFee = (row) => {
-  console.log(44, row)
-}
 
 watch(
   () => partDataSource.value,
@@ -615,8 +651,8 @@ watch(
     }, 0)
     const profitMargin =
       Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
-    const profit = factory_price_count * profitMargin
     const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
+    const profit = price - factory_price_count
 
     partDialog.value.factory_price_count = factory_price_count
     partDialog.value.profitMargin = profitMargin
@@ -626,11 +662,14 @@ watch(
   { deep: true },
 )
 watch(
-  () => partDialog.value.profitMargin,
+  () => partDialog.value,
   (value) => {
     partDialog.value.price = (
-      partDialog.value.factory_price_count *
-      (1 + value / 100)
+      value.factory_price_count *
+      (1 + partDialog.value.profitMargin / 100)
+    ).toFixed(2)
+    partDialog.value.profit = (
+      partDialog.value.price - value.factory_price_count
     ).toFixed(2)
   },
   { deep: true },
@@ -672,6 +711,7 @@ offerStore.$subscribe((mutation, state) => {
   const { customer, product } = state
   const NewCustomer = offerStore.getCustomerData()
   console.log('NewCustomer', NewCustomer)
+  console.log('product', product)
   formModel.product = []
   if (product.length) {
     // console.log(
@@ -770,15 +810,24 @@ defineExpose({
 </script>
 
 <style lang="scss" scoped>
+$color: #ff5800;
+
 .offer-save-product {
+  .product-item-title {
+    border-top: 1px solid #dcdfe6;
+    padding-top: 12px;
+  }
   .product-item {
     background-color: #fafafa;
     padding: 12px 8px;
     margin: 12px 0;
   }
-
   .title {
     margin-bottom: 24px;
+  }
+
+  .number {
+    color: $color;
   }
 }
 </style>

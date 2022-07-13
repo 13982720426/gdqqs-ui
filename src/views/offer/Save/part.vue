@@ -178,7 +178,7 @@
             <el-descriptions-item label="总成本合计">
               <span class="number">{{ trackData.total }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="预计利润">
+            <el-descriptions-item label="预计利润率">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
                 size="small"
@@ -329,7 +329,7 @@
             <el-descriptions-item label="总成本合计">
               <span class="number">{{ slipLineData.total }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="预计利润">
+            <el-descriptions-item label="预计利润率">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
                 size="small"
@@ -383,7 +383,7 @@
             <el-descriptions-item label="总成本合计">
               <span class="number">{{ transportTotalData.total }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="预计利润">
+            <el-descriptions-item label="预计利润率">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
                 size="small"
@@ -453,7 +453,7 @@
             <el-descriptions-item label="总成本合计">
               <span class="number">{{ installTotalData.total }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="预计利润">
+            <el-descriptions-item label="预计利润率">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
                 size="small"
@@ -513,7 +513,7 @@
             <el-descriptions-item label="总成本合计">
               <span class="number">{{ marketTotalData.total }}</span>
             </el-descriptions-item>
-            <el-descriptions-item label="预计利润">
+            <el-descriptions-item label="预计利润率">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
                 size="small"
@@ -545,7 +545,7 @@
         <el-table-column prop="name" label="说明" />
         <el-table-column prop="count" label="数量(台)" />
         <el-table-column prop="total" label="总成本合计" />
-        <el-table-column prop="profitMargin" label="预计利润" />
+        <el-table-column prop="profitMargin" label="预计利润率" />
         <el-table-column prop="sales" label="销售总价"></el-table-column>
         <el-table-column prop="profit" label="利润额"></el-table-column>
       </el-table>
@@ -1000,11 +1000,13 @@ watch(
       const itemCount = Array.isArray(next)
         ? next.reduce((a, b) => a + b.actualLength, 0)
         : 0
+
       return prev + itemCount
     }, 0)
     trackData.value.total = numberToFixed(total)
     trackData.value.count = numberToFixed(actualLength)
     countDataSource.value[0] = trackData.value
+    console.log(333, countDataSource.value)
   },
   { deep: true },
 )
@@ -1022,6 +1024,7 @@ watch(
       const itemCount = Array.isArray(next)
         ? next.reduce((a, b) => a + b.length, 0)
         : 0
+
       return prev + itemCount
     }, 0)
     slipLineData.value.total = numberToFixed(total)
@@ -1034,6 +1037,7 @@ watch(
 watch(
   () => craneDataSource.value,
   (value) => {
+    console.log('1', value)
     const total = value.reduce((prev, next) => {
       return prev + next.total
     }, 0)
@@ -1083,7 +1087,7 @@ offerStore.$subscribe((mutation, state) => {
       workshopData.value.push({
         ...workshopItem,
         total: 0, // 总成本合计
-        profitMargin: 1.1, // 预计利润率
+        profitMargin: 1.1, // 预计利润率率
         totalPrice: 0, // 销售总价
         profitAmount: 0, // 利润额
         splpartOptions: [], // 滑线下拉数据
