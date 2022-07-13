@@ -651,7 +651,15 @@ const marketTotalData = ref({
 const countDataSource = ref([]) // 总合计
 
 const QuoteData = reactive({
-  track: {}, // 轨道table数据
+  track: {
+    total: 0,
+    profitMargin: 10,
+    name: '轨道', // 说明
+    count: 0, // 数量
+    sales: 0,
+    profit: 0,
+    dataSource: [],
+  }, // 轨道table数据
   slipLine: {}, // 滑线table数据
 })
 
@@ -683,6 +691,7 @@ const numberToFixed = (number, length = 2) => {
  * @param {Object} workshop 车间数据
  */
 const onTrackAdd = (workshop) => {
+  console.log('workshop', workshop)
   const workshopKey = workshop.key
   const key = `track${getKey()}`
   const wsLength = workshop.workshopLength
@@ -697,12 +706,39 @@ const onTrackAdd = (workshop) => {
     platens,
     wsLength,
   }
+  let { dataSource } = QuoteData.track
+  const list = []
+  const dataList = {
+    key: workshopKey,
+    trackList: [newTrackItem],
+  }
+
+  if (dataSource.length === 0) {
+    dataSource.push(dataList)
+  } else {
+    dataSource.forEach((item) => {
+      if (item.key === dataList.key) {
+        item.trackList.push(newTrackItem)
+      } else {
+        dataSource.push(dataList)
+      }
+    })
+  }
+  // else {
+  //   dataSource = dataList
+  // }
 
   if (QuoteData.track[workshopKey]) {
     QuoteData.track[workshopKey].push(newTrackItem)
   } else {
     QuoteData.track[workshopKey] = [newTrackItem]
   }
+  // if (trackList) {
+  //   trackList.push(newTrackItem)
+  // } else {
+  //   trackList = [newTrackItem]
+  // }
+  // console.log('QuoteData.track', QuoteData.track, 'list', dataList)
 }
 
 /**
@@ -990,6 +1026,7 @@ const installTotal = (row, _tax) => {
 watch(
   () => QuoteData.track,
   (value) => {
+    console.log('value', value)
     const total = Object.values(value).reduce((prev, next) => {
       const itemCount = Array.isArray(next)
         ? next.reduce((a, b) => a + b.count, 0)
@@ -1006,7 +1043,6 @@ watch(
     trackData.value.total = numberToFixed(total)
     trackData.value.count = numberToFixed(actualLength)
     countDataSource.value[0] = trackData.value
-    console.log(333, countDataSource.value)
   },
   { deep: true },
 )
@@ -1170,6 +1206,7 @@ onMounted(() => {
 })
 
 const getValues = async () => {
+  console.log('tarck', QuoteData.track, trackData.value)
   return {
     track: QuoteData.track, // 轨道
     slipLine: QuoteData.slipLine, // 滑线
