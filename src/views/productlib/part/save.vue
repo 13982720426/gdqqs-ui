@@ -377,7 +377,7 @@
             :disabled="disabled"
           >
             <el-option
-              v-for="dict in q_crane_type"
+              v-for="dict in craneTypeItem"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -761,7 +761,10 @@
 </template>
 
 <script setup name="PartSave">
-import { getcraneModelBycraneType } from '@/api/business/productpart'
+import {
+  getcraneModelBycraneType,
+  getAddPartCraneType,
+} from '@/api/business/productpart'
 
 const { proxy } = getCurrentInstance()
 
@@ -856,4 +859,12 @@ async function getCraneModel() {
   const { data } = await getcraneModelBycraneType(params)
   craneModelItem.value = data
 }
+
+const craneTypeItem = ref([])
+async function getPartCraneType() {
+  const { data } = await getAddPartCraneType()
+  craneTypeItem.value = data
+}
+
+getPartCraneType()
 </script>
