@@ -175,6 +175,7 @@
             <el-select
               v-model="form.craneType"
               placeholder="请选择"
+              :change="getCraneModel()"
               style="width: 60%"
             >
               <el-option
@@ -238,48 +239,20 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="起重机型号" prop="craneModel">
-            <template v-if="form.craneType == 1">
-              <el-select
-                v-model="form.craneModel"
-                placeholder="请选择"
-                style="width: 60%"
-              >
-                <el-option
-                  v-for="dict in q_single_crane_model"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </template>
-            <template v-else-if="form.craneType == 2">
-              <el-select
-                v-model="form.craneModel"
-                placeholder="请选择"
-                style="width: 60%"
-              >
-                <el-option
-                  v-for="dict in q_double_crane_model"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </template>
-            <template v-else-if="form.craneType == 3">
-              <el-select
-                v-model="form.craneModel"
-                placeholder="请选择"
-                style="width: 60%"
-              >
-                <el-option
-                  v-for="dict in q_susp_crane_model"
-                  :key="dict.value"
-                  :label="dict.label"
-                  :value="dict.value"
-                />
-              </el-select>
-            </template>
+            <el-select
+              v-model="form.craneModel"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+              :disabled="disabled"
+            >
+              <el-option
+                v-for="item in craneModelItem"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -622,6 +595,7 @@ import {
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
+import { getcraneModelBycraneType } from '@/api/business/product'
 
 const upUrl = ref(
   import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel',
@@ -1090,6 +1064,18 @@ async function getProductMSG() {
     } else {
       proxy.$modal.msgError(`查询失败，${response.msg}`)
     }
+  }
+}
+const craneModelItem = ref([])
+
+async function getCraneModel() {
+  const { craneType } = form.value
+  const res = await getcraneModelBycraneType({ craneType })
+  if (res.code == 200) {
+    craneModelItem.value = res.data
+    form.value.craneModel = ''
+  } else {
+    proxy.$modal.msgError(`查询失败，${res.msg}`)
   }
 }
 
