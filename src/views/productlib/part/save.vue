@@ -8,7 +8,7 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
-            @change="handlePartType"
+            @change="handlePartType()"
             :disabled="true"
           >
             <el-option
@@ -354,7 +354,7 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
-            @change="handlePartType"
+            @change="handlePartType()"
             :disabled="disabled"
           >
             <el-option
@@ -373,7 +373,7 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
-            @change="getCraneModel"
+            @change="getCraneOperation()"
             :disabled="disabled"
           >
             <el-option
@@ -386,16 +386,36 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="起升重量(t)" prop="liftWeight">
+        <el-form-item label="操作方式" prop="craneOperation">
           <el-select
-            v-model="form.liftWeight"
+            v-model="form.craneOperation"
             placeholder="请选择"
             clearable
             style="width: 60%"
             :disabled="disabled"
+            @change="getCraneModel()"
           >
             <el-option
-              v-for="item in liftWeight"
+              v-for="dict in craneOperationItem"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="起重机型号" prop="craneModel">
+          <el-select
+            v-model="form.craneModel"
+            placeholder="请选择"
+            clearable
+            style="width: 60%"
+            :disabled="disabled"
+            @change="getWorkLevel()"
+          >
+            <el-option
+              v-for="item in craneModelItem"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -404,16 +424,35 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="操作方式" prop="craneOperation">
+        <el-form-item label="工作级别" prop="workLevel">
           <el-select
-            v-model="form.craneOperation"
+            v-model="form.workLevel"
+            placeholder="请选择"
+            clearable
+            style="width: 60%"
+            :disabled="disabled"
+            @change="getLiftHeight()"
+          >
+            <el-option
+              v-for="dict in workLevelItem"
+              :key="dict.value"
+              :label="dict.label"
+              :value="dict.value"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="起升高度" prop="liftHeight">
+          <el-select
+            v-model="form.liftHeight"
             placeholder="请选择"
             clearable
             style="width: 60%"
             :disabled="disabled"
           >
             <el-option
-              v-for="dict in q_oper_mode"
+              v-for="dict in liftHeightItem"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -440,77 +479,21 @@
         </el-form-item>
       </el-col>
       <el-col :span="8">
-        <el-form-item label="起重机型号" prop="craneModel">
+        <el-form-item label="起升重量(t)" prop="liftWeight">
           <el-select
-            v-model="form.craneModel"
+            v-model="form.liftWeight"
             placeholder="请选择"
             clearable
             style="width: 60%"
             :disabled="disabled"
           >
             <el-option
-              v-for="item in craneModelItem"
+              v-for="item in liftWeight"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
           </el-select>
-          <!-- <template v-if="form.craneType == 1">
-            <el-select
-              v-model="form.craneModel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_single_crane_model"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="form.craneType == 2">
-            <el-select
-              v-model="form.craneModel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_double_crane_model"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="form.craneType == 3">
-            <el-select
-              v-model="form.craneModel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_susp_crane_model"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else>
-            <el-select
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            ></el-select>
-          </template> -->
         </el-form-item>
       </el-col>
       <el-col :span="8">
@@ -573,127 +556,6 @@
           </template>
         </el-form-item>
       </el-col>
-      <el-col :span="8">
-        <el-form-item label="起升高度" prop="liftHeight">
-          <template v-if="form.craneType == 1">
-            <el-select
-              v-model="form.liftHeight"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_single_crane_lift_height"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="form.craneType == 2">
-            <el-select
-              v-model="form.liftHeight"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_double_crane_lift_height"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="form.craneType == 3">
-            <el-select
-              v-model="form.liftHeight"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_susp_crane_lift_height"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else>
-            <el-select
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            ></el-select>
-          </template>
-        </el-form-item>
-      </el-col>
-      <el-col :span="8">
-        <el-form-item label="工作级别" prop="workLevel">
-          <template v-if="form.craneType == 1">
-            <el-select
-              v-model="form.workLevel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_single_crane_work_level"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="form.craneType == 2">
-            <el-select
-              v-model="form.workLevel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_double_crane_work_level"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else-if="form.craneType == 3">
-            <el-select
-              v-model="form.workLevel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="dict in q_susp_crane_work_level"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-              />
-            </el-select>
-          </template>
-          <template v-else>
-            <el-select
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            ></el-select>
-          </template>
-        </el-form-item>
-      </el-col>
-
       <el-col :span="8">
         <el-form-item label="数量" prop="quantity">
           <el-input
@@ -762,8 +624,11 @@
 
 <script setup name="PartSave">
 import {
-  getcraneModelBycraneType,
   getAddPartCraneType,
+  getCraneOperationByCraneType,
+  getcraneModelBytwo,
+  getliftHeightByfourth,
+  getworkLevelBythree,
 } from '@/api/business/productpart'
 
 const { proxy } = getCurrentInstance()
@@ -850,20 +715,81 @@ const {
 function handlePartType() {
   props.form = {}
 }
-const craneModelItem = ref([])
 
-async function getCraneModel() {
+const craneTypeItem = ref([])
+const craneOperationItem = ref([])
+const craneModelItem = ref([])
+const workLevelItem = ref([])
+const liftHeightItem = ref([])
+
+async function getPartCraneType() {
+  const res = await getAddPartCraneType()
+  if (res.code == 200) {
+    craneTypeItem.value = res.data
+  } else {
+    proxy.$modal.msgError(`查询失败，${res.msg}`)
+  }
+}
+
+async function getCraneOperation() {
   const params = {
     craneType: props.form.craneType,
   }
-  const { data } = await getcraneModelBycraneType(params)
-  craneModelItem.value = data
+  const res = await getCraneOperationByCraneType(params)
+  if (res.code == 200) {
+    craneOperationItem.value = res.data
+    props.form.craneOperation = ''
+    props.form.craneModel = ''
+    props.form.workLevel = ''
+    props.form.liftHeight = ''
+  } else {
+    proxy.$modal.msgError(`查询失败，${res.msg}`)
+  }
 }
-
-const craneTypeItem = ref([])
-async function getPartCraneType() {
-  const { data } = await getAddPartCraneType()
-  craneTypeItem.value = data
+async function getCraneModel() {
+  const params = {
+    craneType: props.form.craneType,
+    craneOperation: props.form.craneOperation,
+  }
+  const res = await getcraneModelBytwo(params)
+  if (res.code == 200) {
+    craneModelItem.value = res.data
+    props.form.craneModel = ''
+    props.form.workLevel = ''
+    props.form.liftHeight = ''
+  } else {
+    proxy.$modal.msgError(`查询失败，${res.msg}`)
+  }
+}
+async function getWorkLevel() {
+  const params = {
+    craneType: props.form.craneType,
+    craneOperation: props.form.craneOperation,
+    craneModel: props.form.craneModel,
+  }
+  const res = await getworkLevelBythree(params)
+  if (res.code == 200) {
+    workLevelItem.value = res.data
+    props.form.workLevel = ''
+    props.form.liftHeight = ''
+  } else {
+    proxy.$modal.msgError(`查询失败，${res.msg}`)
+  }
+}
+async function getLiftHeight() {
+  const params = {
+    craneType: props.form.craneType,
+    craneOperation: props.form.craneOperation,
+    craneModel: props.form.craneModel,
+    workLevel: props.form.workLevel,
+  }
+  const res = await getliftHeightByfourth(params)
+  if (res.code == 200) {
+    liftHeightItem.value = res.data
+    props.form.liftHeight = ''
+  } else {
+    proxy.$modal.msgError(`查询失败，${res.msg}`)
+  }
 }
 
 getPartCraneType()
