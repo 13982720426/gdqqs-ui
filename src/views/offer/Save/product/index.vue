@@ -226,15 +226,31 @@
         </div>
       </el-form>
     </OfferSaveTitle>
-    <div class="title">
+    <!-- <div class="title">
       <el-table :data="countDataSource">
         <el-table-column label="" width="100" />
-        <!-- <el-table-column prop="name" label="车间名称" /> -->
+        <el-table-column prop="name" label="车间名称" />
         <el-table-column prop="count" label="起重机数量(台)" />
         <el-table-column prop="total" label="总成本合计" />
         <el-table-column prop="sales" label="销售总价"></el-table-column>
         <el-table-column prop="profit" label="利润额"></el-table-column>
       </el-table>
+    </div> -->
+    <div style="margin: 16px">
+      <el-descriptions :column="4">
+        <el-descriptions-item label="起重机总数(台)">
+          <span class="number">{{ totals.count }}</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="总成本合计">
+          <span class="number">{{ totals.total }}</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="销售总价">
+          <span class="number">{{ totals.sales }}</span>
+        </el-descriptions-item>
+        <el-descriptions-item label="利润额">
+          <span class="number">{{ totals.profit }}</span>
+        </el-descriptions-item>
+      </el-descriptions>
     </div>
     <el-dialog v-model="dialogVisible" width="85%" title="选择部件">
       <el-select
@@ -382,6 +398,13 @@ const formModel = reactive({
     crabSpeed: null,
     cartSpeed: null,
   },
+  isEdit: false,
+})
+const totals = ref({
+  count: 0,
+  total: 0,
+  sales: 0,
+  profit: 0,
 })
 
 const validType = (rule, value, callback) => {
@@ -429,6 +452,14 @@ const countDataSource = ref([])
 //车间统计数据
 const workshopTotalData = ref([])
 
+// 选择部件弹窗数据
+const partDialog = ref({
+  factory_price_count: 0,
+  profitMargin: 10,
+  profit: 0,
+  price: 0,
+})
+
 /**
  *
  * @param data
@@ -436,8 +467,8 @@ const workshopTotalData = ref([])
  * @param index 起重机下标
  */
 const selectPart = (data, workshopItemKey, index, isEdit) => {
+  formModel.isEdit = isEdit
   queryPart(data, workshopItemKey, index, isEdit)
-
   if ('partData' in data) {
     productId.value = data.productData?.id
     partDataSource.value = data.partData
@@ -451,7 +482,7 @@ const cancel = () => {
 }
 
 const savePartData = () => {
-  const { productMsg } = formModel
+  const { productMsg, isEdit } = formModel
 
   const productItem = productList.value.find(
     (item) => item.productName === productId.value,
@@ -460,7 +491,6 @@ const savePartData = () => {
   productItem.index = productMsg.index
   productItem.workshopItemKey = productMsg.workshopItemKey
   formModel.product.forEach((item, index) => {
-    console.log('item', item)
     if (productItem && productItem.workshopItemKey === item.key) {
       const amountItem = item.amount[productItem.index]
       amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
@@ -474,41 +504,33 @@ const savePartData = () => {
         cartSpeed: productItem.cartSpeed,
         id: productItem.productName,
       }
-
-      //获取车间统计数据
-      const obj = amountItem.partQuote
-      obj.name = item.name
-      obj.key = item.key
-      workshopTotalData.value.push(obj)
     }
   })
+
   totalAll()
   cancel()
 }
 
 //总合计
 function totalAll() {
-  const total = workshopTotalData.value.reduce(
-    (accumulator, currentValue) =>
-      accumulator + currentValue.factory_price_count,
+  //总合计
+  const arr = []
+  formModel.product.forEach((item) => {
+    item.amount.forEach((item2) => {
+      if (item2.partQuote) {
+        arr.push(item2.partQuote)
+      }
+    })
+  })
+  const total = arr.reduce((per, next) => per + next.factory_price_count, 0)
+  const sales = arr.reduce((per, next) => per + Number(next.price), 0)
+  const profit = arr.reduce(
+    (per, next) => per + Number(next.price - next.factory_price_count),
     0,
   )
-  const sales = workshopTotalData.value.reduce(
-    (accumulator, currentValue) => accumulator + Number(currentValue.price),
-    0,
-  )
-  const profit = workshopTotalData.value.reduce(
-    (accumulator, currentValue) =>
-      accumulator +
-      Number(currentValue.price - currentValue.factory_price_count),
-    0,
-  )
-  const obj1 = {}
-  obj1.count = workshopTotalData.value.length
-  obj1.total = total.toFixed(2)
-  obj1.sales = sales.toFixed(2)
-  obj1.profit = profit.toFixed(2)
-  countDataSource.value[0] = obj1
+  totals.value.total = total.toFixed(2)
+  totals.value.sales = sales.toFixed(2)
+  totals.value.profit = profit.toFixed(2)
 }
 
 /**
@@ -579,8 +601,6 @@ const onProductChange = (value) => {
 
   const itemData = productList.value.find((item) => item.productName === value)
 
-  console.log('itemData', itemData)
-
   if (itemData.bomParams) {
     let bomData = JSON.parse(itemData.bomParams)
     bomData = bomData.map((item) => {
@@ -629,14 +649,6 @@ const onProductChange = (value) => {
   //   partDataSource.value = bomData
   // } else partDataSource.value = []
 }
-
-// 选择部件弹窗数据
-const partDialog = ref({
-  factory_price_count: 0,
-  profitMargin: 10,
-  profit: 0,
-  price: 0,
-})
 
 watch(
   () => partDataSource.value,
@@ -710,20 +722,9 @@ const createAmount = (length) => {
 offerStore.$subscribe((mutation, state) => {
   const { customer, product } = state
   const NewCustomer = offerStore.getCustomerData()
-  console.log('NewCustomer', NewCustomer)
-  console.log('product', product)
+
   formModel.product = []
   if (product.length) {
-    // console.log(
-    //   'new',
-    //   typeof JSON.stringify(NewCustomer.workshopInfo),
-    //   JSON.stringify(NewCustomer.workshopInfo),
-    //   'old',
-    //   typeof customer.workshopInfo,
-    //   customer.workshopInfo,
-    //   '00',
-    //   product,
-    // )
     if (JSON.stringify(NewCustomer.workshopInfo) === customer.workshopInfo) {
       product.forEach((item) => {
         formModel.product.push(item)
@@ -780,6 +781,13 @@ offerStore.$subscribe((mutation, state) => {
   //     })
   //   })
   // }
+
+  //起重机总数
+  const countsum = []
+  formModel.product.forEach((item) => {
+    countsum.push(item.amount.length)
+  })
+  totals.value.count = countsum.reduce((per, next) => per + next, 0)
 })
 
 const getValues = async () => {
