@@ -706,39 +706,26 @@ const onTrackAdd = (workshop) => {
     platens,
     wsLength,
   }
-  let { dataSource } = QuoteData.track
-  const list = []
-  const dataList = {
-    key: workshopKey,
-    trackList: [newTrackItem],
-  }
-
-  if (dataSource.length === 0) {
-    dataSource.push(dataList)
-  } else {
-    dataSource.forEach((item) => {
-      if (item.key === dataList.key) {
-        item.trackList.push(newTrackItem)
-      } else {
-        dataSource.push(dataList)
-      }
-    })
-  }
-  // else {
-  //   dataSource = dataList
-  // }
 
   if (QuoteData.track[workshopKey]) {
     QuoteData.track[workshopKey].push(newTrackItem)
   } else {
     QuoteData.track[workshopKey] = [newTrackItem]
   }
-  // if (trackList) {
-  //   trackList.push(newTrackItem)
-  // } else {
-  //   trackList = [newTrackItem]
-  // }
-  // console.log('QuoteData.track', QuoteData.track, 'list', dataList)
+
+  //轨道数据添加处理
+  let { dataSource } = QuoteData.track
+  const dataList = {
+    key: workshopKey,
+    trackList: [newTrackItem],
+  }
+  const data = dataSource.find((item) => item.key == workshopKey)
+  if (!data) {
+    dataSource.push(dataList)
+  } else {
+    const data1 = dataSource.find((item) => item.key == workshopKey)
+    data1.trackList.push(newTrackItem)
+  }
 }
 
 /**
@@ -752,6 +739,9 @@ const onTrackDelete = (workshopId, key) => {
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
   }
+  const data = QuoteData.track.dataSource.find((item) => item.key == workshopId)
+
+  console.log('QuoteData.track', workshopId, QuoteData.track, data)
 }
 
 const findProduct = (key) => {
@@ -1027,6 +1017,7 @@ watch(
   () => QuoteData.track,
   (value) => {
     console.log('value', value)
+    //计算轨道数据
     const total = Object.values(value).reduce((prev, next) => {
       const itemCount = Array.isArray(next)
         ? next.reduce((a, b) => a + b.count, 0)
@@ -1044,6 +1035,7 @@ watch(
     trackData.value.count = numberToFixed(actualLength)
     countDataSource.value[0] = trackData.value
   },
+
   { deep: true },
 )
 
