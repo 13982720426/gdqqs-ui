@@ -724,7 +724,7 @@ const onTrackAdd = (workshop) => {
     dataSource.push(dataList)
   } else {
     const data1 = dataSource.find((item) => item.key == workshopKey)
-    data1.trackList.push(newTrackItem)
+    data1.trackList = QuoteData.track[workshopKey]
   }
 }
 
@@ -739,6 +739,7 @@ const onTrackDelete = (workshopId, key) => {
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
   }
+  //轨道数据存入QuoteData.track.dataSource
   const data = QuoteData.track.dataSource.find((item) => item.key == workshopId)
   data.trackList = QuoteData.track[workshopId]
 }
