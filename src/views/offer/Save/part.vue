@@ -740,8 +740,7 @@ const onTrackDelete = (workshopId, key) => {
     QuoteData.track[workshopId].splice(index, 1)
   }
   const data = QuoteData.track.dataSource.find((item) => item.key == workshopId)
-
-  console.log('QuoteData.track', workshopId, QuoteData.track, data)
+  data.trackList = QuoteData.track[workshopId]
 }
 
 const findProduct = (key) => {
@@ -1198,7 +1197,6 @@ onMounted(() => {
 })
 
 const getValues = async () => {
-  console.log('tarck', QuoteData.track, trackData.value)
   return {
     track: QuoteData.track, // 轨道
     slipLine: QuoteData.slipLine, // 滑线
