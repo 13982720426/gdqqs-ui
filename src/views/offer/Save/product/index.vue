@@ -226,18 +226,10 @@
         </div>
       </el-form>
     </OfferSaveTitle>
-    <!-- <div class="title">
-      <el-table :data="countDataSource">
-        <el-table-column label="" width="100" />
-        <el-table-column prop="name" label="车间名称" />
-        <el-table-column prop="count" label="起重机数量(台)" />
-        <el-table-column prop="total" label="总成本合计" />
-        <el-table-column prop="sales" label="销售总价"></el-table-column>
-        <el-table-column prop="profit" label="利润额"></el-table-column>
-      </el-table>
-    </div> -->
+
     <div style="margin: 16px">
-      <el-descriptions :column="4">
+      <el-descriptions :column="5">
+        <el-descriptions-item label="合计"></el-descriptions-item>
         <el-descriptions-item label="起重机总数(台)">
           <span class="number">{{ totals.count }}</span>
         </el-descriptions-item>
@@ -375,10 +367,9 @@
 import OfferSaveTitle from '../../components/Title'
 import DictSelect from './DictSelect'
 import useOfferStore from '@/store/modules/offer'
-import { onMounted, defineExpose, computed } from 'vue'
+import { defineExpose } from 'vue'
 import { listProduct } from '@/api/business/product'
-import { cloneDeep, omit } from 'lodash-es'
-import { isArray } from '@vue/shared'
+import { cloneDeep } from 'lodash-es'
 
 const { proxy } = getCurrentInstance()
 
@@ -446,12 +437,6 @@ const rules = ref({
   level: [{ required: true, validator: validType, trigger: 'blur' }],
 })
 
-//总合计
-const countDataSource = ref([])
-
-//车间统计数据
-const workshopTotalData = ref([])
-
 // 选择部件弹窗数据
 const partDialog = ref({
   factory_price_count: 0,
@@ -513,7 +498,6 @@ const savePartData = () => {
 
 //总合计
 function totalAll() {
-  //总合计
   const arr = []
   formModel.product.forEach((item) => {
     item.amount.forEach((item2) => {
@@ -687,29 +671,6 @@ watch(
   { deep: true },
 )
 
-// const partDialogData = computed(() => {
-//   const factory_price_count = partDataSource.value.reduce((prev, next) => {
-//     const price = (
-//       Number(next.num) *
-//       Number(next.price) *
-//       Number(next.taxrate || 0)
-//     ).toFixed(2)
-//     return prev + Number(price)
-//   }, 0)
-//   console.log('offerStore.getCustomerData()', offerStore.getCustomerData())
-//   const profitMargin =
-//     Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
-//   const profit = factory_price_count * profitMargin
-//   const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
-
-//   return {
-//     factory_price_count,
-//     profitMargin,
-//     profit,
-//     price,
-//   }
-// })
-
 const createAmount = (length) => {
   return new Array(length).fill(1).map((b) => ({
     type: undefined,
@@ -749,38 +710,6 @@ offerStore.$subscribe((mutation, state) => {
       })
     })
   }
-
-  // if (product.length) {
-  //   let productItem, workshopInfoItem
-  //   product.forEach((item) => {
-  //     console.log('111', item)
-  //     productItem = item
-  //   })
-
-  //   // const workshopInfo = JSON.parse(customer.workshopInfo)
-  //   // workshopInfo.forEach((item) => {
-  //   //   console.log('222', item)
-  //   //   workshopInfoItem = item
-  //   // })
-  //   // console.log(
-  //   //   'productItem',
-  //   //   productItem,
-  //   //   'workshopInfoItem',
-  //   //   workshopInfoItem,
-  //   // )
-  // }
-  // if (customer.workshopInfo) {
-  //   const workshopInfo = JSON.parse(customer.workshopInfo)
-  //   workshopInfo.forEach((item) => {
-  //     console.log('1', item)
-
-  //     formModel.product.push({
-  //       name: item.name,
-  //       key: item.key,
-  //       amount: createAmount(item.amount),
-  //     })
-  //   })
-  // }
 
   //起重机总数
   const countsum = []
