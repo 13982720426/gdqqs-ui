@@ -506,10 +506,10 @@ function totalAll() {
       }
     })
   })
-  const total = arr.reduce((per, next) => per + next.factory_price_count, 0)
-  const sales = arr.reduce((per, next) => per + Number(next.price), 0)
+  const total = arr.reduce((pre, next) => pre + next.factory_price_count, 0)
+  const sales = arr.reduce((pre, next) => pre + Number(next.price), 0)
   const profit = arr.reduce(
-    (per, next) => per + Number(next.price - next.factory_price_count),
+    (pre, next) => pre + Number(next.price - next.factory_price_count),
     0,
   )
   totals.value.total = total.toFixed(2)
@@ -716,7 +716,7 @@ offerStore.$subscribe((mutation, state) => {
   formModel.product.forEach((item) => {
     countsum.push(item.amount.length)
   })
-  totals.value.count = countsum.reduce((per, next) => per + next, 0)
+  totals.value.count = countsum.reduce((pre, next) => pre + next, 0)
 })
 
 const getValues = async () => {

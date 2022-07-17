@@ -208,7 +208,6 @@ const queryDetail = async () => {
         marketDataSource: inspectPriceInfo.dataSource,
       }
       const customerResp = await getCustomer(resp.data.customerId)
-      console.log(111, customerResp)
       // 获取客户详情
       offerStore.setCustomerData({
         customerId: resp.data.customerId,
@@ -222,7 +221,6 @@ const queryDetail = async () => {
         ...paymentMethodInfo,
         offerName: resp.data.offerName,
       })
-      console.log(22, offerStore.getCustomerData())
     } catch (e) {
       console.warn(e)
     }

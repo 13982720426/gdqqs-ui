@@ -691,7 +691,6 @@ const numberToFixed = (number, length = 2) => {
  * @param {Object} workshop 车间数据
  */
 const onTrackAdd = (workshop) => {
-  console.log('workshop', workshop)
   const workshopKey = workshop.key
   const key = `track${getKey()}`
   const wsLength = workshop.workshopLength
@@ -980,11 +979,12 @@ const getSummaries = (param) => {
  * 单个车间成本合计
  */
 const workshopFree = (workshopDataSource) => {
-  return workshopDataSource
+  const sum = workshopDataSource
     ? workshopDataSource.reduce((prev, next) => {
         return prev + next.count
       }, 0)
     : 0
+  return sum.toFixed(2)
 }
 
 const getTax = async () => {
@@ -1013,27 +1013,53 @@ const installTotal = (row, _tax) => {
   return total
 }
 
+//轨道数据处理
+const trackCloneData = (value) => {
+  let arr = cloneDeep(value)
+  delete arr.count
+  delete arr.dataSource
+  delete arr.name
+  delete arr.profit
+  delete arr.profitMargin
+  delete arr.sales
+  delete arr.total
+  const obj = Object.assign({}, arr)
+  const list = []
+  for (let key in obj) {
+    QuoteData.track.dataSource.forEach((item) => {
+      if (item.key == key) {
+        item.trackList = obj[key]
+        list.push(item.trackList)
+      }
+    })
+  }
+  return list
+}
+
+//轨道总成本合计
+const trackTotal = (list) => {
+  const newList = []
+  list.forEach((item) => {
+    item.forEach((item2) => {
+      newList.push(item2)
+    })
+  })
+  const total = newList.reduce((pre, next) => {
+    if (!next.count && next.count !== 0) {
+      next.count = 2.13
+    }
+    return pre + next.count
+  }, 0)
+  trackData.value.total = numberToFixed(total)
+  trackData.value.count = newList.length
+  countDataSource.value[0] = trackData.value
+}
+
 watch(
   () => QuoteData.track,
   (value) => {
-    console.log('value', value)
-    //计算轨道数据
-    const total = Object.values(value).reduce((prev, next) => {
-      const itemCount = Array.isArray(next)
-        ? next.reduce((a, b) => a + b.count, 0)
-        : 0
-      return prev + itemCount
-    }, 0)
-    const actualLength = Object.values(value).reduce((prev, next) => {
-      const itemCount = Array.isArray(next)
-        ? next.reduce((a, b) => a + b.actualLength, 0)
-        : 0
-
-      return prev + itemCount
-    }, 0)
-    trackData.value.total = numberToFixed(total)
-    trackData.value.count = numberToFixed(actualLength)
-    countDataSource.value[0] = trackData.value
+    const list = trackCloneData(value)
+    trackTotal(list)
   },
 
   { deep: true },
@@ -1065,7 +1091,6 @@ watch(
 watch(
   () => craneDataSource.value,
   (value) => {
-    console.log('1', value)
     const total = value.reduce((prev, next) => {
       return prev + next.total
     }, 0)

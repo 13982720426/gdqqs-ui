@@ -97,7 +97,6 @@ const queryData = async (name) => {
   }
   const resp = await queryList(params)
   if (resp.code === 200) {
-    console.log('resp', resp)
     total.value = resp.total
     dataSource.value = resp.rows
   }
