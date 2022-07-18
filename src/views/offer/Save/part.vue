@@ -210,7 +210,7 @@
               滑线:
               <el-select
                 :disabled="offerStore.type === 'view'"
-                v-model="slipLineData.id"
+                v-model="QuoteData.slipLineId[item.key]"
                 @change="
                   (value) => {
                     slipLineChange(value, item)
@@ -661,6 +661,7 @@ const QuoteData = reactive({
     dataSource: [],
   }, // 轨道table数据
   slipLine: {}, // 滑线table数据
+  slipLineId: {}, //车间对应滑线id
 })
 
 const getKey = () => {
@@ -927,6 +928,7 @@ const slipLineChange = (id, item) => {
   newSlip.level = level
 
   QuoteData.slipLine[item.key] = [newSlip]
+  QuoteData.slipLineId[item.key] = slipItem.splPartId
 }
 
 const salesItemCalculate = (item) => {
@@ -1151,6 +1153,7 @@ offerStore.$subscribe((mutation, state) => {
       // 回显
       QuoteData.track = partData.track
       QuoteData.slipLine = partData.slipLine
+      QuoteData.slipLineId = partData.slipLineId
       craneDataSource.value = partData.craneDataSource // 起重机运输
       installDataSource.value = partData.installDataSource // 安装
       marketDataSource.value = partData.marketDataSource // 市场
@@ -1226,6 +1229,7 @@ const getValues = async () => {
   return {
     track: QuoteData.track, // 轨道
     slipLine: QuoteData.slipLine, // 滑线
+    slipLineId: QuoteData.slipLineId, // 车间对应滑线id
     craneDataSource: craneDataSource.value, // 起重机运输
     installDataSource: installDataSource.value, // 安装
     marketDataSource: marketDataSource.value, // 市场
