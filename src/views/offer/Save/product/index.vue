@@ -227,8 +227,8 @@
       </el-form>
     </OfferSaveTitle>
 
-    <div style="margin: 16px">
-      <el-descriptions :column="5">
+    <div style="margin-bottom: 16px;">
+      <el-descriptions :column="5" style="padding: 16px 16px 0 16px;background-color: #fff;">
         <el-descriptions-item label="合计"></el-descriptions-item>
         <el-descriptions-item label="起重机总数(台)">
           <span class="number">{{ totals.count }}</span>
@@ -262,6 +262,7 @@
       <el-table
         style="width: 100%"
         :data="partDataSource"
+        :span-method="objectSpanMethod"
         border
         @cancel="cancel"
       >
@@ -271,13 +272,16 @@
             <el-radio-group
               v-model="row.part_code_value"
               :disabled="offerStore.type === 'view'"
+              style="flex-direction: column;align-items: flex-start"
+              class="table-brand-item"
             >
-              <el-radio
-                :key="item.key"
-                v-for="item in row.brand"
-                :label="item"
-                @click.prevent="checkRadio(row)"
-              />
+                <el-radio
+                    style="margin-right: 0;"
+                    v-for="item in row.values"
+                    :key="item.model"
+                    :label="item.model"
+                    @click.prevent="checkRadio(row, item.model)"
+                >{{item.name}}</el-radio>
             </el-radio-group>
           </template>
         </el-table-column>
@@ -302,6 +306,8 @@
               :max="100"
               controls-position="right"
               style="width: 100%"
+              :step="0.01"
+              :precision="2"
             />
           </template>
         </el-table-column>
@@ -457,6 +463,7 @@ const selectPart = (data, workshopItemKey, index, isEdit) => {
   if ('partData' in data) {
     productId.value = data.productData?.id
     partDataSource.value = data.partData
+    console.log('selectPart')
   }
   dialogVisible.value = true
 }
@@ -525,14 +532,6 @@ function totalAll() {
  * @returns {Promise<void>}
  */
 const queryPart = async (data, workshopItemKey, index, isEdit) => {
-  console.log(333, data, workshopItemKey, index, isEdit)
-  const productInfo = offerStore.getProductData()
-
-  productInfo.forEach((item) => {
-    if (item.key === workshopItemKey) {
-      partDataSource.value = item.amount
-    }
-  })
 
   const { productMsg } = formModel
   productMsg.workshopItemKey = workshopItemKey
@@ -580,23 +579,71 @@ const queryPart = async (data, workshopItemKey, index, isEdit) => {
   // }
 }
 
+const objectSpanMethod = ({
+  row,
+  column,
+  rowIndex,
+  columnIndex,
+}) => {
+  if (columnIndex === 0 || columnIndex === 1) {
+    if ('endIndex' in row) {
+      return {
+        rowspan: row.endIndex + 1,
+        colspan: 1
+      }
+    } else {
+      return {
+        rowspan: 0,
+        colspan: 0,
+      }
+    }
+  }
+}
+
+const findSameOfferCode = (data, startIndex = 0) => {
+  const values = [
+    {
+      model: data[startIndex].model,
+      name: data[startIndex].brand,
+    }
+  ]
+  let endIndex = 0
+
+  for (let i = startIndex; i < data.length; i++) {
+    if (i < data.length - 1 && !data[i+1].offerCode) {
+      values.push({
+        model: data[i+1].model,
+        name: data[i+1].brand,
+      })
+      endIndex += 1
+    } else {
+      return {
+        values,
+        endIndex
+      }
+    }
+  }
+
+  return {
+    values,
+    endIndex
+  }
+}
+
 const onProductChange = (value) => {
   const { productMsg } = formModel
 
   const itemData = productList.value.find((item) => item.productName === value)
 
   if (itemData.bomParams) {
-    let bomData = JSON.parse(itemData.bomParams)
-    bomData = bomData.map((item) => {
-      item.brand = item.brand.includes(',')
-        ? item.brand.split(',')
-        : [item.brand]
+    const bomData = JSON.parse(itemData.bomParams)
 
-      item.part_code_value = item.brand.length === 1 ? item.brand[0] : null
-      if (item.brand === '') {
-        item.part_code_value = null
-      } else if (item.offerCode === '') {
-        item.part_code_value = null
+    bomData.map((item, index) => {
+      if (item.offerCode !== '') {
+        const { values, endIndex } = findSameOfferCode(bomData, index)
+        item.values = values.filter(item => !!item.model)
+        item.endIndex = endIndex
+        item.part_code_value = item.values.length ? item.values[0].model : null
       }
       return item
     })
@@ -637,7 +684,10 @@ const onProductChange = (value) => {
 watch(
   () => partDataSource.value,
   (value) => {
-    const factory_price_count = value.reduce((prev, next) => {
+    // 过滤未选中的值
+    const partCodeValues = value.filter(item => !!item.part_code_value).map(item => item.part_code_value)
+    const filterValues = value.filter(item => partCodeValues.includes(item.model)) // 已选中品牌的部件
+    const factory_price_count = filterValues.reduce((prev, next) => {
       const price = (
         Number(next.num) *
         Number(next.price) *
@@ -731,14 +781,8 @@ const getValues = async () => {
     return arr
   }
 }
-function checkRadio(row) {
-  if (row.brand[0] !== '') {
-    if (row.part_code_value) {
-      row.part_code_value = null
-    } else {
-      row.part_code_value = row.brand[0]
-    }
-  }
+function checkRadio(row, value) {
+  row.part_code_value = value
 }
 
 defineExpose({
@@ -765,6 +809,10 @@ $color: #ff5800;
 
   .number {
     color: $color;
+  }
+
+  .table-brand-item label:not(:last-child) {
+    margin-bottom: 15px;
   }
 }
 </style>

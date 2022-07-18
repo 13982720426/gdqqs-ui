@@ -7,8 +7,42 @@ export default defineStore('offer', {
     type: 'add',
   }),
   actions: {
-    setCustomerData(data) {
+    setCustomerData(data) { // 设置客户信息
       this.customer = data
+      const { workshopInfo } = this.getCustomerData()
+      if (this.product.length) { // 修改产品中的车间信息
+        const productList = this.getProductData()
+        workshopInfo.forEach(item => {
+          const productObj = productList.find(b => b.key === item.key)
+          const amountCount = productObj.amount.length
+          const amounts = new Array(item.amount).fill(1).map((b) => ({
+            type: undefined,
+            operation: undefined,
+            weight: undefined,
+            level: undefined,
+          }))
+
+          productObj.name = item.name
+
+          const newAmounts = amounts.map((item, index) => {
+            if (index + 1 <= amountCount) {
+              return productObj.amount[index]
+            }
+            return item
+          })
+
+          productObj.amount = [...newAmounts]
+        })
+        this.setProductData(productList)
+      }
+      if (Object.keys(this.partData).length) {
+        const { craneDataSource, installDataSource} = this.partData
+        workshopInfo.forEach((item, index) => {
+          craneDataSource[index].workshopName = item.name
+          installDataSource[index].workshopName = item.name
+        })
+        this.setPartData(this.payData)
+      }
     },
     setProductData(data) {
       this.product = data
