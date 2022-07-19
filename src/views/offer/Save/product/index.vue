@@ -463,7 +463,6 @@ const selectPart = (data, workshopItemKey, index, isEdit) => {
   if ('partData' in data) {
     productId.value = data.productData?.id
     partDataSource.value = data.partData
-    console.log('selectPart')
   }
   dialogVisible.value = true
 }
@@ -485,6 +484,7 @@ const savePartData = () => {
   formModel.product.forEach((item, index) => {
     if (productItem && productItem.workshopItemKey === item.key) {
       const amountItem = item.amount[productItem.index]
+      amountItem.productId=productMsg.productId
       amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
       amountItem.partQuote = cloneDeep(partDialog) // 部件价格统计信息
       amountItem.productData = {
@@ -536,7 +536,6 @@ const queryPart = async (data, workshopItemKey, index, isEdit) => {
   const { productMsg } = formModel
   productMsg.workshopItemKey = workshopItemKey
   productMsg.index = index
-  // TODO 判断当前是否选择过部件
   productId.value = undefined
   productList.value = []
   const resp = await listProduct({
@@ -548,35 +547,6 @@ const queryPart = async (data, workshopItemKey, index, isEdit) => {
   if (resp.code === 200) {
     productList.value = resp.rows
   }
-
-  // if (resp.code === 200) {
-  //   // 遍历产品下的BOM清单
-
-  //   resp.rows.forEach((item) => {
-  //     if (item.bomParams) {
-  //       const bomData = JSON.parse(item.bomParams)
-  //       // partDataSource.value = bomData
-  //       console.log('bomData', bomData)
-  //       // bomData.data = bomData.data.map((item) => {
-  //       //   item.brand = item.brand.includes(',')
-  //       //     ? item.brand.split(',')
-  //       //     : [item.brand]
-  //       //   item.part_code_value =
-  //       //     item.brand.length === 1 ? item.brand[0] : undefined
-  //       //   return item
-  //       // })
-  //       // productList.value.push({
-  //       //   ...bomData,
-  //       //   ratedPower: item.ratedPower,
-  //       //   liftSpeed: item.liftSpeed,
-  //       //   crabSpeed: item.crabSpeed,
-  //       //   cartSpeed: item.cartSpeed,
-  //       //   workshopItemKey,
-  //       //   index,
-  //       // })
-  //     }
-  //   })
-  // }
 }
 
 const objectSpanMethod = ({
@@ -608,7 +578,6 @@ const findSameOfferCode = (data, startIndex = 0) => {
     }
   ]
   let endIndex = 0
-
   for (let i = startIndex; i < data.length; i++) {
     if (i < data.length - 1 && !data[i+1].offerCode) {
       values.push({
@@ -623,7 +592,6 @@ const findSameOfferCode = (data, startIndex = 0) => {
       }
     }
   }
-
   return {
     values,
     endIndex
@@ -653,32 +621,9 @@ const onProductChange = (value) => {
     productMsg.liftSpeed = itemData.liftSpeed
     productMsg.crabSpeed = itemData.crabSpeed
     productMsg.cartSpeed = itemData.cartSpeed
+    productMsg.productId = itemData.productId
   }
 
-  // const item = productList.value.find(
-  //   (item) => item.productName === value && item.push,
-  // )
-  // productId.value = item.productName
-  // console.log('11item', item)
-  // partDataSource.value = item
-
-  // if (item.bomParams) {
-  //   let bomData = JSON.parse(item.bomParams)
-  //   bomData = bomData.map((item) => {
-  //     item.brand = item.brand.includes(',')
-  //       ? item.brand.split(',')
-  //       : [item.brand]
-
-  //     item.part_code_value = item.brand.length === 1 ? item.brand[0] : null
-  //     if (item.brand === '') {
-  //       item.part_code_value = null
-  //     } else if (item.offerCode === '') {
-  //       item.part_code_value = null
-  //     }
-  //     return item
-  //   })
-  //   partDataSource.value = bomData
-  // } else partDataSource.value = []
 }
 
 watch(
