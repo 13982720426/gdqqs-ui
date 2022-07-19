@@ -41,7 +41,7 @@ export default defineStore('offer', {
           craneDataSource[index].workshopName = item.name
           installDataSource[index].workshopName = item.name
         })
-        this.setPartData(this.payData)
+        this.setPartData(this.partData)
       }
     },
     setProductData(data) {

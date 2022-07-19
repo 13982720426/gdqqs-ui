@@ -210,7 +210,7 @@
               滑线:
               <el-select
                 :disabled="offerStore.type === 'view'"
-                v-model="QuoteData.slipLineId[item.key]"
+                v-model="item.splPartId"
                 @change="
                   (value) => {
                     slipLineChange(value, item)
@@ -562,7 +562,7 @@ import { listTrackpart } from '@/api/business/trackpart'
 import { listCrastopmodelpart } from '@/api/business/crastopmodelpart'
 import { listSplpart } from '@/api/business/splpart'
 import { getDicts } from '@/api/system/dict/data'
-import { cloneDeep, omit } from 'lodash-es'
+import { cloneDeep } from 'lodash-es'
 
 const offerStore = useOfferStore()
 
@@ -614,7 +614,7 @@ const slipLineData = ref({
   count: 0, // 数量
   sales: 0,
   profit: 0,
-  id: '',
+  splId: [],
 })
 
 // 起重机运输费用统计
@@ -661,7 +661,6 @@ const QuoteData = reactive({
     dataSource: [],
   }, // 轨道table数据
   slipLine: {}, // 滑线table数据
-  slipLineId: {}, //车间对应滑线id
 })
 
 const getKey = () => {
@@ -798,8 +797,8 @@ const queryTrackByModel = async (model, row, key) => {
         sgltrackWeight: firstData.sgltrackWeight,
         cost: numberToFixed(
           firstData.sgltrackLength *
-            firstData.sgltrackWeight *
-            firstData.trackUnprice,
+          firstData.sgltrackWeight *
+          firstData.trackUnprice,
         ),
         platensConst: platens * firstData.tppUnprice,
         tiePlatesConst: tiePlates * firstData.cpUnprice,
@@ -928,7 +927,6 @@ const slipLineChange = (id, item) => {
   newSlip.level = level
 
   QuoteData.slipLine[item.key] = [newSlip]
-  QuoteData.slipLineId[item.key] = slipItem.splPartId
 }
 
 const salesItemCalculate = (item) => {
@@ -1086,6 +1084,7 @@ watch(
     slipLineData.value.total = numberToFixed(total)
     slipLineData.value.count = numberToFixed(length)
     countDataSource.value[1] = slipLineData.value
+    slipLineData.value.splId=workshopData.value
   },
   { deep: true },
 )
@@ -1132,6 +1131,7 @@ watch(
   },
 )
 
+
 offerStore.$subscribe((mutation, state) => {
   const { customer, product, partData } = state
   if (customer.workshopInfo && product.length) {
@@ -1145,15 +1145,13 @@ offerStore.$subscribe((mutation, state) => {
         profitMargin: 1.1, // 预计利润率率
         totalPrice: 0, // 销售总价
         profitAmount: 0, // 利润额
-        splpartOptions: [], // 滑线下拉数据
+        splPartId:'',
       })
     })
-
     if (Object.keys(partData).length) {
       // 回显
       QuoteData.track = partData.track
       QuoteData.slipLine = partData.slipLine
-      QuoteData.slipLineId = partData.slipLineId
       craneDataSource.value = partData.craneDataSource // 起重机运输
       installDataSource.value = partData.installDataSource // 安装
       marketDataSource.value = partData.marketDataSource // 市场
@@ -1162,6 +1160,7 @@ offerStore.$subscribe((mutation, state) => {
       transportTotalData.value = partData.transportTotalData // 起重机运输统计
       installTotalData.value = partData.installTotalData // 安装统计
       marketTotalData.value = partData.marketTotalData // 市场统计
+      workshopData.value=partData.slipLineData.splId // 滑线下拉数据
     } else {
       let marketTotal = 0 // 市场成本合计
       let amountCount = 0 // 起重机数量
@@ -1229,7 +1228,6 @@ const getValues = async () => {
   return {
     track: QuoteData.track, // 轨道
     slipLine: QuoteData.slipLine, // 滑线
-    slipLineId: QuoteData.slipLineId, // 车间对应滑线id
     craneDataSource: craneDataSource.value, // 起重机运输
     installDataSource: installDataSource.value, // 安装
     marketDataSource: marketDataSource.value, // 市场

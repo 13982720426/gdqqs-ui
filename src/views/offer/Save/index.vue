@@ -184,6 +184,7 @@ const stepsPrev = () => {
 
 const queryDetail = async () => {
   const resp = await getOffer(offerState.id)
+  console.log(2,resp);
   if (resp.code === 200) {
     try {
       const paymentMethodInfo = JSON.parse(resp.data.paymentMethodInfo) // 付款方式json

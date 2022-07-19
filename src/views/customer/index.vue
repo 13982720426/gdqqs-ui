@@ -382,7 +382,6 @@ function handleAdd() {
 
 /** 操作编辑 */
 function handleUpdate(row) {
-  console.log(22)
   proxy.$refs['upcustomer'].clearValidate()
   custable.value = false
   open.value = true
@@ -443,7 +442,6 @@ const rules = ref({
 
 /** 提交按钮 */
 function submit() {
-  console.log(111, form.value)
   proxy.$refs['upcustomer'].validate((valid) => {
     if (valid) {
       if (form.value.customerNature !== '1') {
