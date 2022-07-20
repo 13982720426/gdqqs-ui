@@ -705,25 +705,10 @@ const onTrackAdd = (workshop) => {
     platens,
     wsLength,
   }
-
   if (QuoteData.track[workshopKey]) {
     QuoteData.track[workshopKey].push(newTrackItem)
   } else {
     QuoteData.track[workshopKey] = [newTrackItem]
-  }
-
-  //轨道数据添加处理
-  let { dataSource } = QuoteData.track
-  const dataList = {
-    key: workshopKey,
-    trackList: [newTrackItem],
-  }
-  const data = dataSource.find((item) => item.key == workshopKey)
-  if (!data) {
-    dataSource.push(dataList)
-  } else {
-    const data1 = dataSource.find((item) => item.key == workshopKey)
-    data1.trackList = QuoteData.track[workshopKey]
   }
 }
 
@@ -738,9 +723,6 @@ const onTrackDelete = (workshopId, key) => {
   if (index > -1) {
     QuoteData.track[workshopId].splice(index, 1)
   }
-  //轨道数据存入QuoteData.track.dataSource
-  const data = QuoteData.track.dataSource.find((item) => item.key == workshopId)
-  data.trackList = QuoteData.track[workshopId]
 }
 
 const findProduct = (key) => {
@@ -1015,25 +997,26 @@ const installTotal = (row, _tax) => {
 
 //轨道数据处理
 const trackCloneData = (value) => {
-  let arr = cloneDeep(value)
-  delete arr.count
-  delete arr.dataSource
-  delete arr.name
-  delete arr.profit
-  delete arr.profitMargin
-  delete arr.sales
-  delete arr.total
-  const obj = Object.assign({}, arr)
-  const list = []
+  let obj = cloneDeep(value)
+  delete obj.count
+  delete obj.dataSource
+  delete obj.name
+  delete obj.profit
+  delete obj.profitMargin
+  delete obj.sales
+  delete obj.total
+  const newObj={
+    list:[], //干净的数组
+    newlist:[] //带key的数组
+  }
   for (let key in obj) {
-    QuoteData.track.dataSource.forEach((item) => {
-      if (item.key == key) {
-        item.trackList = obj[key]
-        list.push(item.trackList)
-      }
+    newObj.list.push(obj[key])
+    newObj.newlist.push({
+      key:key,
+      trackList:obj[key]
     })
   }
-  return list
+  return newObj
 }
 
 //轨道总成本合计
@@ -1058,7 +1041,7 @@ const trackTotal = (list) => {
 watch(
   () => QuoteData.track,
   (value) => {
-    const list = trackCloneData(value)
+    const { list } = trackCloneData(value)
     trackTotal(list)
   },
 
@@ -1225,6 +1208,11 @@ onMounted(() => {
 })
 
 const getValues = async () => {
+
+  //轨道数据存入dataSource
+  const { newlist } = trackCloneData(QuoteData.track)
+  QuoteData.track.dataSource=newlist
+
   return {
     track: QuoteData.track, // 轨道
     slipLine: QuoteData.slipLine, // 滑线

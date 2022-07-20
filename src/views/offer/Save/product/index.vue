@@ -473,6 +473,8 @@ const cancel = () => {
 }
 
 const savePartData = () => {
+  proxy.$modal.loading('正在处理')
+  cancel()
   const { productMsg, isEdit } = formModel
 
   const productItem = productList.value.find(
@@ -500,7 +502,8 @@ const savePartData = () => {
   })
 
   totalAll()
-  cancel()
+  proxy.$modal.closeLoading()
+  // cancel()
 }
 
 //总合计
