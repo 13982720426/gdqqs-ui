@@ -164,6 +164,8 @@ import OfferSaveTitle from '../components/Title'
 import DictSelect from './product/DictSelect'
 import { defineExpose, reactive } from 'vue'
 import useOfferStore from '@/store/modules/offer'
+const router = useRouter()
+
 
 const offerStore = useOfferStore()
 const { proxy } = getCurrentInstance()
@@ -272,13 +274,22 @@ const getValues = async () => {
     }
   }
 }
-
 const exportData = (data, id) => {
-  console.log(111, data, id)
+  const offerId = router.currentRoute.value.query.id
   if (id === '1') {
     //导出为WORD
+    proxy.download(
+      'business/offer/exportWord',
+      { offerId:offerId },
+      `offer_${new Date().getTime()}.docx`,
+    )
   } else {
     //导出为PDF
+    proxy.download(
+      'business/offer/exportPdf',
+      { offerId:offerId },
+      `offer_${new Date().getTime()}.pdf`,
+    )
   }
 }
 

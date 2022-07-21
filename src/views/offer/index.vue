@@ -128,17 +128,25 @@ const view = (id) => {
 }
 
 //导出文件
-const exportData = (id) => {
-  const productId = id
+const exportData =  (id) => {
   proxy.$modal
-    .exportData('请选择导出类型', '导出为WORD', '导出为PDf')
-    .then(() => {
-      return console.log(productId)
+    .exportData('请选择导出类型', '导出为WORD', '导出为PDF')
+    .then( () => {
+      proxy.download(
+        'business/offer/exportWord',
+        { offerId:id },
+        `offer_${new Date().getTime()}.docx`,
+      )
     })
-    .catch(() => {
-      console.log(productId)
+    .catch( async () => {
+      proxy.download(
+        'business/offer/exportPdf',
+        { offerId:id },
+        `offer_${new Date().getTime()}.pdf`,
+      )
     })
 }
+
 
 const onReset = () => {
   searchText.value = undefined

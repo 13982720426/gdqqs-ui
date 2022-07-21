@@ -135,7 +135,7 @@ const saveData = async () => {
     : await addOffer(obj)
   if (resp.code === 200) {
     proxy.$modal.msgSuccess('提交成功')
-    // router.push('/offer')
+    router.currentRoute.value.query.id=resp.msg
   } else {
     proxy.$modal.msgError(`提交失败`)
   }

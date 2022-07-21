@@ -459,7 +459,7 @@ const partDialog = ref({
  * @param index 起重机下标
  */
 const selectPart = (data, workshopItemKey, index, isEdit) => {
-  formModel.isEdit = isEdit
+  if(!isEdit) partDataSource.value = []
   queryPart(data, workshopItemKey, index, isEdit)
   if ('partData' in data) {
     productId.value = data.productData?.id
