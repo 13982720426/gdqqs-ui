@@ -323,25 +323,47 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="单价(元)" prop="oilPrice">
-            <el-input
-              v-model="form.oilPrice"
-              placeholder="请输入"
+          <el-form-item label="物料编码" prop="partCode">
+            <el-select
+              v-model="form.partCode"
+              placeholder="请选择"
               style="width: 60%"
-              type="number"
-              oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
-            />
+              @change="getUnitPrice()"
+            >
+              <el-option
+                v-for="item in partCodeItem"
+                :key="item.dictLabel"
+                :label="item.dictLabel"
+                :value="item.dictLabel"
+              >
+              <span style="float: left">{{ item.dictLabel }}</span>
+                <span
+                  style="
+                  margin-left: 10px;
+                  float: right;
+                  color: var(--el-text-color-secondary);
+                  font-size: 13px;
+                "
+                >￥:{{ item.dictValue }}</span>
+              </el-option>
+            </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="物料编码" prop="partCode">
-            <el-input
-              v-model="form.partCode"
-              placeholder="请输入"
+          <el-form-item label="单价(元)" prop="oilPrice">
+            <el-select
+              v-model="form.oilPrice"
+              placeholder="请选择"
+              clearable
               style="width: 60%"
-              maxlength="32"
-              show-word-limit
-            />
+            >
+              <el-option
+                v-for="dict in unitPriceItem"
+                :key="dict.label"
+                :label="dict.lable"
+                :value="dict.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </template>
@@ -570,13 +592,46 @@
       </el-col>
       <el-col :span="8">
         <el-form-item label="物料编码" prop="partCode">
-          <el-input
+          <el-select
             v-model="form.partCode"
-            placeholder="请输入"
+            placeholder="请选择"
             style="width: 60%"
-            maxlength="32"
-            show-word-limit
-          />
+            @change="getUnitPrice()"
+          >
+            <el-option
+              v-for="item in partCodeItem"
+              :key="item.dictLabel"
+              :label="item.dictLabel"
+              :value="item.dictLabel"
+            >
+            <span style="float: left">{{ item.dictLabel }}</span>
+              <span
+                style="
+                margin-left: 10px;
+                float: right;
+                color: var(--el-text-color-secondary);
+                font-size: 13px;
+              "
+              >￥:{{ item.dictValue }}</span>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="8">
+        <el-form-item label="单价(元)" prop="unitPrice">
+          <el-select
+            v-model="form.unitPrice"
+            placeholder="请选择"
+            clearable
+            style="width: 60%"
+          >
+            <el-option
+              v-for="dict in unitPriceItem"
+              :key="dict.label"
+              :label="dict.lable"
+              :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
       </el-col>
       <el-col :span="8">
@@ -607,17 +662,6 @@
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="8">
-        <el-form-item label="单价(元)" prop="unitPrice">
-          <el-input
-            v-model="form.unitPrice"
-            placeholder="请输入"
-            style="width: 60%"
-            type="number"
-            oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"
-          />
-        </el-form-item>
-      </el-col>
     </el-row>
   </el-form>
 </template>
@@ -629,7 +673,9 @@ import {
   getcraneModelBytwo,
   getliftHeightByfourth,
   getworkLevelBythree,
+  getSelectPriceBypartCode
 } from '@/api/business/productpart'
+import { listData } from '@/api/system/dict/data'
 
 const { proxy } = getCurrentInstance()
 
@@ -694,7 +740,6 @@ function handlePartType() {
   props.form = {}
 }
 let form = ref({})
-
 form = props.form
 
 const craneTypeItem = ref([])
@@ -702,6 +747,40 @@ const craneOperationItem = ref([])
 const craneModelItem = ref([])
 const workLevelItem = ref([])
 const liftHeightItem = ref([])
+const partCodeItem = ref([])
+const unitPriceItem = ref([])
+
+
+const defaultDictType = ref('sys_part_code')
+
+const data = reactive({
+  queryParams: {
+    pageNum: 1,
+    pageSize: 99999,
+    dictName: undefined,
+    dictType: defaultDictType,
+  },
+})
+const { queryParams } = toRefs(data)
+
+/** 查询物料编码列表 */
+function getPartCode() {
+  listData(queryParams.value).then((response) => {
+    partCodeItem.value = response.rows
+  })
+}
+/** 查询价格列表 */
+function getUnitPrice() {
+  const params = {
+    partCode: form.partCode,
+  }
+  getSelectPriceBypartCode(params).then((response) => {
+    unitPriceItem.value = response.data
+    form.unitPrice=unitPriceItem.value[0].value
+    form.form.oilPrice=unitPriceItem.value[0].value
+  })
+}
+getPartCode()
 
 async function getPartCraneType() {
   const res = await getAddPartCraneType()
@@ -774,4 +853,5 @@ async function getLiftHeight() {
 }
 
 getPartCraneType()
+// getPartCodeType()
 </script>

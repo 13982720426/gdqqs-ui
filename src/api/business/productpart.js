@@ -91,3 +91,11 @@ export function getliftHeightByfourth(query) {
     params: query,
   })
 }
+// 部件新增 查询价格列表
+export function getSelectPriceBypartCode(query) {
+  return request({
+    url: '/business/product/selectPriceBypartCode',
+    method: 'get',
+    params: query,
+  })
+}

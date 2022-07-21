@@ -1007,25 +1007,13 @@ function reset() {
 function submitForm() {
   if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'first'
-  } else if (
-    form.value.partType === '1' &&
-    form.value.craneType === undefined
-  ) {
+  } else if (form.value.partType === '1' && form.value.craneType === undefined) {
     activeTab.value = 'second'
-  } else if (
-    form.value.partType === '2' &&
-    form.value.craneType === undefined
-  ) {
+  } else if (form.value.partType === '2' && form.value.craneType === undefined) {
     activeTab.value = 'third'
-  } else if (
-    form.value.partType === '3' &&
-    form.value.craneType === undefined
-  ) {
+  } else if (form.value.partType === '3' && form.value.craneType === undefined) {
     activeTab.value = 'fourth'
-  } else if (
-    form.value.partType === '4' &&
-    form.value.craneType === undefined
-  ) {
+  } else if (form.value.partType === '4' && form.value.craneType === undefined) {
     activeTab.value = 'five'
   }
   proxy.$refs['saveFormRef'].$refs['saveFormRef'].validate((valid) => {
@@ -1162,7 +1150,10 @@ function handleAdd() {
   opentable.value = false
   showList.value = true
   disabled.value = false
-  if (activeTab.value == 'second') {
+  if (activeTab.value == 'first') {
+    saveTitle.value = '新增产品部件'
+    saveType.value = 'product'
+  } else if (activeTab.value == 'second') {
     saveTitle.value = '新增轨道'
     saveType.value = 'install'
     form.value = { partType: '1' }
@@ -1170,7 +1161,7 @@ function handleAdd() {
     saveTitle.value = '新增滑线'
     saveType.value = 'install'
     form.value = { partType: '2' }
-  } else if (activeTab.value == 'third') {
+  } else if (activeTab.value == 'fourth') {
     saveTitle.value = '新增大车止档型号'
     saveType.value = 'install'
     form.value = { partType: '3' }
@@ -1178,30 +1169,18 @@ function handleAdd() {
     saveTitle.value = '新增油漆'
     saveType.value = 'install'
     form.value = { partType: '4' }
-  } else if (activeTab.value == 'first') {
-    saveTitle.value = '新增产品部件'
-    saveType.value = 'product'
-  }
-  if (form.value.partType === '1' && form.value.craneType === undefined) {
-    activeTab.value = 'second'
-  } else if (
-    form.value.partType === '2' &&
-    form.value.craneType === undefined
-  ) {
-    activeTab.value = 'third'
-  } else if (
-    form.value.partType === '3' &&
-    form.value.craneType === undefined
-  ) {
-    activeTab.value = 'fourth'
-  } else if (
-    form.value.partType === '4' &&
-    form.value.craneType === undefined
-  ) {
-    activeTab.value = 'five'
-  } else if (form.value.partType === '3' && form.value.craneType === '1') {
+  } 
+  if (form.value.partType === '3' && form.value.craneType === '1') {
     activeTab.value = 'first'
-  }
+  } else if (form.value.partType === '1' && form.value.craneType === undefined) {
+    activeTab.value = 'second'
+  } else if (form.value.partType === '2' && form.value.craneType === undefined) {
+    activeTab.value = 'third'
+  } else if (form.value.partType === '3' && form.value.craneType === undefined) {
+    activeTab.value = 'fourth'
+  } else if (form.value.partType === '4' && form.value.craneType === undefined) {
+    activeTab.value = 'five'
+  } 
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
@@ -1222,6 +1201,7 @@ function handleUpdate(row) {
     getTrackpart(trackPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改轨道'
+      form.value = { partType: '1' }
     })
   } else if (activeTab.value == 'third') {
     const splPartId = row.splPartId || ids.value
