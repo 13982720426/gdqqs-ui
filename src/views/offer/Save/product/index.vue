@@ -204,7 +204,6 @@
             >
               <div v-if="!!amountItem.productData">
                 <el-button
-                  :disabled="offerStore.type === 'view'"
                   type="success"
                   @click="selectPart(amountItem, workshopItem.key, index, true)"
                 >
@@ -278,9 +277,9 @@
                 <el-radio
                     style="margin-right: 0;"
                     v-for="item in row.values"
-                    :key="item.model"
-                    :label="item.model"
-                    @click.prevent="checkRadio(row, item.model)"
+                    :key="item.name"
+                    :label="item.name"
+                    @click.prevent="checkRadio(row, item.name)"
                 >{{item.name}}</el-radio>
             </el-radio-group>
           </template>
@@ -362,7 +361,9 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="cancel">取消</el-button>
-          <el-button type="primary" @click="savePartData">确认</el-button>
+          <el-button type="primary" 
+            :disabled="offerStore.type === 'view'" 
+            @click="savePartData">确认</el-button>
         </span>
       </template>
     </el-dialog>
@@ -474,7 +475,6 @@ const cancel = () => {
 
 const savePartData = () => {
   proxy.$modal.loading('正在处理')
-  cancel()
   const { productMsg, isEdit } = formModel
 
   const productItem = productList.value.find(
@@ -503,7 +503,7 @@ const savePartData = () => {
 
   totalAll()
   proxy.$modal.closeLoading()
-  // cancel()
+  cancel()
 }
 
 //总合计
@@ -614,7 +614,10 @@ const onProductChange = (value) => {
         const { values, endIndex } = findSameOfferCode(bomData, index)
         item.values = values.filter(item => !!item.model)
         item.endIndex = endIndex
-        item.part_code_value = item.values.length ? item.values[0].model : null
+        item.part_code_value = item.values.length ? item.values[0].name : null
+      }
+      if(item.offerCode === '遥控器' || item.offerCode === '驾驶室'){
+        item.part_code_value = null
       }
       return item
     })
@@ -629,12 +632,18 @@ const onProductChange = (value) => {
 
 }
 
+function numberChange(value) {
+  console.log(value);
+}
 watch(
   () => partDataSource.value,
   (value) => {
     // 过滤未选中的值
-    const partCodeValues = value.filter(item => !!item.part_code_value).map(item => item.part_code_value)
-    const filterValues = value.filter(item => partCodeValues.includes(item.model)) // 已选中品牌的部件
+    const modelValues = value.filter(item => !!item.part_code_value).map(item => item.model) 
+    const dataValues = value.filter(item => modelValues.includes(item.model))  //符合条件的型号
+
+    const brandValues = value.filter(item => !!item.part_code_value).map(item => item.part_code_value)//选中的品牌
+    const filterValues = dataValues.filter(item => brandValues.includes(item.brand)) // 选中的品牌和型号
     const factory_price_count = filterValues.reduce((prev, next) => {
       const price = (
         Number(next.num) *
@@ -643,8 +652,7 @@ watch(
       ).toFixed(2)
       return prev + Number(price)
     }, 0)
-    const profitMargin =
-      Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
+    const profitMargin = Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
     const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
     const profit = price - factory_price_count
 
@@ -708,6 +716,7 @@ offerStore.$subscribe((mutation, state) => {
       })
     })
   }
+  totalAll()
 
   //起重机总数
   const countsum = []
