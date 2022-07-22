@@ -8,7 +8,6 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
-            @change="handlePartType()"
             :disabled="true"
           >
             <el-option
@@ -376,7 +375,6 @@
             placeholder="请选择"
             clearable
             style="width: 60%"
-            @change="handlePartType()"
             :disabled="disabled"
           >
             <el-option
@@ -388,7 +386,7 @@
           </el-select>
         </el-form-item>
       </el-col>
-      <el-col :span="8">
+       <el-col :span="8">
         <el-form-item label="起重机类型" prop="craneType">
           <el-select
             v-model="form.craneType"
@@ -714,10 +712,21 @@ const {
   q_track_model,
   q_install_parttype,
   q_spl_level,
+  q_crane_type,
+  q_oper_mode,
   sys_yes_no,
+  q_single_crane_model,
+  q_double_crane_model,
+  q_susp_crane_model,
   q_single_crane_span,
   q_double_crane_span,
   q_susp_crane_span,
+  q_single_crane_lift_height,
+  q_double_crane_lift_height,
+  q_susp_crane_lift_height,
+  q_single_crane_work_level,
+  q_double_crane_work_level,
+  q_susp_crane_work_level,
   q_unit,
   q_electric_max,
   qq_electric_max,
@@ -727,20 +736,25 @@ const {
   'q_track_model',
   'q_install_parttype',
   'q_spl_level',
+  'q_crane_type',
+  'q_oper_mode',
   'sys_yes_no',
+  'q_single_crane_model',
+  'q_double_crane_model',
+  'q_susp_crane_model',
   'q_single_crane_span',
   'q_double_crane_span',
   'q_susp_crane_span',
+  'q_single_crane_lift_height',
+  'q_double_crane_lift_height',
+  'q_susp_crane_lift_height',
+  'q_single_crane_work_level',
+  'q_double_crane_work_level',
+  'q_susp_crane_work_level',
   'q_unit',
   'q_electric_max',
   'qq_electric_max',
 )
-
-function handlePartType() {
-  props.form = {}
-}
-let form = ref({})
-form = props.form
 
 const craneTypeItem = ref([])
 const craneOperationItem = ref([])
@@ -772,12 +786,12 @@ function getPartCode() {
 /** 查询价格列表 */
 function getUnitPrice() {
   const params = {
-    partCode: form.partCode,
+    partCode: props.form.partCode,
   }
   getSelectPriceBypartCode(params).then((response) => {
     unitPriceItem.value = response.data
-    form.unitPrice=unitPriceItem.value[0].value
-    form.form.oilPrice=unitPriceItem.value[0].value
+    props.form.unitPrice=unitPriceItem.value[0].value
+    props.form.oilPrice=unitPriceItem.value[0].value
   })
 }
 getPartCode()
@@ -793,65 +807,64 @@ async function getPartCraneType() {
 
 async function getCraneOperation() {
   const params = {
-    craneType: form.craneType,
+    craneType: props.form.craneType,
   }
   const res = await getCraneOperationByCraneType(params)
   if (res.code == 200) {
     craneOperationItem.value = res.data
-    form.craneOperation = ''
-    form.craneModel = ''
-    form.workLevel = ''
-    form.liftHeight = ''
+    props.form.craneOperation = ''
+    props.form.craneModel = ''
+    props.form.workLevel = ''
+    props.form.liftHeight = ''
   } else {
     proxy.$modal.msgError(`查询失败，${res.msg}`)
   }
 }
 async function getCraneModel() {
   const params = {
-    craneType: form.craneType,
-    craneOperation: form.craneOperation,
+    craneType: props.form.craneType,
+    craneOperation: props.form.craneOperation,
   }
   const res = await getcraneModelBytwo(params)
   if (res.code == 200) {
     craneModelItem.value = res.data
-    form.craneModel = ''
-    form.workLevel = ''
-    form.liftHeight = ''
+    props.form.craneModel = ''
+    props.form.workLevel = ''
+    props.form.liftHeight = ''
   } else {
     proxy.$modal.msgError(`查询失败，${res.msg}`)
   }
 }
 async function getWorkLevel() {
   const params = {
-    craneType: form.craneType,
-    craneOperation: form.craneOperation,
-    craneModel: form.craneModel,
+    craneType: props.form.craneType,
+    craneOperation: props.form.craneOperation,
+    craneModel: props.form.craneModel,
   }
   const res = await getworkLevelBythree(params)
   if (res.code == 200) {
     workLevelItem.value = res.data
-    form.workLevel = ''
-    form.liftHeight = ''
+    props.form.workLevel = ''
+    props.form.liftHeight = ''
   } else {
     proxy.$modal.msgError(`查询失败，${res.msg}`)
   }
 }
 async function getLiftHeight() {
   const params = {
-    craneType: form.craneType,
-    craneOperation: form.craneOperation,
-    craneModel: form.craneModel,
-    workLevel: form.workLevel,
+    craneType: props.form.craneType,
+    craneOperation: props.form.craneOperation,
+    craneModel: props.form.craneModel,
+    workLevel: props.form.workLevel,
   }
   const res = await getliftHeightByfourth(params)
   if (res.code == 200) {
     liftHeightItem.value = res.data
-    form.liftHeight = ''
+    props.form.liftHeight = ''
   } else {
     proxy.$modal.msgError(`查询失败，${res.msg}`)
   }
 }
 
 getPartCraneType()
-// getPartCodeType()
 </script>

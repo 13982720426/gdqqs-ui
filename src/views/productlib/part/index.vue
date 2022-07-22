@@ -700,8 +700,8 @@ const data = reactive({
   form: {},
   rules: {
     partType: [{ required: true, message: '请选择部件类型', trigger: 'blur' }],
-    //轨道
 
+    //轨道
     fixedMode: [{ required: true, message: '请选择固定方式', trigger: 'blur' }],
     sgltrackLength: [
       { required: true, message: '请输入单根轨道长度', trigger: 'blur' },
@@ -788,14 +788,12 @@ const data = reactive({
   productsub: {},
 })
 
-const trackModelOptions = ref([])
 
 const { queryParams, form, rules, productsub } = toRefs(data)
 
 const {
   q_crane_type,
   q_oper_mode,
-  sys_yes_no,
   q_single_crane_model,
   q_double_crane_model,
   q_susp_crane_model,
@@ -824,7 +822,6 @@ const {
 } = proxy.useDict(
   'q_crane_type',
   'q_oper_mode',
-  'sys_yes_no',
   'q_single_crane_model',
   'q_double_crane_model',
   'q_susp_crane_model',
@@ -860,13 +857,6 @@ function craneTypeFormat(row, column) {
 function craneOperationFormat(row, column) {
   return proxy.selectDictLabel(q_oper_mode.value, row.craneOperation)
 }
-// 起重机型号翻译
-// function craneModelFormat(row, column) {
-//   return proxy.selectDictLabel(
-//     q_double_crane_model.value,
-//     router.forward().craneModel,
-//   )
-// }
 // 跨度翻译
 function spanFormat(row, column) {
   return proxy.selectDictLabel(q_double_crane_span.value, row.span)
@@ -1195,13 +1185,12 @@ function handleUpdate(row) {
     })
     saveTitle.value = '新增产品部件'
     saveType.value = 'product'
-    form.value = { partType: '3', craneType: '1' }
   } else if (activeTab.value == 'second') {
     const trackPartId = row.trackPartId || ids.value
     getTrackpart(trackPartId).then((response) => {
       form.value = response.data
+      console.log(form.value);
       saveTitle.value = '修改轨道'
-      form.value = { partType: '1' }
     })
   } else if (activeTab.value == 'third') {
     const splPartId = row.splPartId || ids.value
@@ -1211,7 +1200,6 @@ function handleUpdate(row) {
     })
     saveTitle.value = '新增滑线'
     saveType.value = 'install'
-    form.value = { partType: '2' }
   } else if (activeTab.value == 'fourth') {
     const cartPartId = row.cartPartId || ids.value
     getCrastopmodelpart(cartPartId).then((response) => {
@@ -1220,7 +1208,6 @@ function handleUpdate(row) {
     })
     saveTitle.value = '新增大车止档型号'
     saveType.value = 'install'
-    form.value = { partType: '3' }
   } else if (activeTab.value == 'five') {
     const paintPartId = row.paintPartId || ids.value
     getPaintpart(paintPartId).then((response) => {
@@ -1229,7 +1216,6 @@ function handleUpdate(row) {
     })
     saveTitle.value = '新增油漆'
     saveType.value = 'install'
-    form.value = { partType: '4' }
   }
 }
 
