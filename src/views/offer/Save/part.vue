@@ -230,7 +230,11 @@
           <div>
             <el-table :data="QuoteData.slipLine[item.key]">
               <el-table-column type="index" label="序号" width="80" />
-              <el-table-column prop="level" label="滑线级数" width="100" />
+              <el-table-column prop="level" label="滑线级数" width="100" >    
+                <template #default="{ row }">
+                {{row.level == 1 ? '单极' : '多级'}}
+                </template>
+              </el-table-column>
               <el-table-column
                 prop="electricMax"
                 label="最大电流"
@@ -565,6 +569,8 @@ import { getDicts } from '@/api/system/dict/data'
 import { cloneDeep } from 'lodash-es'
 
 const offerStore = useOfferStore()
+const { proxy } = getCurrentInstance()
+
 
 const default_track_data = {
   fixed: undefined,
@@ -882,33 +888,38 @@ const slipLineChange = (id, item) => {
   // 计算当前车间总电流
   const slipItem = slipLineOptions.value.find((sItem) => sItem.splPartId === id)
   const productItem = findProduct(item.key)
-  const power = productItem.amount.reduce(
+  const totalPower = productItem.amount.reduce(
     (prev, next) => prev + Number(next.productData.ratedPower),
     0,
   )
-  const newSlip = {
-    electricMax: slipItem.electricMax,
-    trolleyUnprice: Number(slipItem.trolleyUnprice),
-    length: item.workshopLength,
-    collectorCount: productItem.amount.length * 4, // 集电器数量起重机数量*4
-    collector: Number(slipItem.collector),
-    installLength: item.workshopLength,
-    installUnprice: Number(slipItem.installUnprice),
-    idlightUnprice: Number(slipItem.idlightUnprice),
-    idlight: item.workshopLength > 150 ? 2 : 1,
-    rcable: item.liftingHeight + 2,
-    rcableUnprice: Number(slipItem.rcableUnprice),
-    count: 0,
+  const totalCurrent = totalPower / 380 * 1.1 * 1000
+  if(totalCurrent > 400){
+    proxy.$modal.msgError('车间总电流大于400A')
+    QuoteData.slipLine[item.key] = []
+    return 
+  }else{
+    const newSlip = {
+      electricMax: slipItem.electricMax,
+      trolleyUnprice: Number(slipItem.trolleyUnprice),
+      length: item.workshopLength,
+      collectorCount: productItem.amount.length * 4, // 集电器数量起重机数量*4
+      collector: Number(slipItem.collector),
+      installLength: item.workshopLength,
+      installUnprice: Number(slipItem.installUnprice),
+      idlightUnprice: Number(slipItem.idlightUnprice),
+      idlight: item.workshopLength > 150 ? 2 : 1,
+      rcable: item.liftingHeight + 2,
+      rcableUnprice: Number(slipItem.rcableUnprice),
+      count: 0,
+    }
+    let level = 2 // 滑线级数
+    if (totalPower > 120) {
+      level = 1
+    }
+    newSlip.level = level
+    QuoteData.slipLine[item.key] = [newSlip]
   }
-  let level = 2 // 滑线级数
 
-  if (power > 120) {
-    level = 1
-  }
-
-  newSlip.level = level
-
-  QuoteData.slipLine[item.key] = [newSlip]
 }
 
 const salesItemCalculate = (item) => {
@@ -1051,6 +1062,7 @@ watch(
 watch(
   () => QuoteData.slipLine,
   (value) => {
+    console.log(value);
     const total = Object.values(value).reduce((prev, next) => {
       const itemCount = Array.isArray(next)
         ? next.reduce((a, b) => a + b.count, 0)
@@ -1160,7 +1172,6 @@ offerStore.$subscribe((mutation, state) => {
           const newObject = {
             workshopName,
             model: pItem.name,
-            // model: amountItem.productData.name,
             weight: amountItem.weight,
           }
           let AcceptanceFee = 0
