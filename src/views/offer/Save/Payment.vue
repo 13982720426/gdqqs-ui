@@ -2,8 +2,8 @@
   <div class="offer-save-payment">
     <el-form ref="form" :rules="rules" :model="formModel">
       <div style="margin-bottom: 16px">
-        <el-button @click="exportData(formModel, 1)">导出为WORD</el-button>
-        <el-button @click="exportData(formModel, 2)">导出为PDF</el-button>
+        <el-button @click="exportData(1)">导出为WORD</el-button>
+        <el-button @click="exportData(2)">导出为PDF</el-button>
       </div>
       <OfferSaveTitle title="报价名称">
         <el-row>
@@ -274,23 +274,28 @@ const getValues = async () => {
     }
   }
 }
-const exportData = (data, id) => {
+const exportData = (value) => {
   const offerId = router.currentRoute.value.query.id
-  if (id === '1') {
-    //导出为WORD
-    proxy.download(
-      'business/offer/exportWord',
-      { offerId:offerId },
-      `offer_${new Date().getTime()}.docx`,
-    )
-  } else {
-    //导出为PDF
-    proxy.download(
-      'business/offer/exportPdf',
-      { offerId:offerId },
-      `offer_${new Date().getTime()}.pdf`,
-    )
+  if(!!offerId){
+    if (value === '1') {
+      //导出为WORD
+      proxy.download(
+        'business/offer/exportWord',
+        { offerId:offerId },
+        `offer_${new Date().getTime()}.docx`,
+      )
+    } else {
+      //导出为PDF
+      proxy.download(
+        'business/offer/exportPdf',
+        { offerId:offerId },
+        `offer_${new Date().getTime()}.pdf`,
+      )
+    }    
+  }else{
+    proxy.$modal.msgError('导出失败，请完善报价并提交')
   }
+
 }
 
 defineExpose({
