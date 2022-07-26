@@ -1189,7 +1189,6 @@ function handleUpdate(row) {
     const trackPartId = row.trackPartId || ids.value
     getTrackpart(trackPartId).then((response) => {
       form.value = response.data
-      console.log(form.value);
       saveTitle.value = '修改轨道'
     })
   } else if (activeTab.value == 'third') {

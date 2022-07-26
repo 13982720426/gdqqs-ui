@@ -137,7 +137,6 @@ watch(
 
       // 首先将值转为数组
       const list = Array.isArray(val) ? val : props.modelValue.split(',')
-      console.log(list, 'list')
       // 然后将数组转为对象数组
       fileList.value = list.map((item) => {
         if (typeof item === 'string') {

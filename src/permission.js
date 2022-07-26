@@ -28,7 +28,6 @@ router.beforeEach((to, from, next) => {
         useUserStore().getInfo().then(() => {
           isRelogin.show = false
           usePermissionStore().generateRoutes().then(accessRoutes => {
-            console.log(accessRoutes)
             // 根据roles权限生成可访问的路由表
             accessRoutes.forEach(route => {
               if (!isHttp(route.path)) {

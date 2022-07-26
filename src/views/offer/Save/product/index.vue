@@ -632,9 +632,6 @@ const onProductChange = (value) => {
 
 }
 
-function numberChange(value) {
-  console.log(value);
-}
 watch(
   () => partDataSource.value,
   (value) => {

@@ -37,7 +37,7 @@ onMounted(() => {
 })
 
 watch(() => props.dictType, (value) => {
-  console.log(value)
+  // console.log(value)
   queryData(value)
 })
 

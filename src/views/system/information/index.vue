@@ -154,8 +154,6 @@ function getUser() {
   getUserProfile().then(response => {
     state.user = response.data
     state.user.adminName = response.data.roles[0].roleName
-    console.log(response.data.roles[0].roleName)
-    console.log(state.user.adminName)
   })
 }
 

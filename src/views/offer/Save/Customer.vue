@@ -519,9 +519,9 @@ offerStore.$subscribe((mutation, state) => {
   }
 })
 
-onMounted(() => {
-  console.log('cusomer onMounted')
-})
+// onMounted(() => {
+//   console.log('cusomer onMounted')
+// })
 
 defineExpose({
   getValues,

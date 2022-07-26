@@ -15,7 +15,6 @@ const useDictionaryStore = defineStore(
             },
             getData(type) {
                 return new Observable((subscriber) => {
-                    console.log(subscriber)
                     if (this.data[type]) {
                         subscriber.next(this.data[type])
                     } else {

@@ -148,15 +148,14 @@ const saveData = async () => {
 const stepsNext = async () => {
   if (stepsKey.value === 0) {
     const data = await customerRef.value.getValues()
-    console.log('0', data)
+    // console.log('0', data)
     if (!data) {
       return
     }
     offerStore.setCustomerData(data)
   } else if (stepsKey.value === 1) {
-    console.log(11)
     const data = await productRef.value.getValues()
-    console.log('1', data)
+    // console.log('1', data)
 
     if (!data) {
       return
@@ -164,7 +163,7 @@ const stepsNext = async () => {
     offerStore.setProductData(data)
   } else if (stepsKey.value === 2) {
     const data = await partRef.value.getValues()
-    console.log(22, data)
+    // console.log(22, data)
     if (!data) {
       return
     }
@@ -184,7 +183,7 @@ const stepsPrev = () => {
 
 const queryDetail = async () => {
   const resp = await getOffer(offerState.id)
-  console.log(2,resp);
+  // console.log(2,resp);
   if (resp.code === 200) {
     try {
       const paymentMethodInfo = JSON.parse(resp.data.paymentMethodInfo) // 付款方式json

@@ -1062,7 +1062,6 @@ watch(
 watch(
   () => QuoteData.slipLine,
   (value) => {
-    console.log(value);
     const total = Object.values(value).reduce((prev, next) => {
       const itemCount = Array.isArray(next)
         ? next.reduce((a, b) => a + b.count, 0)
