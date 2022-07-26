@@ -31,7 +31,8 @@
       >
         提交
       </el-button>
-      <el-button><router-link to="/offer">关闭</router-link></el-button>
+      <router-link :to="{ path: '/offer' }"><el-button style="margin-left:12px;">关闭</el-button></router-link>
+      <!-- <el-button><router-link to="/offer">关闭</router-link></el-button> -->
     </div>
   </div>
 </template>
