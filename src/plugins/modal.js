@@ -72,13 +72,6 @@ export default {
       type: 'warning',
     })
   },
-  // 导出提示
-  exportData(content, confirmButtonText, cancelButtonText) {
-    return ElMessageBox.confirm(content, '系统提示', {
-      confirmButtonText: confirmButtonText,
-      cancelButtonText: cancelButtonText,
-    })
-  },
   // 打开遮罩层
   loading(content) {
     loadingInstance = ElLoading.service({

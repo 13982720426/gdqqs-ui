@@ -11,7 +11,6 @@ const useDictionaryStore = defineStore(
         }),
         actions: {
             setData(type, data) {
-                console.log(type, data)
                 this.data[type] = data
             },
             getData(type) {

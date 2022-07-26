@@ -52,7 +52,18 @@
         <template #default="{ row }">
           <el-button @click="view(row.offerId)">详情查看</el-button>
           <el-button @click="edit(row.offerId)">编辑</el-button>
-          <el-button @click="exportData(row.offerId)">导出</el-button>
+          <!-- <el-button @click="exportData(row.offerId)">导出</el-button> -->
+          <el-popconfirm
+            confirm-button-text="WORD"
+            cancel-button-text="PDF"
+            title="请选择导出方式"
+            @confirm="confirmEvent(row.offerId)"
+            @cancel="cancelEvent(row.offerId)"
+          >
+            <template #reference>
+              <el-button>导出</el-button>
+            </template>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -73,6 +84,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { delOffer } from '../../api/business/offer'
 import useOfferStore from '@/store/modules/offer'
+
 
 const { proxy } = getCurrentInstance()
 
@@ -127,26 +139,20 @@ const view = (id) => {
   })
 }
 
-//导出文件
-const exportData =  (id) => {
-  proxy.$modal
-    .exportData('请选择导出类型', '导出为WORD', '导出为PDF')
-    .then( () => {
-      proxy.download(
-        'business/offer/exportWord',
-        { offerId:id },
-        `offer_${new Date().getTime()}.docx`,
-      )
-    })
-    .catch( async () => {
-      proxy.download(
-        'business/offer/exportPdf',
-        { offerId:id },
-        `offer_${new Date().getTime()}.pdf`,
-      )
-    })
+const confirmEvent = (id) => {
+  proxy.download(
+    'business/offer/exportWord',
+    { offerId:id },
+    `offer_${new Date().getTime()}.docx`,
+  )
 }
-
+const cancelEvent = (id) => {
+  proxy.download(
+    'business/offer/exportPdf',
+    { offerId:id },
+    `offer_${new Date().getTime()}.pdf`,
+  )
+}
 
 const onReset = () => {
   searchText.value = undefined
