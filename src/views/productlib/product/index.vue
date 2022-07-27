@@ -946,17 +946,19 @@ function submitForm() {
     if (valid) {
       if (form.value.productId != null) {
         updateProduct(form.value).then((response) => {
-          proxy.$modal.msgSuccess('修改成功')
-          showList.value = true
-          getList()
+          if(response.code===200){
+            proxy.$modal.msgSuccess('修改成功')        
+          }
         })
       } else {
         addProduct(form.value).then((response) => {
-          proxy.$modal.msgSuccess('新增成功')
-          showList.value = true
-          getList()
+          if(response.code===200){
+            proxy.$modal.msgSuccess('新增成功')         
+          }
         })
       }
+      showList.value = true
+      getList()   
     }
   })
 }
@@ -980,7 +982,9 @@ function handleSelectionChange(selection) {
 /** 新增按钮操作 */
 function handleAdd() {
   reset()
+  excelList.value=[]
   showList.value = false
+  saveTitle.value = '新增产品'
 }
 /** 修改按钮操作 */
 function handleUpdate(row) {
@@ -1047,6 +1051,7 @@ function handleExport() {
   }
 }
 
+
 async function getProductMSG() {
   const { liftWeight, span, workLevel, liftHeight } = form.value
   if (liftWeight && span && workLevel && liftHeight) {
@@ -1060,7 +1065,6 @@ async function getProductMSG() {
     if (res.code === 200) {
       const data = JSON.parse(res.data.bomParams)
       excelList.value = data
-      proxy.$modal.msgSuccess('查询成功')
     } else {
       proxy.$modal.msgError(`查询失败，${response.msg}`)
     }
@@ -1073,7 +1077,11 @@ async function getCraneModel() {
   const res = await getcraneModelBycraneType({ craneType })
   if (res.code == 200) {
     craneModelItem.value = res.data
-    form.value.craneModel = ''
+    if(!res.data.length){
+      form.value.craneModel = ''
+    }else{
+      form.value.craneModel=craneModelItem.value[0].value
+    }
   } else {
     proxy.$modal.msgError(`查询失败，${res.msg}`)
   }
