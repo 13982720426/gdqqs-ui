@@ -388,11 +388,11 @@ import Save from './save.vue'
 import { reactive } from 'vue-demi'
 import { getToken } from '@/utils/auth'
 
-const orbitModel = ref(true)
+const orbitModel = ref(false)
 const slipLine = ref(false)
 const orbit = ref(false)
 const paint = ref(false)
-const crane = ref(false)
+const crane = ref(true)
 
 const { proxy } = getCurrentInstance()
 const router = useRouter()
