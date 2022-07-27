@@ -277,7 +277,7 @@ const getValues = async () => {
 const exportData = (value) => {
   const offerId = router.currentRoute.value.query.id
   if(!!offerId){
-    if (value === '1') {
+    if (value === 1) {
       //导出为WORD
       proxy.download(
         'business/offer/exportWord',
