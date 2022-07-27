@@ -175,7 +175,7 @@
             <el-select
               v-model="form.craneType"
               placeholder="请选择"
-              :change="getCraneModel()"
+              @change="getCraneModel()"
               style="width: 60%"
             >
               <el-option
@@ -183,6 +183,24 @@
                 :key="dict.value"
                 :label="dict.label"
                 :value="dict.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="起重机型号" prop="craneModel">
+            <el-select
+              v-model="form.craneModel"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+              :disabled="disabled"
+            >
+              <el-option
+                v-for="item in craneModelItem"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
               />
             </el-select>
           </el-form-item>
@@ -226,28 +244,10 @@
               placeholder="请选择"
               style="width: 60%"
               :disabled="disabled"
-              :change="getProductMSG()"
+              @change="getProductMSG"
             >
               <el-option
                 v-for="item in liftWeight"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="起重机型号" prop="craneModel">
-            <el-select
-              v-model="form.craneModel"
-              placeholder="请选择"
-              clearable
-              style="width: 60%"
-              :disabled="disabled"
-            >
-              <el-option
-                v-for="item in craneModelItem"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -262,6 +262,7 @@
                 v-model="form.span"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_single_crane_span"
@@ -276,6 +277,7 @@
                 v-model="form.span"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_double_crane_span"
@@ -290,6 +292,7 @@
                 v-model="form.span"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_susp_crane_span"
@@ -308,6 +311,7 @@
                 v-model="form.liftHeight"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_single_crane_lift_height"
@@ -322,6 +326,7 @@
                 v-model="form.liftHeight"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_double_crane_lift_height"
@@ -336,6 +341,7 @@
                 v-model="form.liftHeight"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_susp_crane_lift_height"
@@ -354,6 +360,7 @@
                 v-model="form.workLevel"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_single_crane_work_level"
@@ -368,6 +375,7 @@
                 v-model="form.workLevel"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_double_crane_work_level"
@@ -382,6 +390,7 @@
                 v-model="form.workLevel"
                 placeholder="请选择"
                 style="width: 60%"
+                @change="getProductMSG"
               >
                 <el-option
                   v-for="dict in q_susp_crane_work_level"
@@ -1053,6 +1062,7 @@ function handleExport() {
 
 
 async function getProductMSG() {
+  console.log(111);
   const { liftWeight, span, workLevel, liftHeight } = form.value
   if (liftWeight && span && workLevel && liftHeight) {
     const params = {
@@ -1061,6 +1071,7 @@ async function getProductMSG() {
       workLevel,
       liftHeight,
     }
+    console.log(222);
     const res = await getAddProductMSG(params)
     if (res.code === 200) {
       const data = JSON.parse(res.data.bomParams)
