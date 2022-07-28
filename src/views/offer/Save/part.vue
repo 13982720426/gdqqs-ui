@@ -79,7 +79,7 @@
               </el-table-column>
               <el-table-column
                 prop="cartStops"
-                label="大车止挡数量"
+                label="大车止档数量"
                 width="130"
               >
                 <template #default="scope">
@@ -124,8 +124,8 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="cartStopsConst"
-                label="大车止挡费用"
+                prop="unprice"
+                label="大车止档费用"
                 width="120"
               >
                 <template #default="{ row }">
@@ -218,12 +218,29 @@
                 "
                 placeholder="请选择滑线"
               >
-                <el-option
+                <!-- <el-option
                   :key="slipItem.splPartId"
                   v-for="slipItem in slipLineOptions"
                   :label="slipItem.splPartName"
                   :value="slipItem.splPartId"
-                />
+                /> -->
+              <el-option
+                v-for="item in slipLineOptions"
+                :key="item.splPartId"
+                :label="item.splPartName"
+                :value="item.splPartId"
+              >
+              <span style="float: left">{{ item.splPartName }}</span>
+                <span
+                  style="
+                  margin-left: 10px;
+                  float: right;
+                  color: var(--el-text-color-secondary);
+                  font-size: 13px;
+                "
+                >{{item.splLevel == 1 ? '单极' : '多级'}}
+                </span>
+              </el-option>
               </el-select>
             </span>
           </div>
@@ -502,7 +519,7 @@
           </el-table>
         </div>
         <div style="margin-top: 16px">
-          <el-descriptions size="small" :column="5">
+          <el-descriptions size="small" :column="4">
             <el-descriptions-item label="招待费总数">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
@@ -514,6 +531,11 @@
                 style="width: 100px"
               />
             </el-descriptions-item>
+            <el-descriptions-item label="招待费补税款">
+              <span class="number">{{ numberToFixed(marketTotalData.hospitality * (tax - 1)) }}</span>
+            </el-descriptions-item>
+          </el-descriptions>
+          <el-descriptions size="small" :column="4">
             <el-descriptions-item label="总成本合计">
               <span class="number">{{ marketTotalData.total }}</span>
             </el-descriptions-item>
@@ -549,7 +571,7 @@
         <el-table-column prop="name" label="说明" />
         <el-table-column prop="count" label="数量(台)" />
         <el-table-column prop="total" label="总成本合计" />
-        <el-table-column prop="profitMargin" label="预计利润率" />
+        <el-table-column prop="profitMargin" label="预计利润率(10%)" />
         <el-table-column prop="sales" label="销售总价"></el-table-column>
         <el-table-column prop="profit" label="利润额"></el-table-column>
       </el-table>
@@ -753,11 +775,14 @@ const queryTrackByModel = async (model, row, key) => {
     trackModel: model,
   })
   if (resp.code === 200 && resp.rows.length) {
-    // 获取大车止挡数据
+    // 获取大车止档数据
     const carResp = await listCrastopmodelpart({ trackModel: model })
+
 
     if (carResp.code === 200 && carResp.rows.length) {
       const carData = toNumberByKey(carResp.rows[0], ['unprice', 'weight'])
+            console.log(1,carData,carResp);
+
       const firstData = toNumberByKey(resp.rows[0], [
         'cpUnprice',
         'tppUnprice',
@@ -790,7 +815,7 @@ const queryTrackByModel = async (model, row, key) => {
         ),
         platensConst: platens * firstData.tppUnprice,
         tiePlatesConst: tiePlates * firstData.cpUnprice,
-        carUnprice: carData.carUnprice,
+        unprice: carData.unprice,
         carWeight: carData.weight,
         tiePlates,
         platens,
@@ -822,8 +847,8 @@ const taxPayment = (row) => {
 }
 
 const cartStopsConst = (row) => {
-  return row.carUnprice
-    ? numberToFixed(row.carUnprice * row.carWeight * row.cartStops)
+  return row.unprice
+    ? numberToFixed(row.unprice * row.carWeight * row.cartStops)
     : 0
 }
 
@@ -865,7 +890,7 @@ const rcableFee = (row) => {
 }
 
 const slipTaxFee = (row) => {
-  return numberToFixed(row.installUnprice * row.installLength * (tax - 1))
+  return numberToFixed(row.installUnprice * row.installLength * (tax.value - 1))
 }
 
 const slipCount = (row) => {
@@ -879,14 +904,15 @@ const slipCount = (row) => {
   return count
 }
 
+
 /**
  * 滑线选择
  * @param {string} 当前车间的滑线tableId
  * @param {string} 当前滑线数据
  */
 const slipLineChange = (id, item) => {
-  // 计算当前车间总电流
   const slipItem = slipLineOptions.value.find((sItem) => sItem.splPartId === id)
+  // 计算当前车间总电流
   const productItem = findProduct(item.key)
   const totalPower = productItem.amount.reduce(
     (prev, next) => prev + Number(next.productData.ratedPower),
@@ -898,29 +924,39 @@ const slipLineChange = (id, item) => {
     QuoteData.slipLine[item.key] = []
     return 
   }else{
-    const newSlip = {
-      electricMax: slipItem.electricMax,
-      trolleyUnprice: Number(slipItem.trolleyUnprice),
-      length: item.workshopLength,
-      collectorCount: productItem.amount.length * 4, // 集电器数量起重机数量*4
-      collector: Number(slipItem.collector),
-      installLength: item.workshopLength,
-      installUnprice: Number(slipItem.installUnprice),
-      idlightUnprice: Number(slipItem.idlightUnprice),
-      idlight: item.workshopLength > 150 ? 2 : 1,
-      rcable: item.liftingHeight + 2,
-      rcableUnprice: Number(slipItem.rcableUnprice),
-      count: 0,
+    if(totalCurrent <= 120 && slipItem.splLevel==='1'){
+      proxy.$modal.msgError('车间总电流小于120A，不能选单极')
+      QuoteData.slipLine[item.key] = []
+    }else if(totalCurrent > 120 && slipItem.splLevel==='2'){
+      proxy.$modal.msgError('车间总电流大于120A，不能选多极')
+      QuoteData.slipLine[item.key] = []
+    }else{
+      const newSlip = {
+        electricMax: slipItem.electricMax,
+        trolleyUnprice: Number(slipItem.trolleyUnprice),
+        length: item.workshopLength,
+        collector: Number(slipItem.collector),
+        level: Number(slipItem.splLevel),
+        // collectorCount: productItem.amount.length * 4, // 集电器数量起重机数量*4
+        installLength: item.workshopLength,
+        installUnprice: Number(slipItem.installUnprice),
+        idlightUnprice: Number(slipItem.idlightUnprice),
+        idlight: item.workshopLength > 150 ? 2 : 1,
+        rcable: item.liftingHeight + 2,
+        rcableUnprice: Number(slipItem.rcableUnprice),
+        count: 0,
+      }
+      // 单极滑线1台起重机配4个，多级滑线1台起重机配2个	
+      if (slipItem.splLeve==='1') {
+        newSlip.collectorCount =  productItem.amount.length * 4
+      }else{
+        newSlip.collectorCount =  productItem.amount.length * 2
+      }
+      QuoteData.slipLine[item.key] = [newSlip]      
     }
-    let level = 2 // 滑线级数
-    if (totalPower > 120) {
-      level = 1
-    }
-    newSlip.level = level
-    QuoteData.slipLine[item.key] = [newSlip]
   }
-
 }
+
 
 const salesItemCalculate = (item) => {
   const sales = numberToFixed(item.total * (1 + item.profitMargin / 100))
@@ -1055,7 +1091,6 @@ watch(
     const { list } = trackCloneData(value)
     trackTotal(list)
   },
-
   { deep: true },
 )
 
@@ -1078,7 +1113,7 @@ watch(
     slipLineData.value.total = numberToFixed(total)
     slipLineData.value.count = numberToFixed(length)
     countDataSource.value[1] = slipLineData.value
-    slipLineData.value.splId=workshopData.value
+    slipLineData.value.splId = workshopData.value
   },
   { deep: true },
 )
@@ -1108,25 +1143,23 @@ watch(
 )
 
 watch(
-  () => marketDataSource.value,
+  [
+    () => marketDataSource.value,
+    () => marketTotalData.value.hospitality,
+  ],
   (value) => {
+    const total = value[0].reduce((prev, next) => {
+      return prev + next.total
+    }, 0)
+    const Alltotal = total + value[1] * tax.value
+    marketTotalData.value.total = numberToFixed(Alltotal)
     countDataSource.value[4] = marketTotalData.value
   },
   { deep: true },
 )
 
-watch(
-  [
-    () => transportTotalData.value.total,
-    () => transportTotalData.value.profitMargin,
-  ],
-  () => {
-    // console.log(transportTotalData.value)
-  },
-)
-
-
 offerStore.$subscribe((mutation, state) => {
+  queryListSplpart()
   const { customer, product, partData } = state
   if (customer.workshopInfo && product.length) {
     workshopData.value = []
@@ -1136,7 +1169,7 @@ offerStore.$subscribe((mutation, state) => {
       workshopData.value.push({
         ...workshopItem,
         total: 0, // 总成本合计
-        profitMargin: 1.1, // 预计利润率率
+        profitMargin: 1.1, // 预计利润率
         totalPrice: 0, // 销售总价
         profitAmount: 0, // 利润额
         splPartId:'',
@@ -1213,7 +1246,6 @@ offerStore.$subscribe((mutation, state) => {
 
 onMounted(() => {
   getTax()
-  // TODO 根据车间起重机的总电流判断，大于120A选择单级，小于选择多级，如超出400A直接报错提醒, 后期放置在offerStore.$subscribe处worshop遍历时处理并给splpartOptions赋值
   queryListSplpart()
 })
 

@@ -213,10 +213,10 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="集电器" prop="collector">
+          <el-form-item label="集电器单价(元)" prop="collector">
             <el-input
               v-model="form.collector"
-              placeholder="请输入集电器"
+              placeholder="请输入集电器单价"
               style="width: 60%"
               type="number"
               oninput="if(value<0){value='0'} if(value.length>16)value=value.slice(0,16)"

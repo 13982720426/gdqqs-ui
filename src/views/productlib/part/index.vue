@@ -515,7 +515,7 @@ const splPartColumns = ref([
   {
     id: 6,
     prop: 'collector',
-    label: '集电器',
+    label: '集电器单价',
     align: 'center',
   },
   {
@@ -736,7 +736,7 @@ const data = reactive({
     trolleyUnprice: [
       { required: true, message: '请输入滑触线单价', trigger: 'blur' },
     ],
-    collector: [{ required: true, message: '请输入集电器', trigger: 'blur' }],
+    collector: [{ required: true, message: '请输入集电器单价', trigger: 'blur' }],
     installUnprice: [
       { required: true, message: '请输入安装费单价', trigger: 'blur' },
     ],
@@ -1195,7 +1195,7 @@ function handleUpdate(row) {
     const splPartId = row.splPartId || ids.value
     getSplpart(splPartId).then((response) => {
       form.value = response.data
-      saveTitle.value = '修改滑道'
+      saveTitle.value = '修改滑线'
     })
     saveTitle.value = '新增滑线'
     saveType.value = 'install'
