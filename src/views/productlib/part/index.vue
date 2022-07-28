@@ -1321,7 +1321,7 @@ const upload = reactive({
 /** 导入按钮操作 */
 function handleImport() {
   if (activeTab.value === 'first') {
-    upload.title = '产品部件'
+    upload.title = '产品部件导入'
     upload.url =
       import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData'
   } else if (activeTab.value === 'second') {
