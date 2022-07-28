@@ -50,11 +50,11 @@ export function delProduct(productId) {
     method: 'delete',
   })
 }
-// 获取起重机型号列表
-export function getcraneModelBycraneType(query) {
-  return request({
-    url: '/business/productpart/getcraneModelBycraneType',
-    method: 'get',
-    params: query,
-  })
-}
+// // 获取起重机型号列表
+// export function getcraneModelBycraneType(query) {
+//   return request({
+//     url: '/business/productpart/getcraneModelBycraneType',
+//     method: 'get',
+//     params: query,
+//   })
+// }

@@ -175,8 +175,8 @@
             <el-select
               v-model="form.craneType"
               placeholder="请选择"
-              @change="getCraneModel()"
               style="width: 60%"
+              @change="getCraneModel()"
             >
               <el-option
                 v-for="dict in q_crane_type"
@@ -187,8 +187,9 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
-          <el-form-item label="起重机型号" prop="craneModel">
+      <el-col :span="8">
+        <el-form-item label="起重机型号" prop="craneModel">
+          <template v-if="form.craneType == 1">
             <el-select
               v-model="form.craneModel"
               placeholder="请选择"
@@ -197,14 +198,55 @@
               :disabled="disabled"
             >
               <el-option
-                v-for="item in craneModelItem"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="dict in q_single_crane_model"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
               />
             </el-select>
-          </el-form-item>
-        </el-col>
+          </template>
+          <template v-else-if="form.craneType == 2">
+            <el-select
+              v-model="form.craneModel"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+              :disabled="disabled"
+            >
+              <el-option
+                v-for="dict in q_double_crane_model"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </template>
+          <template v-else-if="form.craneType == 3">
+            <el-select
+              v-model="form.craneModel"
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+              :disabled="disabled"
+            >
+              <el-option
+                v-for="dict in q_susp_crane_model"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+              />
+            </el-select>
+          </template>
+          <template v-else>
+            <el-select
+              placeholder="请选择"
+              clearable
+              style="width: 60%"
+              :disabled="disabled"
+            ></el-select>
+          </template>
+        </el-form-item>
+      </el-col>
         <el-col :span="8">
           <el-form-item label="操作方式" prop="craneOperation">
             <el-select
@@ -604,7 +646,7 @@ import {
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
-import { getcraneModelBycraneType } from '@/api/business/product'
+// import { getcraneModelBycraneType } from '@/api/business/product'
 
 const upUrl = ref(
   import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel',
@@ -661,12 +703,6 @@ const excelListColumns = ref([
     label: '单位',
     align: 'center',
   },
-
-  // {
-  //   prop: 'price2',
-  //   label: '物料编码价格',
-  //   align: 'center',
-  // },
   {
     prop: 'price',
     label: '金地球成本价(不含税)',
@@ -866,8 +902,6 @@ function getList() {
   })
 }
 
-// //文件上传
-// function submitfile() {}
 
 /*** 导入参数 */
 const upload = reactive({
@@ -1021,31 +1055,6 @@ function handleDelete(row) {
     .catch(() => {})
 }
 
-//上传格式检验
-// 上传前校检格式和大小
-function handleBeforeUpload(file) {
-  // 校检文件类型
-  let fileExtension = ''
-  if (file.name?.lastIndexOf('.') > -1) {
-    fileExtension = file.name.slice(file.name.lastIndexOf('.') + 1)
-  }
-  if (fileExtension !== 'xls' || fileExtension !== 'xlsx') {
-    proxy.$modal.msgError(
-      `文件格式不正确, 请上传${fileType.join('/')}格式文件!`,
-    )
-  }
-  // 校检文件大小
-  if (fileSize) {
-    const isLt = file.size / 1024 / 1024 < fileSize
-    if (!isLt) {
-      proxy.$modal.msgError(`上传文件大小不能超过 ${fileSize} MB!`)
-      return false
-    }
-  }
-  proxy.$modal.loading('正在上传文件，请稍候...')
-  number.value++
-  return true
-}
 /** 导出按钮操作 */
 function handleExport() {
   if (ids.value.length !== 0) {
@@ -1060,9 +1069,7 @@ function handleExport() {
   }
 }
 
-
 async function getProductMSG() {
-  console.log(111);
   const { liftWeight, span, workLevel, liftHeight } = form.value
   if (liftWeight && span && workLevel && liftHeight) {
     const params = {
@@ -1071,7 +1078,6 @@ async function getProductMSG() {
       workLevel,
       liftHeight,
     }
-    console.log(222);
     const res = await getAddProductMSG(params)
     if (res.code === 200) {
       const data = JSON.parse(res.data.bomParams)
@@ -1081,21 +1087,9 @@ async function getProductMSG() {
     }
   }
 }
-const craneModelItem = ref([])
 
-async function getCraneModel() {
-  const { craneType } = form.value
-  const res = await getcraneModelBycraneType({ craneType })
-  if (res.code == 200) {
-    craneModelItem.value = res.data
-    if(!res.data.length){
-      form.value.craneModel = ''
-    }else{
-      form.value.craneModel=craneModelItem.value[0].value
-    }
-  } else {
-    proxy.$modal.msgError(`查询失败，${res.msg}`)
-  }
+function getCraneModel() {
+  form.value.craneModel = ''
 }
 
 getList()
