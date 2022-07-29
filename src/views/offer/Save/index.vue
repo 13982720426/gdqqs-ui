@@ -149,22 +149,18 @@ const saveData = async () => {
 const stepsNext = async () => {
   if (stepsKey.value === 0) {
     const data = await customerRef.value.getValues()
-    // console.log('0', data)
     if (!data) {
       return
     }
     offerStore.setCustomerData(data)
   } else if (stepsKey.value === 1) {
     const data = await productRef.value.getValues()
-    // console.log('1', data)
-
     if (!data) {
       return
     }
     offerStore.setProductData(data)
   } else if (stepsKey.value === 2) {
     const data = await partRef.value.getValues()
-    // console.log(22, data)
     if (!data) {
       return
     }

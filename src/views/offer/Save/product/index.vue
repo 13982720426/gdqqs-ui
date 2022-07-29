@@ -486,7 +486,7 @@ const savePartData = () => {
   formModel.product.forEach((item, index) => {
     if (productItem && productItem.workshopItemKey === item.key) {
       const amountItem = item.amount[productItem.index]
-      amountItem.productId=productMsg.productId
+      amountItem.productId = productMsg.productId
       amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
       amountItem.partQuote = cloneDeep(partDialog) // 部件价格统计信息
       amountItem.productData = {
@@ -684,7 +684,6 @@ const createAmount = (length) => {
 offerStore.$subscribe((mutation, state) => {
   const { customer, product } = state
   const NewCustomer = offerStore.getCustomerData()
-
   formModel.product = []
   if (product.length) {
     if (JSON.stringify(NewCustomer.workshopInfo) === customer.workshopInfo) {

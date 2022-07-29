@@ -14,24 +14,26 @@ export default defineStore('offer', {
         const productList = this.getProductData()
         workshopInfo.forEach(item => {
           const productObj = productList.find(b => b.key === item.key)
-          const amountCount = productObj.amount.length
-          const amounts = new Array(item.amount).fill(1).map((b) => ({
-            type: undefined,
-            operation: undefined,
-            weight: undefined,
-            level: undefined,
-          }))
+          if(!!productObj){
+            const amountCount = productObj.amount.length
+            const amounts = new Array(item.amount).fill(1).map((b) => ({
+              type: undefined,
+              operation: undefined,
+              weight: undefined,
+              level: undefined,
+            }))
 
-          productObj.name = item.name
+            productObj.name = item.name
 
-          const newAmounts = amounts.map((item, index) => {
-            if (index + 1 <= amountCount) {
-              return productObj.amount[index]
-            }
-            return item
-          })
-
-          productObj.amount = [...newAmounts]
+            const newAmounts = amounts.map((item, index) => {
+              if (index + 1 <= amountCount) {
+                return productObj.amount[index]
+              }
+              return item
+            })     
+            productObj.amount = [...newAmounts]
+   
+          }
         })
         this.setProductData(productList)
       }
