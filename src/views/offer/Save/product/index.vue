@@ -162,7 +162,7 @@
                   {{ amountItem.productData.cartSpeed }}
                 </el-descriptions-item>
                 <el-descriptions-item
-                  label="预计利润率(%)"
+                  label="预计利润率"
                   width="150px"
                   label-align="right"
                 >
@@ -269,7 +269,7 @@
         <el-table-column prop="brand" label="品牌" min-width="180">
           <template #default="{ row }">
             <el-radio-group
-              v-model="row.part_code_value"
+              v-model="row.part_code_id"
               :disabled="offerStore.type === 'view'"
               style="flex-direction: column;align-items: flex-start"
               class="table-brand-item"
@@ -277,9 +277,9 @@
                 <el-radio
                     style="margin-right: 0;"
                     v-for="item in row.values"
-                    :key="item.name"
-                    :label="item.name"
-                    @click.prevent="checkRadio(row, item.name)"
+                    :key="item.id"
+                    :label="item.id"
+                    @click.prevent="checkRadio(row, item.id)"
                 >{{item.name}}</el-radio>
             </el-radio-group>
           </template>
@@ -336,7 +336,7 @@
             {{ partDialog.factory_price_count }}
           </el-descriptions-item>
           <el-descriptions-item
-            label="预计利润率(%)"
+            label="预计利润率"
             width="150px"
             label-align="right"
           >
@@ -516,7 +516,7 @@ function totalAll() {
       }
     })
   })
-  const total = arr.reduce((pre, next) => pre + next.factory_price_count, 0)
+  const total = arr.reduce((pre, next) => pre + Number(next.factory_price_count), 0)
   const sales = arr.reduce((pre, next) => pre + Number(next.price), 0)
   const profit = arr.reduce(
     (pre, next) => pre + Number(next.price - next.factory_price_count),
@@ -578,6 +578,7 @@ const findSameOfferCode = (data, startIndex = 0) => {
     {
       model: data[startIndex].model,
       name: data[startIndex].brand,
+      id: data[startIndex].id,
     }
   ]
   let endIndex = 0
@@ -586,6 +587,7 @@ const findSameOfferCode = (data, startIndex = 0) => {
       values.push({
         model: data[i+1].model,
         name: data[i+1].brand,
+        id: data[i+1].id,
       })
       endIndex += 1
     } else {
@@ -614,14 +616,13 @@ const onProductChange = (value) => {
         const { values, endIndex } = findSameOfferCode(bomData, index)
         item.values = values.filter(item => !!item.model)
         item.endIndex = endIndex
-        item.part_code_value = item.values.length ? item.values[0].name : null
+        item.part_code_id = item.values.length ? item.values[0].id : null
       }
       if(item.offerCode === '遥控器' || item.offerCode === '驾驶室'){
-        item.part_code_value = null
+        item.part_code_id = null
       }
       return item
     })
-
     partDataSource.value = bomData
     productMsg.ratedPower = itemData.ratedPower
     productMsg.liftSpeed = itemData.liftSpeed
@@ -636,11 +637,9 @@ watch(
   () => partDataSource.value,
   (value) => {
     // 过滤未选中的值
-    const modelValues = value.filter(item => !!item.part_code_value).map(item => item.model) 
-    const dataValues = value.filter(item => modelValues.includes(item.model))  //符合条件的型号
+    const idValues = value.filter(item => !!item.part_code_id).map(item => item.part_code_id) //选中的品牌和型号唯一的id
+    const filterValues = value.filter(item => idValues.includes(item.id))  //符合选中的数据
 
-    const brandValues = value.filter(item => !!item.part_code_value).map(item => item.part_code_value)//选中的品牌
-    const filterValues = dataValues.filter(item => brandValues.includes(item.brand)) // 选中的品牌和型号
     const factory_price_count = filterValues.reduce((prev, next) => {
       const price = (
         Number(next.num) *
@@ -650,13 +649,12 @@ watch(
       return prev + Number(price)
     }, 0)
     const profitMargin = Number(offerStore.getCustomerData().customerItem?.profitMargin) || 0
-    const price = (factory_price_count * (1 + profitMargin / 100)).toFixed(2)
+    const price = factory_price_count * (1 + profitMargin / 100)
     const profit = price - factory_price_count
-
-    partDialog.value.factory_price_count = factory_price_count
-    partDialog.value.profitMargin = profitMargin
-    partDialog.value.profit = profit
-    partDialog.value.price = price
+    partDialog.value.factory_price_count = factory_price_count.toFixed(2)
+    partDialog.value.profitMargin = profitMargin.toFixed(2)
+    partDialog.value.profit = profit.toFixed(2)
+    partDialog.value.price = price.toFixed(2)
   },
   { deep: true },
 )
@@ -736,7 +734,7 @@ const getValues = async () => {
   }
 }
 function checkRadio(row, value) {
-  row.part_code_value = value
+  row.part_code_id = value
 }
 
 defineExpose({
