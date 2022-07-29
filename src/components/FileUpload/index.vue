@@ -234,15 +234,15 @@ function handleUploadSuccess(res, file) {
       newuploadList.value = fileList.value
       uploadList.value = []
       number.value = 0
+
       emit('update:modelValue', listToString(fileList.value))
       emit('uploadSuccess', newuploadList.value)
-      proxy.$modal.closeLoading()
     }
   } else {
     handleDelete(0)
-    proxy.$modal.closeLoading()
     proxy.$modal.msgError(res.msg)
   }
+    proxy.$modal.closeLoading()
 }
 
 // 删除文件
