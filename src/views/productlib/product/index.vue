@@ -986,22 +986,25 @@ function getvalues(data) {
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs['saveFormRef'].validate((valid) => {
+    console.log(valid,form.value);
     if (valid) {
       if (form.value.productId != null) {
         updateProduct(form.value).then((response) => {
           if(response.code===200){
-            proxy.$modal.msgSuccess('修改成功')        
+            proxy.$modal.msgSuccess('修改成功')  
+            showList.value = true
+            getList()         
           }
         })
       } else {
         addProduct(form.value).then((response) => {
           if(response.code===200){
-            proxy.$modal.msgSuccess('新增成功')         
+            proxy.$modal.msgSuccess('新增成功') 
+            showList.value = true  
+            getList()         
           }
         })
       }
-      showList.value = true
-      getList()   
     }
   })
 }
