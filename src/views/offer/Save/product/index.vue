@@ -269,7 +269,7 @@
         <el-table-column prop="brand" label="品牌" min-width="180">
           <template #default="{ row }">
             <el-radio-group
-              v-model="row.part_code_id"
+              v-model="row.part_code_value"
               :disabled="offerStore.type === 'view'"
               style="flex-direction: column;align-items: flex-start"
               class="table-brand-item"
@@ -616,10 +616,10 @@ const onProductChange = (value) => {
         const { values, endIndex } = findSameOfferCode(bomData, index)
         item.values = values.filter(item => !!item.model)
         item.endIndex = endIndex
-        item.part_code_id = item.values.length ? item.values[0].id : null
+        item.part_code_value = item.values.length ? item.values[0].id : null
       }
       if(item.offerCode === '遥控器' || item.offerCode === '驾驶室'){
-        item.part_code_id = null
+        item.part_code_value = null
       }
       return item
     })
@@ -637,7 +637,7 @@ watch(
   () => partDataSource.value,
   (value) => {
     // 过滤未选中的值
-    const idValues = value.filter(item => !!item.part_code_id).map(item => item.part_code_id) //选中的品牌和型号唯一的id
+    const idValues = value.filter(item => !!item.part_code_value).map(item => item.part_code_value) //选中的品牌和型号唯一的id
     const filterValues = value.filter(item => idValues.includes(item.id))  //符合选中的数据
 
     const factory_price_count = filterValues.reduce((prev, next) => {
@@ -724,16 +724,30 @@ const getValues = async () => {
   const data = await form.value.validate()
   if (data) {
     const newData = cloneDeep(formModel)
-    const arr = []
-    const workshopInfo = offerStore.getCustomerData().workshopInfo
-    workshopInfo.forEach((_, index) => {
-      arr.push(newData.product[index])
+
+    let noPartData //是否未选择部件
+    newData.product.forEach(item=>{
+      item.amount.forEach(item2=>{
+        if(!item2.partData){
+          noPartData = true
+        }
+      })
     })
-    return arr
+
+    if(noPartData){
+      proxy.$modal.msgWarning('请完善数据')
+    }else{
+      const arr = []
+      const workshopInfo = offerStore.getCustomerData().workshopInfo
+      workshopInfo.forEach((_, index) => {
+        arr.push(newData.product[index])
+      })
+      return arr      
+    }
   }
 }
 function checkRadio(row, value) {
-  row.part_code_id = value
+  row.part_code_value = value
 }
 
 defineExpose({
