@@ -45,6 +45,11 @@
                 v-model="formData.workshopInfo[index].name"
                 style="width: 210px"
               ></el-input>
+              <!-- <el-button
+                :disabled="offerStore.type !== 'add'"
+                v-if="index === 0"
+                @click="addWork()"
+              > -->
               <el-button
                 :disabled="offerStore.type === 'view'"
                 v-if="index === 0"
@@ -52,6 +57,11 @@
               >
                 添加车间信息
               </el-button>
+              <!-- <el-button
+                :disabled="offerStore.type !== 'add'"
+                v-if="index !== 0"
+                @click="removeWork(item.key)"
+              > -->
               <el-button
                 :disabled="offerStore.type === 'view'"
                 v-if="index !== 0"
