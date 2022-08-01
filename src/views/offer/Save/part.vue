@@ -588,7 +588,8 @@ import { listTrackpart } from '@/api/business/trackpart'
 import { listCrastopmodelpart } from '@/api/business/crastopmodelpart'
 import { listSplpart } from '@/api/business/splpart'
 import { getDicts } from '@/api/system/dict/data'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, omit } from 'lodash-es'
+
 
 const offerStore = useOfferStore()
 const { proxy } = getCurrentInstance()
@@ -1044,14 +1045,7 @@ const installTotal = (row, _tax) => {
 
 //轨道数据处理
 const trackCloneData = (value) => {
-  let obj = cloneDeep(value)
-  delete obj.count
-  delete obj.dataSource
-  delete obj.name
-  delete obj.profit
-  delete obj.profitMargin
-  delete obj.sales
-  delete obj.total
+  let obj = omit(value,'count','dataSource','name','profit','profitMargin','sales','total')
   const newObj={
     list:[], //干净的数组
     newlist:[] //带key的数组
@@ -1253,40 +1247,49 @@ const getValues = async () => {
 
   //轨道数据存入dataSource
   const { newlist } = trackCloneData(QuoteData.track)
-  QuoteData.track.dataSource = newlist
+  if(newlist.length != 0){
+    // 轨道数据判断
+    QuoteData.track.dataSource = newlist
+    let noTrack = Object.values(newlist).map(item=>item.trackList.length).includes(0) //是否轨道无数据
+    if(!noTrack){
+      //轨道有数据，部分未填写
+      Object.values(newlist).map(item=>item.trackList).filter(item=>item.length != 0).forEach( item => {
+          item.forEach( item2 => {
+            if(!item2.fixed || !item2.model){
+              noTrack = true
+            }
+          })
+        }
+      )  
+    }
 
-  let noTrack = Object.values(newlist).map(item=>item.trackList.length).includes(0) //是否轨道无数据
-  if(!noTrack){
-    //轨道有数据，部分未填写
-    Object.values(newlist).map(item=>item.trackList).filter(item=>item.length != 0).forEach( item => {
-        item.forEach( item2 => {
-          if(!item2.fixed || !item2.model){
-            noTrack = true
-          }
-        })
-      }
-    )  
-  }
-  const noSlipLine=Object.values(QuoteData.slipLine).map(item=>item.length).includes(0) //是否滑线未选择
+    // 滑线数据判断
+    let noSlipLine = true
+    if(Object.keys(QuoteData.slipLine).length != 0){
+      noSlipLine = Object.values(QuoteData.slipLine).map(item=>item.length).includes(0) //是否滑线未选择
+    }
 
-  if(noTrack || noSlipLine){
-    proxy.$modal.msgWarning('请完善数据')
+    if(noSlipLine){
+      proxy.$modal.msgWarning('请完善滑线数据')
+    }else if(noTrack){
+      proxy.$modal.msgWarning('请完善轨道数据')
+    }else{
+      return {
+        track: QuoteData.track, // 轨道
+        slipLine: QuoteData.slipLine, // 滑线
+        craneDataSource: craneDataSource.value, // 起重机运输
+        installDataSource: installDataSource.value, // 安装
+        marketDataSource: marketDataSource.value, // 市场
+        trackData: trackData.value, // 轨道统计
+        slipLineData: slipLineData.value, // 滑线统计
+        transportTotalData: transportTotalData.value, // 起重机运输统计
+        installTotalData: installTotalData.value, // 安装统计
+        marketTotalData: marketTotalData.value, // 市场统计
+      }      
+    }
   }else{
-    return {
-      track: QuoteData.track, // 轨道
-      slipLine: QuoteData.slipLine, // 滑线
-      craneDataSource: craneDataSource.value, // 起重机运输
-      installDataSource: installDataSource.value, // 安装
-      marketDataSource: marketDataSource.value, // 市场
-      trackData: trackData.value, // 轨道统计
-      slipLineData: slipLineData.value, // 滑线统计
-      transportTotalData: transportTotalData.value, // 起重机运输统计
-      installTotalData: installTotalData.value, // 安装统计
-      marketTotalData: marketTotalData.value, // 市场统计
-    }  
+    proxy.$modal.msgWarning('请完善轨道和滑线数据')
   }
-
-
 }
 
 defineExpose({
