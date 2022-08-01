@@ -729,8 +729,8 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    craneOperation: null,
-    productId: null,
+    craneOperation: '',
+    productId: '',
   },
   form: {
     craneType: 1,
@@ -954,23 +954,23 @@ function cancel() {
 // 表单重置
 function reset() {
   form.value = {
-    productName: null,
+    productName: '',
     craneType: '1',
-    craneOperation: null,
-    control: null,
-    craneModel: null,
-    span: null,
-    liftHeight: null,
-    workLevel: null,
-    ratedPower: null,
-    liftSpeed: null,
-    crabSpeed: null,
-    cartSpeed: null,
-    pressureMax: null,
-    uploadChart: null,
-    uploadCrane: null,
-    uploadPressure: null,
-    uploadPrice: null,
+    craneOperation: '',
+    control: '',
+    craneModel: '',
+    span: '',
+    liftHeight: '',
+    workLevel: '',
+    ratedPower: '',
+    liftSpeed: '',
+    crabSpeed: '',
+    cartSpeed: '',
+    pressureMax: '',
+    uploadChart: '',
+    uploadCrane: '',
+    uploadPressure: '',
+    uploadPrice: '',
     bomParams: undefined,
   }
   proxy.resetForm('saveFormRef')
@@ -988,7 +988,7 @@ function submitForm() {
   proxy.$refs['saveFormRef'].validate((valid) => {
     console.log(valid,form.value);
     if (valid) {
-      if (form.value.productId != null) {
+      if (form.value.productId != '') {
         updateProduct(form.value).then((response) => {
           if(response.code===200){
             proxy.$modal.msgSuccess('修改成功')  
