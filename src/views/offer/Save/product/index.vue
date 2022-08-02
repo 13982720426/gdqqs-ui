@@ -545,7 +545,7 @@ const queryPart = async (data, workshopItemKey, index, isEdit) => {
     craneType: data.type,
     craneOperation: data.operation,
     workLevel: data.level,
-    liftWeight: parseInt(data.weight),
+    liftWeight: parseInt(data.weight) + 'T',
   })
   if (resp.code === 200) {
     productList.value = resp.rows

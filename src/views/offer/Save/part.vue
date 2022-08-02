@@ -520,7 +520,7 @@
         </div>
         <div style="margin-top: 16px">
           <el-descriptions size="small" :column="4">
-            <el-descriptions-item label="招待费总数">
+            <el-descriptions-item label="招待费">
               <el-input-number
                 :disabled="offerStore.type === 'view'"
                 v-model="marketTotalData.hospitality"
@@ -782,8 +782,6 @@ const queryTrackByModel = async (model, row, key) => {
 
     if (carResp.code === 200 && carResp.rows.length) {
       const carData = toNumberByKey(carResp.rows[0], ['unprice', 'weight'])
-            console.log(1,carData,carResp);
-
       const firstData = toNumberByKey(resp.rows[0], [
         'cpUnprice',
         'tppUnprice',
@@ -1197,11 +1195,11 @@ offerStore.$subscribe((mutation, state) => {
         pItem.amount.forEach((amountItem) => {
           const newObject = {
             workshopName,
-            model: pItem.name,
+            model: amountItem.productData.name,
             weight: amountItem.weight,
           }
           let AcceptanceFee = 0
-          if (amountItem.weight > 3) {
+          if (parseFloat(amountItem.weight) > 3) {
             AcceptanceFee = 1000
           }
           marketTotal += numberToFixed(AcceptanceFee * tax.value)
