@@ -859,7 +859,13 @@ function craneOperationFormat(row, column) {
 }
 // 跨度翻译
 function spanFormat(row, column) {
-  return proxy.selectDictLabel(q_double_crane_span.value, row.span)
+  if (row.craneType == 1) {
+    return proxy.selectDictLabel(q_single_crane_span.value, row.span)
+  } else if (row.craneType == 2){
+    return proxy.selectDictLabel(q_double_crane_span.value, row.span)
+  }else{
+    return proxy.selectDictLabel(q_susp_crane_span.value, row.span)
+  }
 }
 //起升高度翻译
 function liftHeightFormat(row, column) {
