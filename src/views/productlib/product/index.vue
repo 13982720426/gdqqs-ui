@@ -100,7 +100,11 @@
         label="起升重量(t)"
         align="center"
         prop="liftWeight"
-      ></el-table-column>
+      >
+        <template #default="{ row }">
+          <span>{{ liftWeightFormat(row) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="起重机型号" align="center" prop="craneModel">
         <template #default="{ row }">
           <span>{{ craneModelFormat(row) }}</span>
@@ -289,7 +293,7 @@
               @change="getProductMSG"
             >
               <el-option
-                v-for="item in liftWeight"
+                v-for="item in q_lift_weight"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -808,6 +812,7 @@ const {
   q_crab_speed,
   q_cart_speed,
   q_pressure_max,
+  q_lift_weight
 } = proxy.useDict(
   'q_crane_type',
   'q_oper_mode',
@@ -829,6 +834,7 @@ const {
   'q_crab_speed',
   'q_cart_speed',
   'q_pressure_max',
+  'q_lift_weight'
 )
 const liftWeight = [
   {
@@ -844,6 +850,10 @@ function craneTypeFormat(row, column) {
 // 操作方式翻译
 function craneOperationFormat(row, column) {
   return proxy.selectDictLabel(q_oper_mode.value, row.craneOperation)
+}
+// 起升重量翻译
+function liftWeightFormat(row, column) {
+  return proxy.selectDictLabel(q_lift_weight.value, row.liftWeight)
 }
 // 起重机型号翻译
 function craneModelFormat(row, column) {
@@ -986,9 +996,8 @@ function getvalues(data) {
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs['saveFormRef'].validate((valid) => {
-    console.log(valid,form.value);
     if (valid) {
-      if (form.value.productId != '') {
+      if (form.value.productId != undefined ) {
         updateProduct(form.value).then((response) => {
           if(response.code===200){
             proxy.$modal.msgSuccess('修改成功')  

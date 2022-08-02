@@ -508,7 +508,7 @@
             :disabled="disabled"
           >
             <el-option
-              v-for="item in liftWeight"
+              v-for="item in q_lift_weight"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -677,13 +677,6 @@ import { listData } from '@/api/system/dict/data'
 
 const { proxy } = getCurrentInstance()
 
-const liftWeight = [
-  {
-    value: '2',
-    label: '2',
-  },
-]
-
 const props = defineProps({
   // 表格数据
   form: {
@@ -730,6 +723,7 @@ const {
   q_unit,
   q_electric_max,
   qq_electric_max,
+  q_lift_weight
 } = proxy.useDict(
   'q_part_type',
   'q_fixed_mode',
@@ -754,6 +748,7 @@ const {
   'q_unit',
   'q_electric_max',
   'qq_electric_max',
+  'q_lift_weight'
 )
 
 const craneTypeItem = ref([])
