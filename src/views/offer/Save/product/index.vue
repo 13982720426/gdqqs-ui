@@ -336,7 +336,7 @@
             {{ partDialog.factory_price_count }}
           </el-descriptions-item>
           <el-descriptions-item
-            label="预计利润率"
+            label="预计利润率%"
             width="150px"
             label-align="right"
           >
@@ -735,7 +735,7 @@ const getValues = async () => {
     })
 
     if(noPartData){
-      proxy.$modal.msgWarning('请完善数据')
+      proxy.$modal.msgWarning('请完善起重机部件')
     }else{
       const arr = []
       const workshopInfo = offerStore.getCustomerData().workshopInfo
