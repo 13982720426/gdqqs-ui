@@ -1167,6 +1167,7 @@ offerStore.$subscribe((mutation, state) => {
         splPartId:'',
       })
     })
+    
     if (Object.keys(partData).length) {
       // 回显
       QuoteData.track = partData.track
@@ -1185,15 +1186,17 @@ offerStore.$subscribe((mutation, state) => {
       let amountCount = 0 // 起重机数量
 
       const _craneDataSource = [] // 起重机运输
-      const _installDataSource = [] // 起重机运输
-      const _marketDataSource = [] // 起重机运输
+      const _installDataSource = [] // 起重机安装及吊装费
+      const _marketDataSource = [] // 起重机市场监管局特检费
 
       product.forEach((pItem) => {
         // 读取起重机数量，生成列表
         const workshopName = pItem.name
+        const key = pItem.key
         amountCount += pItem.amount.length
         pItem.amount.forEach((amountItem) => {
           const newObject = {
+            key,
             workshopName,
             model: amountItem.productData?.name,
             weight: amountItem.weight,

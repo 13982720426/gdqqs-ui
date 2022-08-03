@@ -38,14 +38,34 @@ export default defineStore('offer', {
         this.setProductData(productList)
       }
       if (Object.keys(this.partData).length) {
-        const { craneDataSource, installDataSource} = this.partData
+        const { craneDataSource, installDataSource, marketDataSource ,slipLineData} = this.partData
         workshopInfo.forEach((item, index) => {
-          craneDataSource[index].workshopName = item.name
-          installDataSource[index].workshopName = item.name
+          this.upDataPartDataName(craneDataSource, item) // 起重机运输
+          this.upDataPartDataName(installDataSource, item) // 起重机安装及吊装费
+          this.upDataPartDataName(marketDataSource, item) // 起重机市场监管局特检费
+          this.upDataPartDataName(slipLineData.splId, item) // 滑线/轨道数据
         })
         this.setPartData(this.partData)
       }
     },
+
+    /**
+     * 更新项目报价中车间名字    
+     * @param {} data  XX数据
+     * @param {} item  车间遍历的item
+     */
+    upDataPartDataName(data,item){
+      data.forEach(item2=>{
+        if(item2.key == item.key){
+          if(item2.workshopName){
+            item2.workshopName = item.name
+          }else{
+            item2.name = item.name
+          }
+        }
+      })
+    },
+
     setProductData(data) {
       this.product = data
     },

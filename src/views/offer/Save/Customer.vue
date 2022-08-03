@@ -516,8 +516,7 @@ const addCustomerListByItem = (item) => {
 }
 
 offerStore.$subscribe((mutation, state) => {
-  const { customerId, customerItem, workshopInfo, customerName } =
-    state.customer
+  const { customerId, customerItem, workshopInfo } = state.customer
   if (customerId && customerItem) {
     formData.customerId = customerId
     formData.customerItem = customerItem
