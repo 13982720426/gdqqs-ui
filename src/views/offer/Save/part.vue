@@ -1195,7 +1195,7 @@ offerStore.$subscribe((mutation, state) => {
         pItem.amount.forEach((amountItem) => {
           const newObject = {
             workshopName,
-            model: amountItem.productData.name,
+            model: amountItem.productData?.name,
             weight: amountItem.weight,
           }
           let AcceptanceFee = 0

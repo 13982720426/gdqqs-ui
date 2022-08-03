@@ -62,7 +62,7 @@ const checked = ref()
 checked.value = props.checked
 
 const emits = defineEmits(['select'])
-//
+
 const radioChange = (value) => {
   const item = props.dataSource.find((item) => item.customerId === value)
   checked.value = value

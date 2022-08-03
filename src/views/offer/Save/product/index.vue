@@ -662,8 +662,7 @@ watch(
   () => partDialog.value,
   (value) => {
     partDialog.value.price = (
-      value.factory_price_count *
-      (1 + partDialog.value.profitMargin / 100)
+      value.factory_price_count * (1 + partDialog.value.profitMargin / 100)
     ).toFixed(2)
     partDialog.value.profit = (
       partDialog.value.price - value.factory_price_count
@@ -681,34 +680,40 @@ const createAmount = (length) => {
   }))
 }
 
+//新增车间
+const addWorkshopInfo = (value) => {
+  value.forEach((item) => {
+    formModel.product.push({
+      name: item.name,
+      key: item.key,
+      amount: createAmount(item.amount),
+    })
+  })
+}
+
 offerStore.$subscribe((mutation, state) => {
   const { customer, product } = state
   const NewCustomer = offerStore.getCustomerData()
   formModel.product = []
   if (product.length) {
     if (JSON.stringify(NewCustomer.workshopInfo) === customer.workshopInfo) {
-      product.forEach((item) => {
+      const keyValues = NewCustomer.workshopInfo.map(item=>item.key)
+      const targetValues = product.filter(item => keyValues.includes(item.key)) //存在的车间直接push到formModel.product
+      targetValues.forEach((item) => {
         formModel.product.push(item)
       })
+
+      const keyValues2 = formModel.product.map(item=>item.key)
+      const noTargetValues = NewCustomer.workshopInfo.filter(item=>!keyValues2.includes(item.key)); //新增的车间单独push
+      if(noTargetValues.length !== 0){
+        addWorkshopInfo(noTargetValues)
+      }
     } else {
-      const workshopInfo = JSON.parse(customer.workshopInfo)
-      workshopInfo.forEach((item) => {
-        formModel.product.push({
-          name: item.name,
-          key: item.key,
-          amount: createAmount(item.amount),
-        })
-      })
+      addWorkshopInfo(NewCustomer.workshopInfo)
     }
   } else if (customer.workshopInfo) {
     const workshopInfo = JSON.parse(customer.workshopInfo)
-    workshopInfo.forEach((item) => {
-      formModel.product.push({
-        name: item.name,
-        key: item.key,
-        amount: createAmount(item.amount),
-      })
-    })
+    addWorkshopInfo(workshopInfo)
   }
   totalAll()
 
