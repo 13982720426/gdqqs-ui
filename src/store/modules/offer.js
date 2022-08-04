@@ -1,3 +1,7 @@
+import { cloneDeep, omit } from 'lodash-es'
+import { getDicts } from '@/api/system/dict/data'
+
+
 export default defineStore('offer', {
   state: () => ({
     customer: {},
@@ -5,6 +9,7 @@ export default defineStore('offer', {
     partData: {},
     payData: {},
     type: 'add',
+    tax: 0,
   }),
   actions: {
     setCustomerData(data) { // 设置客户信息
@@ -35,18 +40,25 @@ export default defineStore('offer', {
         this.setProductData(productList)
       }
       if (Object.keys(this.partData).length) {
-        const { craneDataSource, installDataSource, marketDataSource ,slipLineData} = this.partData
+        const { craneDataSource, installDataSource, marketDataSource ,slipLineData,slipLine,track} = this.partData
 
-        const keyValues=workshopInfo.map(item=>item.key)
-        slipLineData.splId = slipLineData.splId.filter(item=>keyValues.includes(item.key)) //去除删除的数据
+        // 更新数据
+        const keyValues=workshopInfo.map(item=>(item.key).toString())
 
+        for (let key in slipLine) {
+          if(!keyValues.includes(key)){
+           delete slipLine[key]
+          }
+        }
+        for (let key in track) {
+          if(!keyValues.includes(key)){
+           delete track[key]
+          }
+        }
+        slipLineData.splId = slipLineData.splId.filter(item=>keyValues.includes((item.key).toString())) //更新数据
         workshopInfo.forEach(workshopInfoItem => {
-          this.upDataName(craneDataSource, workshopInfoItem) // 起重机运输
-          this.upDataName(installDataSource, workshopInfoItem) // 起重机安装及吊装费
-          this.upDataName(marketDataSource, workshopInfoItem) // 起重机市场监管局特检费
           this.upDataName(slipLineData.splId, workshopInfoItem) // 滑线/轨道数据
         })
-        console.log('this.partData', this.partData);
         this.setPartData(this.partData)
       }
     },
@@ -68,8 +80,79 @@ export default defineStore('offer', {
       })
     },
 
+
+    numberToFixed(number, length = 2){
+      return number ? Number(number.toFixed(length)) : 0
+    },
+
     setProductData(data) {
-      console.log('this.partData2', this.partData,data);
+      if (Object.keys(this.partData).length) {
+        getDicts('q_tax_rate').then(resp=>{
+          if (resp.code === 200 && resp.data.length) {
+            this.tax = Number(resp.data[0].dictValue)
+
+            const oldSliLine = Object.keys(this.partData.slipLine)
+            const newSliLine = this.partData.slipLineData.splId.map(item=>(item.key).toString())
+            if(oldSliLine.toString() !== newSliLine.toString()){
+              const keyValues = this.partData.slipLineData.splId.map(item=>item.key)
+              data = data.filter(item=>keyValues.includes(item.key)) //更新数据
+            }
+
+            let marketTotal = 0 // 市场成本合计
+            let amountCount = 0 // 起重机数量
+            const _craneDataSource = [] // 起重机运输
+            const _installDataSource = [] // 起重机安装及吊装费
+            const _marketDataSource = [] // 起重机市场监管局特检费
+
+            data.forEach((pItem) => {
+              // 读取起重机数量，生成列表
+              const workshopName = pItem.name
+              const key = pItem.key
+              amountCount += pItem.amount.length
+              pItem.amount.forEach((amountItem) => {
+                const newObject = {
+                  key,
+                  workshopName,
+                  model: amountItem.productData?.name,
+                  weight: amountItem.weight,
+                }
+                let AcceptanceFee = 0
+                if (parseFloat(amountItem.weight) > 3) {
+                  AcceptanceFee = 1000
+                }
+                marketTotal += this.numberToFixed(AcceptanceFee * this.tax)
+                _craneDataSource.push({
+                  ...cloneDeep(newObject),
+                  freight: 2500,
+                  taxPayment: 0,
+                  total: 0,
+                })
+                _installDataSource.push({
+                  ...cloneDeep(newObject),
+                  install: 1000,
+                  hoisting: 1500,
+                  taxPayment: 0,
+                  total: 0,
+                })
+                _marketDataSource.push({
+                  ...cloneDeep(newObject),
+                  acceptance: AcceptanceFee,
+                  taxPayment: 0,
+                })
+              })
+            })
+            this.partData.marketTotalData.total = marketTotal
+            this.partData.craneDataSource = _craneDataSource
+            this.partData.installDataSource = _installDataSource
+            this.partData.marketDataSource = _marketDataSource
+              
+            this.partData.transportTotalData.count = amountCount
+            this.partData.installTotalData.count = amountCount
+            this.partData.marketTotalData.count = amountCount
+          }
+        })
+        this.setPartData(this.partData)
+      }
 
       this.product = data
     },
@@ -122,6 +205,7 @@ export default defineStore('offer', {
       this.partData = {}
       this.payData = {}
       this.type = 'add'
+      this.tax = 0
     },
   },
 })
