@@ -1255,6 +1255,7 @@ const getValues = async () => {
   if(newlist.length != 0){
     // 轨道数据判断
     QuoteData.track.dataSource = newlist
+
     let noTrack = Object.values(newlist).map(item=>item.trackList.length).includes(0) //是否轨道无数据
     if(!noTrack){
       //轨道有数据，部分未填写
@@ -1274,7 +1275,18 @@ const getValues = async () => {
       noSlipLine = Object.values(QuoteData.slipLine).map(item=>item.length).includes(0) //是否滑线未选择
     }
 
-    if(noSlipLine){
+   // 有新增情况下
+    const keyValues = craneDataSource.value.map(item=>(item.key).toString())
+    const keyValues2 = newlist.map(item=>(item.key).toString())
+    if(keyValues.toString()!==keyValues2.toString()){
+      noTrack = true
+      noSlipLine = true
+    }
+   
+
+    if(noSlipLine & noSlipLine){
+      proxy.$modal.msgWarning('请完善轨道或滑线数据')
+    }else if(noSlipLine){
       proxy.$modal.msgWarning('请完善滑线数据')
     }else if(noTrack){
       proxy.$modal.msgWarning('请完善轨道数据')
