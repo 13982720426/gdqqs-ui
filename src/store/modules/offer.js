@@ -44,7 +44,6 @@ export default defineStore('offer', {
 
         // 更新数据
         const keyValues=workshopInfo.map(item=>(item.key).toString())
-
         for (let key in slipLine) {
           if(!keyValues.includes(key)){
            delete slipLine[key]
@@ -157,6 +156,7 @@ export default defineStore('offer', {
       this.product = data
     },
     setPartData(data) {
+      console.log('setPartData',data);
       this.partData = data
     },
     setPaymentData(data) {
