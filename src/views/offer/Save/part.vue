@@ -218,12 +218,6 @@
                 "
                 placeholder="请选择滑线"
               >
-                <!-- <el-option
-                  :key="slipItem.splPartId"
-                  v-for="slipItem in slipLineOptions"
-                  :label="slipItem.splPartName"
-                  :value="slipItem.splPartId"
-                /> -->
               <el-option
                 v-for="item in slipLineOptions"
                 :key="item.splPartId"
@@ -1150,9 +1144,20 @@ watch(
   { deep: true },
 )
 
+let once = function(fn) {
+    let caller = true;
+    return function() {
+        if(caller) {
+            caller = false
+            fn.apply(this, arguments)
+        }
+    }
+}
+
 offerStore.$subscribe((mutation, state) => {
-  queryListSplpart()
+  // queryListSplpart()
   const { customer, product, partData } = state
+
   if (customer.workshopInfo && product.length) {
     workshopData.value = []
     const workshopInfo = JSON.parse(customer.workshopInfo)
@@ -1167,75 +1172,86 @@ offerStore.$subscribe((mutation, state) => {
         splPartId:'',
       })
     })
-    
-    if (Object.keys(partData).length) {
+      if (Object.keys(partData).length) {
       // 回显
-      QuoteData.track = partData.track
-      QuoteData.slipLine = partData.slipLine
       craneDataSource.value = partData.craneDataSource // 起重机运输
       installDataSource.value = partData.installDataSource // 安装
       marketDataSource.value = partData.marketDataSource // 市场
-      trackData.value = partData.trackData // 轨道统计
-      slipLineData.value = partData.slipLineData // 滑线统计
+      //trackData.value = partData.trackData // 轨道统计
+     // slipLineData.value = partData.slipLineData // 滑线统计
       transportTotalData.value = partData.transportTotalData // 起重机运输统计
       installTotalData.value = partData.installTotalData // 安装统计
       marketTotalData.value = partData.marketTotalData // 市场统计
-      workshopData.value=partData.slipLineData.splId // 滑线下拉数据
-    } else {
-      let marketTotal = 0 // 市场成本合计
-      let amountCount = 0 // 起重机数量
 
-      const _craneDataSource = [] // 起重机运输
-      const _installDataSource = [] // 起重机安装及吊装费
-      const _marketDataSource = [] // 起重机市场监管局特检费
+      QuoteData.track = partData.track
+      QuoteData.slipLine = partData.slipLine
 
-      product.forEach((pItem) => {
-        // 读取起重机数量，生成列表
-        const workshopName = pItem.name
-        const key = pItem.key
-        amountCount += pItem.amount.length
-        pItem.amount.forEach((amountItem) => {
-          const newObject = {
-            key,
-            workshopName,
-            model: amountItem.productData?.name,
-            weight: amountItem.weight,
+
+      const keyValues = partData.slipLineData.splId.map(item=>item.key)
+
+      const newWorkshopData = workshopData.value.filter(item=>!keyValues.includes(item.key)) //新增的数据 无splPartId
+      if(newWorkshopData.length!==0){
+        newWorkshopData.forEach(item=>{
+            partData.slipLineData.splId.push(item)
           }
-          let AcceptanceFee = 0
-          if (parseFloat(amountItem.weight) > 3) {
-            AcceptanceFee = 1000
-          }
-          marketTotal += numberToFixed(AcceptanceFee * tax.value)
-          _craneDataSource.push({
-            ...cloneDeep(newObject),
-            freight: 2500,
-            taxPayment: 0,
-            total: 0,
-          })
-          _installDataSource.push({
-            ...cloneDeep(newObject),
-            install: 1000,
-            hoisting: 1500,
-            taxPayment: 0,
-            total: 0,
-          })
-          _marketDataSource.push({
-            ...cloneDeep(newObject),
-            acceptance: AcceptanceFee,
-            taxPayment: 0,
+        )
+      }
+      workshopData.value = partData.slipLineData.splId //滑线数据回显
+    } 
+    else {
+        let marketTotal = 0 // 市场成本合计
+        let amountCount = 0 // 起重机数量
+        const _craneDataSource = [] // 起重机运输
+        const _installDataSource = [] // 起重机安装及吊装费
+        const _marketDataSource = [] // 起重机市场监管局特检费
+
+        product.forEach((pItem) => {
+          // 读取起重机数量，生成列表
+          const workshopName = pItem.name
+          const key = pItem.key
+          amountCount += pItem.amount.length
+          pItem.amount.forEach((amountItem) => {
+            const newObject = {
+              key,
+              workshopName,
+              model: amountItem.productData?.name,
+              weight: amountItem.weight,
+            }
+            let AcceptanceFee = 0
+            if (parseFloat(amountItem.weight) > 3) {
+              AcceptanceFee = 1000
+            }
+            marketTotal += numberToFixed(AcceptanceFee * tax.value)
+            _craneDataSource.push({
+              ...cloneDeep(newObject),
+              freight: 2500,
+              taxPayment: 0,
+              total: 0,
+            })
+            _installDataSource.push({
+              ...cloneDeep(newObject),
+              install: 1000,
+              hoisting: 1500,
+              taxPayment: 0,
+              total: 0,
+            })
+            _marketDataSource.push({
+              ...cloneDeep(newObject),
+              acceptance: AcceptanceFee,
+              taxPayment: 0,
+            })
           })
         })
-      })
 
-      marketTotalData.value.total = marketTotal
-      craneDataSource.value = _craneDataSource
-      installDataSource.value = _installDataSource
-      marketDataSource.value = _marketDataSource
+        marketTotalData.value.total = marketTotal
+        craneDataSource.value = _craneDataSource
+        installDataSource.value = _installDataSource
+        marketDataSource.value = _marketDataSource
 
-      transportTotalData.value.count = amountCount
-      installTotalData.value.count = amountCount
-      marketTotalData.value.count = amountCount
-    }
+        transportTotalData.value.count = amountCount
+        installTotalData.value.count = amountCount
+        marketTotalData.value.count = amountCount
+      }
   }
 })
 

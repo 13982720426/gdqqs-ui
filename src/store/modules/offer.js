@@ -22,9 +22,7 @@ export default defineStore('offer', {
               weight: undefined,
               level: undefined,
             }))
-
             productObj.name = item.name
-
             const newAmounts = amounts.map((item, index) => {
               if (index + 1 <= amountCount) {
                 return productObj.amount[index]
@@ -32,19 +30,23 @@ export default defineStore('offer', {
               return item
             })     
             productObj.amount = [...newAmounts]
-   
           }
         })
         this.setProductData(productList)
       }
       if (Object.keys(this.partData).length) {
         const { craneDataSource, installDataSource, marketDataSource ,slipLineData} = this.partData
-        workshopInfo.forEach((item, index) => {
-          this.upDataPartDataName(craneDataSource, item) // 起重机运输
-          this.upDataPartDataName(installDataSource, item) // 起重机安装及吊装费
-          this.upDataPartDataName(marketDataSource, item) // 起重机市场监管局特检费
-          this.upDataPartDataName(slipLineData.splId, item) // 滑线/轨道数据
+
+        const keyValues=workshopInfo.map(item=>item.key)
+        slipLineData.splId = slipLineData.splId.filter(item=>keyValues.includes(item.key)) //去除删除的数据
+
+        workshopInfo.forEach(workshopInfoItem => {
+          this.upDataName(craneDataSource, workshopInfoItem) // 起重机运输
+          this.upDataName(installDataSource, workshopInfoItem) // 起重机安装及吊装费
+          this.upDataName(marketDataSource, workshopInfoItem) // 起重机市场监管局特检费
+          this.upDataName(slipLineData.splId, workshopInfoItem) // 滑线/轨道数据
         })
+        console.log('this.partData', this.partData);
         this.setPartData(this.partData)
       }
     },
@@ -54,19 +56,21 @@ export default defineStore('offer', {
      * @param {} data  XX数据
      * @param {} item  车间遍历的item
      */
-    upDataPartDataName(data,item){
+    upDataName(data,workshopInfoItem){
       data.forEach(item2=>{
-        if(item2.key == item.key){
+        if(item2.key == workshopInfoItem.key){
           if(item2.workshopName){
-            item2.workshopName = item.name
+            item2.workshopName = workshopInfoItem.name
           }else{
-            item2.name = item.name
+            item2.name = workshopInfoItem.name
           }
         }
       })
     },
 
     setProductData(data) {
+      console.log('this.partData2', this.partData,data);
+
       this.product = data
     },
     setPartData(data) {
