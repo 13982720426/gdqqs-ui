@@ -1144,18 +1144,8 @@ watch(
   { deep: true },
 )
 
-let once = function(fn) {
-    let caller = true;
-    return function() {
-        if(caller) {
-            caller = false
-            fn.apply(this, arguments)
-        }
-    }
-}
 
 offerStore.$subscribe((mutation, state) => {
-  // queryListSplpart()
   const { customer, product, partData } = state
 
   if (customer.workshopInfo && product.length) {
@@ -1177,18 +1167,14 @@ offerStore.$subscribe((mutation, state) => {
       craneDataSource.value = partData.craneDataSource // 起重机运输
       installDataSource.value = partData.installDataSource // 安装
       marketDataSource.value = partData.marketDataSource // 市场
-      //trackData.value = partData.trackData // 轨道统计
-     // slipLineData.value = partData.slipLineData // 滑线统计
       transportTotalData.value = partData.transportTotalData // 起重机运输统计
       installTotalData.value = partData.installTotalData // 安装统计
-      marketTotalData.value = partData.marketTotalData // 市场统计
+      marketTotalData.value = partData.marketTotalData // 市场统计        
+
 
       QuoteData.track = partData.track
       QuoteData.slipLine = partData.slipLine
-
-
       const keyValues = partData.slipLineData.splId.map(item=>item.key)
-
       const newWorkshopData = workshopData.value.filter(item=>!keyValues.includes(item.key)) //新增的数据 无splPartId
       if(newWorkshopData.length!==0){
         newWorkshopData.forEach(item=>{
