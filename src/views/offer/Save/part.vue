@@ -584,7 +584,7 @@ import { listTrackpart } from '@/api/business/trackpart'
 import { listCrastopmodelpart } from '@/api/business/crastopmodelpart'
 import { listSplpart } from '@/api/business/splpart'
 import { getDicts } from '@/api/system/dict/data'
-import { cloneDeep, omit } from 'lodash-es'
+import { cloneDeep, omit,uniq ,sortedUniq,sortBy} from 'lodash-es'
 
 
 const offerStore = useOfferStore()
@@ -1276,14 +1276,17 @@ const getValues = async () => {
     }
 
    // 有新增情况下
-    const keyValues = craneDataSource.value.map(item=>(item.key).toString())
-    const keyValues2 = newlist.map(item=>(item.key).toString())
+    let keyValues = craneDataSource.value.map(item=> Number(item.key))
+    keyValues = sortBy(uniq(keyValues))
+
+    let keyValues2 = newlist.map(item=> Number(item.key))
+    keyValues2 = sortBy(uniq(keyValues2))
+
     if(keyValues.toString()!==keyValues2.toString()){
       noTrack = true
       noSlipLine = true
     }
    
-
     if(noSlipLine & noSlipLine){
       proxy.$modal.msgWarning('请完善轨道或滑线数据')
     }else if(noSlipLine){
