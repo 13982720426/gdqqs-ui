@@ -38,36 +38,52 @@ export default defineStore('offer', {
           }
         })
         this.setProductData(productList)
-      }
-      if (Object.keys(this.partData).length) {
-        const { craneDataSource, installDataSource, marketDataSource ,slipLineData,slipLine,track} = this.partData
 
-        // 更新数据
-        const keyValues=workshopInfo.map(item=>(item.key).toString())
-        for (let key in slipLine) {
-          if(!keyValues.includes(key)){
-           delete slipLine[key]
-          }
-        }
-        for (let key in track) {
-          if(!keyValues.includes(key)){
-           delete track[key]
-          }
-        }
-        slipLineData.splId = slipLineData.splId.filter(item=>keyValues.includes((item.key).toString())) //更新数据
+        productList.forEach(item2=>{
+          this.partData.slipLineData.splId.forEach(item3=>{
+            if(item2.key === item3.key){
+              item2.amount.forEach(item4=>{
+                if(item4.type == undefined){
+                  item3.splPartId = '' // 起重机数量新增，清空对应滑线
+                }
+              })              
+            }
+          })
+        })
+        
+        this.upDataPartData(this.partData,workshopInfo)   // 更新项目报价数据
+
         workshopInfo.forEach(workshopInfoItem => {
-          this.upDataName(slipLineData.splId, workshopInfoItem) // 滑线/轨道数据
+          this.upDataPartName(this.partData.slipLineData.splId, workshopInfoItem) // 滑线/轨道数据名称
         })
         this.setPartData(this.partData)
+
       }
     },
 
+    // 更新项目报价数据
+    upDataPartData(partData,workshopInfo){
+      const {slipLineData,slipLine,track} = partData
+      const keyValues = workshopInfo.map(item=>(item.key).toString())
+      for (let key in slipLine) {
+        if(!keyValues.includes(key)){
+          delete slipLine[key]
+        }
+      }
+      for (let key in track) {
+        if(!keyValues.includes(key)){
+          delete track[key]
+        }
+      }
+      slipLineData.splId = slipLineData.splId.filter(item=>keyValues.includes((item.key).toString())) //更新数据
+    },
     /**
      * 更新项目报价中车间名字    
      * @param {} data  XX数据
      * @param {} item  车间遍历的item
      */
-    upDataName(data,workshopInfoItem){
+    upDataPartName(data,workshopInfoItem){
+      const productList = this.getProductData()
       data.forEach(item2=>{
         if(item2.key == workshopInfoItem.key){
           if(item2.workshopName){
@@ -156,7 +172,6 @@ export default defineStore('offer', {
       this.product = data
     },
     setPartData(data) {
-      console.log('setPartData',data);
       this.partData = data
     },
     setPaymentData(data) {

@@ -623,7 +623,6 @@ const onProductChange = (value) => {
 
     bomData.map((item, index) => {
       if (item.offerCode!== null) {
-      // if (item.offerCode !== '') {
         const { values, endIndex } = findSameOfferCode(bomData, index)
         item.values = values.filter(item => !!item.model)
         item.endIndex = endIndex

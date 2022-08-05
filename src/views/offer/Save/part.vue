@@ -1202,11 +1202,11 @@ offerStore.$subscribe((mutation, state) => {
       installTotalData.value = partData.installTotalData // 安装统计
       marketTotalData.value = partData.marketTotalData // 市场统计        
 
-
       QuoteData.track = partData.track
       QuoteData.slipLine = partData.slipLine
       const keyValues = partData.slipLineData.splId.map(item=>item.key)
       const newWorkshopData = workshopData.value.filter(item=>!keyValues.includes(item.key)) //新增的数据 无splPartId
+
       if(newWorkshopData.length!==0){
         newWorkshopData.forEach(item=>{
             partData.slipLineData.splId.push(item)
@@ -1304,24 +1304,26 @@ const getValues = async () => {
       noSlipLine = Object.values(QuoteData.slipLine).map(item=>item.length).includes(0) //是否滑线未选择
     }
 
-   // 有新增情况下
-    let keyValues = craneDataSource.value.map(item=> Number(item.key))
-    keyValues = sortBy(uniq(keyValues))
-
-    let keyValues2 = newlist.map(item=> Number(item.key))
-    keyValues2 = sortBy(uniq(keyValues2))
-
+   // 有车间新增情况下
+    const keyValues = sortBy(uniq(craneDataSource.value.map(item=> Number(item.key))))
+    const keyValues2 = sortBy(uniq(newlist.map(item=> Number(item.key))))
     if(keyValues.toString()!==keyValues2.toString()){
       noTrack = true
       noSlipLine = true
+    }else if(keyValues2.length !== Object.getOwnPropertyNames(QuoteData.slipLine).length){
+      noSlipLine = true
     }
-   
+
+    const noSplPartId = slipLineData.value.splId.find(item=>!item.splPartId) //新增起重机需要重新选择滑线
+
     if(noTrack & noSlipLine){
-      proxy.$modal.msgWarning('请完善轨道或滑线数据')
-    }else if(noSlipLine){
-      proxy.$modal.msgWarning('请完善滑线数据')
+      proxy.$modal.msgWarning('请完善轨道和滑线数据')
     }else if(noTrack){
       proxy.$modal.msgWarning('请完善轨道数据')
+    }else if(noTrack){
+      proxy.$modal.msgWarning('请完善轨道数据')
+    }else if(!!noSplPartId){
+      proxy.$modal.msgWarning('有车间新增起重机，需要重新选择滑线')
     }else{
       return {
         track: QuoteData.track, // 轨道
