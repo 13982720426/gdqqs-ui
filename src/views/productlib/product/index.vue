@@ -836,12 +836,6 @@ const {
   'q_pressure_max',
   'q_lift_weight'
 )
-const liftWeight = [
-  {
-    value: '2',
-    label: '2',
-  },
-]
 
 // 超重机类型翻译
 function craneTypeFormat(row, column) {

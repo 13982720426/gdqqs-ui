@@ -138,7 +138,7 @@
                   width="150px"
                   label-align="right"
                 >
-                  {{ amountItem.productData.ratedPower }}
+                  {{ ratedPowerFormat(amountItem.productData.ratedPower) }}
                 </el-descriptions-item>
                 <el-descriptions-item
                   label="起升速度"
@@ -451,6 +451,16 @@ const partDialog = ref({
   profit: 0,
   price: 0,
 })
+
+const {
+  q_rated_power,
+} = proxy.useDict(
+  'q_rated_power',
+)
+// 额定功率翻译
+function ratedPowerFormat(row, column) {
+  return proxy.selectDictLabel(q_rated_power.value, row)
+}
 
 /**
  *

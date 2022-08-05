@@ -919,6 +919,15 @@ const slipCount = (row) => {
   return count
 }
 
+const {
+  q_rated_power,
+} = proxy.useDict(
+  'q_rated_power',
+)
+// 额定功率翻译
+function ratedPowerFormat(row, column) {
+  return proxy.selectDictLabel(q_rated_power.value, row)
+}
 
 /**
  * 滑线选择
@@ -930,7 +939,7 @@ const slipLineChange = (id, item) => {
   // 计算当前车间总电流
   const productItem = findProduct(item.key)
   const totalPower = productItem.amount.reduce(
-    (prev, next) => prev + Number(next.productData.ratedPower),
+    (prev, next) => prev + Number(ratedPowerFormat(next.productData.ratedPower)),
     0,
   )
   const totalCurrent = totalPower / 380 * 1.1 * 1000
