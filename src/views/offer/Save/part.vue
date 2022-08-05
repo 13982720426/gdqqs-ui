@@ -250,7 +250,11 @@
                 prop="electricMax"
                 label="最大电流"
                 width="100"
-              />
+              >
+                <template #default="{ row }">
+                  {{electricMaxFormat(row)}}
+                </template>
+              </el-table-column>
               <el-table-column prop="length" label="滑线数量(米)" width="120" />
               <el-table-column
                 prop="collectorCount"
@@ -584,7 +588,7 @@ import { listTrackpart } from '@/api/business/trackpart'
 import { listCrastopmodelpart } from '@/api/business/crastopmodelpart'
 import { listSplpart } from '@/api/business/splpart'
 import { getDicts } from '@/api/system/dict/data'
-import { cloneDeep, omit } from 'lodash-es'
+import { cloneDeep, omit, uniq, sortBy} from 'lodash-es'
 
 
 const offerStore = useOfferStore()
@@ -688,6 +692,22 @@ const QuoteData = reactive({
   slipLine: {}, // 滑线table数据
 })
 
+const {
+  q_electric_max,
+  qq_electric_max,
+} = proxy.useDict(
+  'q_electric_max',
+  'qq_electric_max',
+)
+//最大电流翻译
+function electricMaxFormat(row, column) {
+  if (row.splLevel == 1) {
+    return proxy.selectDictLabel(q_electric_max.value, row.electricMax)
+  } else {
+    return proxy.selectDictLabel(qq_electric_max.value, row.electricMax)
+  }
+}
+
 const getKey = () => {
   return new Date().valueOf()
 }
@@ -774,7 +794,6 @@ const queryTrackByModel = async (model, row, key) => {
   if (resp.code === 200 && resp.rows.length) {
     // 获取大车止档数据
     const carResp = await listCrastopmodelpart({ trackModel: model })
-
 
     if (carResp.code === 200 && carResp.rows.length) {
       const carData = toNumberByKey(carResp.rows[0], ['unprice', 'weight'])
@@ -1276,15 +1295,18 @@ const getValues = async () => {
     }
 
    // 有新增情况下
-    const keyValues = craneDataSource.value.map(item=>(item.key).toString())
-    const keyValues2 = newlist.map(item=>(item.key).toString())
+    let keyValues = craneDataSource.value.map(item=> Number(item.key))
+    keyValues = sortBy(uniq(keyValues))
+
+    let keyValues2 = newlist.map(item=> Number(item.key))
+    keyValues2 = sortBy(uniq(keyValues2))
+
     if(keyValues.toString()!==keyValues2.toString()){
       noTrack = true
       noSlipLine = true
     }
    
-
-    if(noSlipLine & noSlipLine){
+    if(noTrack & noSlipLine){
       proxy.$modal.msgWarning('请完善轨道或滑线数据')
     }else if(noSlipLine){
       proxy.$modal.msgWarning('请完善滑线数据')
