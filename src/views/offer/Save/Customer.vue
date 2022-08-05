@@ -457,7 +457,7 @@ const DEFAULT_WORK_ITEM = {
   key: '1',
   name: undefined,
   railModel: undefined,
-  workshopLength: 1,
+  workshopLength: 2,
   workshopSpan: 1,
   liftingHeight: 1,
   amount: 1,

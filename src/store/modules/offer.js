@@ -39,14 +39,18 @@ export default defineStore('offer', {
         })
         this.setProductData(productList)
 
+        // 车间起重机数量变化，清空滑线
         productList.forEach(item2=>{
           this.partData.slipLineData.splId.forEach(item3=>{
             if(item2.key === item3.key){
               item2.amount.forEach(item4=>{
                 if(item4.type == undefined){
-                  item3.splPartId = '' // 起重机数量新增，清空对应滑线
+                  item3.splPartId = '' // 车间起重机数量新增，清空对应滑线
                 }
-              })              
+              })
+              if(item2.amount.length!==item3.amount){
+                item3.splPartId = '' // 车间起重机数量减少，清空对应滑线
+              }
             }
           })
         })

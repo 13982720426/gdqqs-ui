@@ -1301,7 +1301,11 @@ const getValues = async () => {
     // 滑线数据判断
     let noSlipLine = true
     if(Object.keys(QuoteData.slipLine).length != 0){
-      noSlipLine = Object.values(QuoteData.slipLine).map(item=>item.length).includes(0) //是否滑线未选择
+      const data = Object.values(QuoteData.slipLine).map(item=>item.length)
+      noSlipLine = data.includes([0])  //是否滑线未选择
+      if(data[0] == 0){
+        noSlipLine = true
+      }
     }
 
    // 有车间新增情况下
@@ -1320,10 +1324,10 @@ const getValues = async () => {
       proxy.$modal.msgWarning('请完善轨道和滑线数据')
     }else if(noTrack){
       proxy.$modal.msgWarning('请完善轨道数据')
-    }else if(noTrack){
-      proxy.$modal.msgWarning('请完善轨道数据')
+    }else if(noSlipLine){
+      proxy.$modal.msgWarning('请完善滑线数据')
     }else if(!!noSplPartId){
-      proxy.$modal.msgWarning('有车间新增起重机，需要重新选择滑线')
+      proxy.$modal.msgWarning('有车间新增或减少起重机，需要重新选择对应滑线')
     }else{
       return {
         track: QuoteData.track, // 轨道
