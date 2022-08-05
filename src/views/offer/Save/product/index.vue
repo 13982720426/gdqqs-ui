@@ -2,7 +2,7 @@
   <div class="offer-save-product">
     <OfferSaveTitle title="产品信息">
       <el-form
-        ref="form"
+        ref="formRef"
         :rules="rules"
         :model="formModel"
         label-position="left"
@@ -384,7 +384,7 @@ const offerStore = useOfferStore()
 const dialogVisible = ref(false)
 const partDataSource = ref([])
 const productList = ref([])
-const form = ref()
+const formRef = ref()
 const productId = ref()
 const formModel = reactive({
   product: [],
@@ -498,7 +498,7 @@ const savePartData = () => {
       const amountItem = item.amount[productItem.index]
       amountItem.productId = productMsg.productId
       amountItem.partData = cloneDeep(partDataSource.value) // 部件列表信息
-      amountItem.partQuote = cloneDeep(partDialog) // 部件价格统计信息
+      amountItem.partQuote = cloneDeep(partDialog.value) // 部件价格统计信息
       amountItem.productData = {
         // 部件对应产品信息
         name: productItem.craneModel,
@@ -737,7 +737,8 @@ offerStore.$subscribe((mutation, state) => {
 })
 
 const getValues = async () => {
-  const data = await form.value.validate()
+
+  const data = await formRef.value.validate()
   if (data) {
     const newData = cloneDeep(formModel)
 
