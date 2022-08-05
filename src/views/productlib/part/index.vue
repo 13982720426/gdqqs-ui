@@ -1196,6 +1196,7 @@ function handleUpdate(row) {
     getTrackpart(trackPartId).then((response) => {
       form.value = response.data
       saveTitle.value = '修改轨道'
+      saveType.value = 'install'
     })
   } else if (activeTab.value == 'third') {
     const splPartId = row.splPartId || ids.value
