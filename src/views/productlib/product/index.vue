@@ -568,6 +568,7 @@
         <el-col :span="8">
           <el-form-item label="上传工厂价BOM清单" prop="uploadPrice">
             <file-upload
+              ref="bomRef"
               :limit="1"
               :show-file-list="false"
               v-model:modelValue="form.uploadPrice"
@@ -581,7 +582,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <span style="font-size: 12px; padding-bottom: 50px">型号：</span>
+      <span style="font-size: 14px; padding-bottom: 10px">型号：</span>
       <QTable
         :loading="loading"
         :data="excelList"
@@ -650,7 +651,6 @@ import {
 import QTable from '../components/QTable.vue'
 import SaveTitle from '@/views/offer/components/Title'
 import { UploadFilled } from '@element-plus/icons-vue'
-// import { getcraneModelBycraneType } from '@/api/business/product'
 
 const upUrl = ref(
   import.meta.env.VITE_APP_BASE_API + '/business/product/readExcel',
@@ -783,9 +783,10 @@ const data = reactive({
     uploadPressure: [
       { required: true, message: '请上传起重机轮压数据', trigger: 'blur' },
     ],
-    uploadPrice: [
-      { required: true, message: '请上传工厂价BOM清单', trigger: 'blur' },
-    ],
+    //BOM清单 非必填，型号列表有数据就不填
+    // uploadPrice: [
+    //   { required: true, message: '请上传工厂价BOM清单', trigger: 'blur' },
+    // ],
   },
 })
 
@@ -980,33 +981,40 @@ function reset() {
   proxy.resetForm('saveFormRef')
 }
 
+
 function getvalues(data) {
   data.forEach((e) => {
     excelList.value = e.bomParams
   })
   form.value.bomParams = JSON.stringify(excelList.value)
 }
+const bomRef = ref(null);
 
 /** 提交按钮 */
 function submitForm() {
   proxy.$refs['saveFormRef'].validate((valid) => {
     if (valid) {
-      if (form.value.productId != undefined ) {
-        updateProduct(form.value).then((response) => {
-          if(response.code===200){
-            proxy.$modal.msgSuccess('修改成功')  
-            showList.value = true
-            getList()         
-          }
-        })
-      } else {
-        addProduct(form.value).then((response) => {
-          if(response.code===200){
-            proxy.$modal.msgSuccess('新增成功') 
-            showList.value = true  
-            getList()         
-          }
-        })
+      form.value.bomParams = JSON.stringify(excelList.value)
+      if(excelList.value == null){
+        proxy.$modal.msgError('BOM清单为空，请上传或根据起升重量、起升高度、跨度和工作级别查询BOM清单')
+      }else{
+        if (form.value.productId != undefined ) {
+          updateProduct(form.value).then((response) => {
+            if(response.code===200){
+              proxy.$modal.msgSuccess('修改成功')  
+              showList.value = true
+              getList()         
+            }
+          })
+        } else {
+          addProduct(form.value).then((response) => {
+            if(response.code===200){
+              proxy.$modal.msgSuccess('新增成功') 
+              showList.value = true  
+              getList()         
+            }
+          })
+        }
       }
     }
   })
@@ -1088,6 +1096,7 @@ async function getProductMSG() {
     if (res.code === 200) {
       const data = JSON.parse(res.data.bomParams)
       excelList.value = data
+      bomRef.value.handleDelete(0); //删除bom清单列表文件
     } else {
       proxy.$modal.msgError(`查询失败，${response.msg}`)
     }
