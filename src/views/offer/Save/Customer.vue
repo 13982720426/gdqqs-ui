@@ -447,7 +447,7 @@ const DEFAULT_WORK_ITEM = {
   key: '1',
   name: undefined,
   railModel: undefined,
-  workshopLength: 2,
+  workshopLength: 20,
   workshopSpan: 1,
   liftingHeight: 1,
   amount: 1,
@@ -495,9 +495,18 @@ const removeWork = (key) => {
 const getValues = async () => {
   const data = await form.value.validate()
   if (data) {
+    const { workshopInfo } = formData
+    const workshopLength = workshopInfo.filter(item => item.workshopLength < 20)
+    if(workshopLength.length !== 0 ){
+      proxy.$modal.msgWarning('车间长度低于20米，确定无问题请忽略')
+    }else{
+      // const newData = cloneDeep(formData)
+      // newData.workshopInfo = JSON.stringify(newData.workshopInfo)
+      // return omit(newData, ['customer'])      
+    }
     const newData = cloneDeep(formData)
     newData.workshopInfo = JSON.stringify(newData.workshopInfo)
-    return omit(newData, ['customer'])
+    return omit(newData, ['customer'])  
   }
 }
 
