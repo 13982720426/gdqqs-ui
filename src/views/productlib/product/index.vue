@@ -528,7 +528,18 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8"></el-col>
+        <el-col :span="8">
+          <el-form-item label="文件模板" prop="data">
+            <el-button 
+              type="primary"
+              icon="UploadFilled"
+              size="mini"
+              v-hasPermi="['system:dict:export']"
+            >
+              <a href="../../../../public/data/productlib/product/productlibProduct.rar" download="productlibProduct.rar">下载模板</a>
+            </el-button>  
+          </el-form-item>
+        </el-col>
         <el-col :span="8">
           <el-form-item label="上传设计总图" prop="uploadChart">
             <file-upload

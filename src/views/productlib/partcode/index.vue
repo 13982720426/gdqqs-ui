@@ -24,6 +24,17 @@
           >
             导入
           </el-button>
+          <el-button
+            type="primary"
+            icon="UploadFilled"
+            size="mini"
+            @click="handleExport"
+            color="#ffdac6"
+            class="sel"
+            v-hasPermi="['system:dict:export']"
+          >
+            <a href="../../../../public/data/productlib/partcode/物料编码导入模板.xlsx" download="物料编码导入模板.xlsx">下载模板</a>
+          </el-button>
           <!-- <el-button
             type="primary"
             icon="UploadFilled"
@@ -370,6 +381,12 @@ const upload = reactive({
 function handleImport() {
   upload.title = '部件编码导入'
   upload.open = true
+}
+/** 模板下载按钮操作 */
+function handleExport() {
+  console.log(111);
+  // upload.title = '部件编码导入'
+  // upload.open = true
 }
 
 /**文件上传中处理 */

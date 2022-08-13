@@ -24,6 +24,16 @@
           >
             导入
           </el-button>
+          <el-button
+            type="primary"
+            icon="UploadFilled"
+            size="mini"
+            color="#ffdac6"
+            class="sel"
+            v-hasPermi="['system:dict:export']"
+          >
+            <a href="../../../../public/data/productlib/part/productlibPart.rar" download="productlibPart.rar">下载模板</a>
+          </el-button>
         </el-col>
       </el-row>
       <el-form
