@@ -1190,7 +1190,6 @@ offerStore.$subscribe((mutation, state) => {
         profitMargin: 1.1, // 预计利润率
         totalPrice: 0, // 销售总价
         profitAmount: 0, // 利润额
-        splPartId:'',
       })
     })
     if (Object.keys(partData).length) {

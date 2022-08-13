@@ -1,4 +1,4 @@
-import { cloneDeep, omit } from 'lodash-es'
+import { cloneDeep, omit, uniq, sortBy} from 'lodash-es'
 import { getDicts } from '@/api/system/dict/data'
 
 
@@ -48,7 +48,7 @@ export default defineStore('offer', {
                   item3.splPartId = '' // 车间起重机数量新增，清空对应滑线
                 }
               })
-              if(item2.amount.length!==item3.amount){
+              if(item2.amount.length !== item3.amount){
                 item3.splPartId = '' // 车间起重机数量减少，清空对应滑线
               }
             }
@@ -61,7 +61,6 @@ export default defineStore('offer', {
           this.upDataPartName(this.partData.slipLineData.splId, workshopInfoItem) // 滑线/轨道数据名称
         })
         this.setPartData(this.partData)
-
       }
     },
 
@@ -110,13 +109,12 @@ export default defineStore('offer', {
           if (resp.code === 200 && resp.data.length) {
             this.tax = Number(resp.data[0].dictValue)
 
-            const oldSliLine = Object.keys(this.partData.slipLine)
-            const newSliLine = this.partData.slipLineData.splId.map(item=>(item.key).toString())
+            const oldSliLine =sortBy(uniq(Object.keys(this.partData.slipLine)))
+            const newSliLine =sortBy(uniq(this.partData.slipLineData.splId.map(item=>(item.key).toString())))
             if(oldSliLine.toString() !== newSliLine.toString()){
               const keyValues = this.partData.slipLineData.splId.map(item=>item.key)
               data = data.filter(item=>keyValues.includes(item.key)) //更新数据
             }
-
             let marketTotal = 0 // 市场成本合计
             let amountCount = 0 // 起重机数量
             const _craneDataSource = [] // 起重机运输
