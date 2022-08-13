@@ -961,7 +961,7 @@ const slipLineChange = (id, item) => {
         length: item.workshopLength,
         collector: Number(slipItem.collector),
         level: Number(slipItem.splLevel),
-        // collectorCount: productItem.amount.length * 4, // 集电器数量起重机数量*4
+        collectorCount: productItem.amount.length * 4, // 集电器数量起重机数量*4
         installLength: item.workshopLength,
         installUnprice: Number(slipItem.installUnprice),
         idlightUnprice: Number(slipItem.idlightUnprice),
@@ -970,12 +970,12 @@ const slipLineChange = (id, item) => {
         rcableUnprice: Number(slipItem.rcableUnprice),
         count: 0,
       }
-      // 单极滑线1台起重机配4个，多级滑线1台起重机配2个	
-      if (slipItem.splLeve==='1') {
-        newSlip.collectorCount =  productItem.amount.length * 4
-      }else{
-        newSlip.collectorCount =  productItem.amount.length * 2
-      }
+      // // 单极滑线1台起重机配4个，多级滑线1台起重机配2个	
+      // if (slipItem.splLeve==='1') {
+      //   newSlip.collectorCount =  productItem.amount.length * 4
+      // }else{
+      //   newSlip.collectorCount =  productItem.amount.length * 2
+      // }
       QuoteData.slipLine[item.key] = [newSlip]      
     }
   }

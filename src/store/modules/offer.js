@@ -41,7 +41,7 @@ export default defineStore('offer', {
 
         // 车间起重机数量变化，清空滑线
         productList.forEach(item2=>{
-          this.partData.slipLineData.splId.forEach(item3=>{
+          this.partData.slipLineData?.splId.forEach(item3=>{
             if(item2.key === item3.key){
               item2.amount.forEach(item4=>{
                 if(item4.type == undefined){
@@ -58,7 +58,7 @@ export default defineStore('offer', {
         this.upDataPartData(this.partData,workshopInfo)   // 更新项目报价数据
 
         workshopInfo.forEach(workshopInfoItem => {
-          this.upDataPartName(this.partData.slipLineData.splId, workshopInfoItem) // 滑线/轨道数据名称
+          this.upDataPartName(this.partData.slipLineData?.splId, workshopInfoItem) // 滑线/轨道数据名称
         })
         this.setPartData(this.partData)
       }
@@ -78,24 +78,26 @@ export default defineStore('offer', {
           delete track[key]
         }
       }
-      slipLineData.splId = slipLineData.splId.filter(item=>keyValues.includes((item.key).toString())) //更新数据
+      if(!slipLineData) return 
+      slipLineData.splId = slipLineData?.splId.filter(item=>keyValues.includes((item.key).toString()))||'' //更新数据
     },
     /**
      * 更新项目报价中车间名字    
      * @param {} data  XX数据
      * @param {} item  车间遍历的item
      */
-    upDataPartName(data,workshopInfoItem){
-      const productList = this.getProductData()
-      data.forEach(item2=>{
-        if(item2.key == workshopInfoItem.key){
-          if(item2.workshopName){
-            item2.workshopName = workshopInfoItem.name
-          }else{
-            item2.name = workshopInfoItem.name
+    upDataPartName(data, workshopInfoItem){
+      if(data){
+        data.forEach(item2=>{
+          if(item2.key == workshopInfoItem.key){
+            if(item2.workshopName){
+              item2.workshopName = workshopInfoItem.name
+            }else{
+              item2.name = workshopInfoItem.name
+            }
           }
-        }
-      })
+        })
+      }
     },
 
 
