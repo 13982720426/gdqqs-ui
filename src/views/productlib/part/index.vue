@@ -28,11 +28,12 @@
             type="primary"
             icon="UploadFilled"
             size="mini"
+            @click="handleDownload"
             color="#ffdac6"
             class="sel"
             v-hasPermi="['system:dict:export']"
           >
-            <a href="../../../../public/data/productlib/part/productlibPart.rar" download="productlibPart.rar">下载模板</a>
+            下载模板
           </el-button>
         </el-col>
       </el-row>
@@ -1361,6 +1362,15 @@ function handleImport() {
   }
   upload.open = true
 }
+
+const handleDownload = () => {
+  proxy.download(
+    'business/upload/getDownloadTemplate',
+    { fileName: 'productlibPart.rar' },
+    `productlibPart.rar`,
+  )
+}
+
 
 /**文件上传中处理 */
 const handleFileUploadProgress = (event, file, fileList) => {

@@ -28,12 +28,12 @@
             type="primary"
             icon="UploadFilled"
             size="mini"
-            @click="handleExport"
+            @click="handleDownload"
             color="#ffdac6"
             class="sel"
             v-hasPermi="['system:dict:export']"
           >
-            <a href="../../../../public/data/productlib/partcode/物料编码导入模板.xlsx" download="物料编码导入模板.xlsx">下载模板</a>
+            下载模板
           </el-button>
           <!-- <el-button
             type="primary"
@@ -360,6 +360,14 @@ function handleDelete(row) {
 //     `dict_data_${new Date().getTime()}.xlsx`,
 //   )
 // }
+
+const handleDownload = () => {
+  proxy.download(
+    'business/upload/getDownloadTemplate',
+    { fileName: '物料编码导入模板.xlsx' },
+    `物料编码导入模板.xlsx`,
+  )
+}
 
 /*** 导入参数 */
 const upload = reactive({

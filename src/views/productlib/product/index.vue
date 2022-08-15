@@ -533,10 +533,11 @@
             <el-button 
               type="primary"
               icon="UploadFilled"
+              @click="handleDownload"
               size="mini"
               v-hasPermi="['system:dict:export']"
             >
-              <a href="../../../../public/data/productlib/product/productlibProduct.rar" download="productlibProduct.rar">下载模板</a>
+              下载模板
             </el-button>  
           </el-form-item>
         </el-col>
@@ -669,7 +670,8 @@ const upUrl = ref(
 const productUrl = ref(
   import.meta.env.VITE_APP_BASE_API + '/business/productpart/importData',
 )
-const mb = ref('') //模板下载地址
+const mb = ref(import.meta.env.VITE_APP_BASE_API) //模板下载地址
+
 const { proxy } = getCurrentInstance()
 const router = useRouter()
 const headers = ref({
@@ -1092,6 +1094,14 @@ function handleExport() {
       `product_${new Date().getTime()}.xlsx`,
     )
   }
+}
+
+const handleDownload = () => {
+  proxy.download(
+    'business/upload/getDownloadTemplate',
+    { fileName: 'productlibProduct.rar' },
+    `productlibProduct.rar`,
+  )
 }
 
 async function getProductMSG() {
