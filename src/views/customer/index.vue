@@ -285,7 +285,7 @@ import {
   delCustomer,
 } from '@/api/business/customer'
 import { listCustomer } from '@/api/business/customer'
-import { ref } from 'vue-demi'
+import { ref } from 'vue'
 
 const { proxy } = getCurrentInstance()
 
