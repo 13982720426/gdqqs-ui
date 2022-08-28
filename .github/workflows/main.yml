@@ -27,11 +27,19 @@ jobs:
     # 命名这个任务为发布Deploy
     - name: Deploy
       # 因为构建之后，需要把代码上传到服务器上，所以需要连接到ssh，并且做一个拷贝操作
-      uses: appleboy/scp-action@v0.0.1
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        password: ${{ secrets.PASSWORD }}
-        port: 22
-        source: 'dist/'
-        target: '/usr/local/tomcat/apache-tomcat-8.5.82/webapps/ROOT'
+      # uses: appleboy/scp-action@v0.0.1
+      # with:
+      #   host: ${{ secrets.HOST }}
+      #   username: ${{ secrets.USERNAME }}
+      #   password: ${{ secrets.PASSWORD }}
+      #   port: '22'
+      #   source: 'dist/'
+      #   target: '/usr/local/tomcat/apache-tomcat-8.5.82/webapps/ROOT'
+      uses: easingthemes/ssh-deploy@v2.0.7
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.ACCESS_TOKEN }}
+        ARGS: '-avz --delete'
+        SOURCE: './dist/'
+        REMOTE_HOST: ${{ secrets.HOST }}
+        REMOTE_USER: ${{ secrets.USERNAME }}
+        TARGET: '/usr/local/tomcat/apache-tomcat-8.5.82/webapps/ROOT'
