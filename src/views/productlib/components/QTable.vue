@@ -36,7 +36,7 @@
   </el-table>
 </template>
 <script setup name="QTable">
-import { computed } from 'vue-demi'
+import { computed } from 'vue'
 
 const emit = defineEmits()
 const props = defineProps({

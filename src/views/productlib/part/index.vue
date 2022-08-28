@@ -396,7 +396,7 @@ import { listProduct } from '@/api/business/product'
 import SaveTitle from '@/views/offer/components/Title'
 import QTable from '../components/QTable.vue'
 import Save from './save.vue'
-import { reactive } from 'vue-demi'
+import { reactive } from 'vue'
 import { getToken } from '@/utils/auth'
 
 const orbitModel = ref(false)

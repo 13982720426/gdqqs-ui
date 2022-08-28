@@ -123,7 +123,7 @@
 import { updateUserProfile, uploadAvatar } from '@/api/system/user'
 import useUserStore from '@/store/modules/user'
 import { getUserProfile } from '@/api/system/user'
-import { ref } from 'vue-demi'
+import { ref } from 'vue'
 
 const state = reactive({
   user: {},

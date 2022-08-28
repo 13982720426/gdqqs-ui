@@ -142,7 +142,7 @@ import { VueCropper } from 'vue-cropper'
 import useUserStore from '@/store/modules/user'
 import { getUserProfile } from '@/api/system/user'
 import userAvatarVue from '../user/profile/userAvatar.vue'
-import { ref } from 'vue-demi'
+import { ref } from 'vue'
 
 const state = reactive({
   user: {
